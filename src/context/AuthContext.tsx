@@ -140,10 +140,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const resetPassword = async (email: string) => {
     if (!supabase || !isSupabaseConfigured) {
-      return { error: null };
+      return {
+        error: new Error(
+          "Supabase n'est pas encore configuré sur cet environnement (clé API manquante dans .env)."
+        )
+      };
     }
     const redirectUrl = window.location.origin + window.location.pathname;
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
       redirectTo: redirectUrl
     });
     return { error: error ? new Error(error.message) : null };
