@@ -10,15 +10,35 @@ import { saveSubmissionToSupabase } from './lib/supabase';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const MainRouter: React.FC = () => {
-  const { user, signOut } = useAuth();
+  const { user, loading, isEmailVerified, signOut } = useAuth();
 
-  const [view, setView] = useState<'home' | 'simulator' | 'results' | 'login' | 'dashboard'>('home');
+  const [view, setView] = useState<'home' | 'simulator' | 'results' | 'dashboard'>('home');
   const [activeCombo, setActiveCombo] = useState<ExamCombination | null>(null);
   const [activeYear, setActiveYear] = useState<string>('2026');
   const [activeMonth, setActiveMonth] = useState<string>('Septembre');
   const [startedAt, setStartedAt] = useState<string>('');
   const [examResult, setExamResult] = useState<ExamResult | null>(null);
 
+  // 1. Loading screen while determining auth session
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+        <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-slate-600 font-medium text-sm">Chargement de votre session...</p>
+      </div>
+    );
+  }
+
+  // 2. Gatekeeper: If user is not logged in OR email is not verified, show Login page as the 1st page
+  if (!user || !isEmailVerified) {
+    return (
+      <Login
+        onSuccess={() => setView('home')}
+      />
+    );
+  }
+
+  // 3. User is authenticated and verified -> give full access to Home, Simulator, Dashboard, and Results
   const handleStartExam = (combo: ExamCombination, year: string, month: string) => {
     setActiveCombo(combo);
     setActiveYear(year);
@@ -53,23 +73,20 @@ const MainRouter: React.FC = () => {
     setExamResult(null);
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    setView('home');
+  };
+
   return (
     <React.Fragment>
       {view === 'home' && (
         <Home
           onStartExam={handleStartExam}
           onViewSubmission={handleViewPastSubmission}
-          onDashboardClick={() => setView(user ? 'dashboard' : 'login')}
-          onLoginClick={() => setView('login')}
-          onLogoutClick={signOut}
-          userEmail={user?.email}
-        />
-      )}
-
-      {view === 'login' && (
-        <Login
-          onSuccess={() => setView('dashboard')}
-          onHomeClick={handleGoHome}
+          onDashboardClick={() => setView('dashboard')}
+          onLogoutClick={handleSignOut}
+          userEmail={user.email}
         />
       )}
 

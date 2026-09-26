@@ -7,10 +7,11 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   isConfigured: boolean;
-  signUp: (email: string, pass: string) => Promise<{ error: Error | null }>;
+  isEmailVerified: boolean;
+  signUp: (email: string, pass: string) => Promise<{ error: Error | null; needsVerification?: boolean }>;
   signIn: (email: string, pass: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
-  // Fallback demo login mode when Supabase env keys are not populated yet
+  resendVerification: (email: string) => Promise<{ error: Error | null }>;
   demoLogin: (email: string) => void;
 }
 
@@ -26,7 +27,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Check demo user in localStorage
       const demoEmail = localStorage.getItem('tcf_demo_user');
       if (demoEmail) {
-        setUser({ id: 'demo_user_id', email: demoEmail } as User);
+        setUser({
+          id: 'demo_user_id',
+          email: demoEmail,
+          email_confirmed_at: new Date().toISOString()
+        } as unknown as User);
       }
       setLoading(false);
       return;
@@ -53,13 +58,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, pass: string) => {
     if (!supabase || !isSupabaseConfigured) {
       demoLogin(email);
-      return { error: null };
+      return { error: null, needsVerification: false };
     }
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password: pass
     });
-    return { error: error ? new Error(error.message) : null };
+    if (error) {
+      return { error: new Error(error.message), needsVerification: false };
+    }
+    
+    // In Supabase, if email confirmation is required, session will be null or email_confirmed_at will be null
+    const needsVerification = Boolean(data.user && (!data.session || !data.user.email_confirmed_at));
+    return { error: null, needsVerification };
   };
 
   const signIn = async (email: string, pass: string) => {
@@ -83,10 +94,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSession(null);
   };
 
+  const resendVerification = async (email: string) => {
+    if (!supabase || !isSupabaseConfigured) return { error: null };
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email
+    });
+    return { error: error ? new Error(error.message) : null };
+  };
+
   const demoLogin = (email: string) => {
     localStorage.setItem('tcf_demo_user', email);
-    setUser({ id: 'demo_user_id', email } as User);
+    setUser({
+      id: 'demo_user_id',
+      email,
+      email_confirmed_at: new Date().toISOString()
+    } as unknown as User);
   };
+
+  // Check email verification status
+  const isEmailVerified = Boolean(
+    user && (!isSupabaseConfigured || Boolean(user.email_confirmed_at || (user as any).confirmed_at))
+  );
 
   return (
     <AuthContext.Provider
@@ -95,9 +124,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         session,
         loading,
         isConfigured: isSupabaseConfigured,
+        isEmailVerified,
         signUp,
         signIn,
         signOut,
+        resendVerification,
         demoLogin
       }}
     >
