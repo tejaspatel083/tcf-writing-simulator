@@ -289,12 +289,6 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
             </p>
           </div>
 
-          {!isConfigured && (
-            <div className="mb-4 bg-amber-50 border border-amber-200 text-amber-800 text-xs p-3 rounded leading-relaxed">
-              ℹ️ <strong>Mode Démo Actif :</strong> Supabase n'est pas encore connecté via .env. Vous pouvez vous connecter immédiatement avec n'importe quel e-mail.
-            </div>
-          )}
-
           {infoMsg && (
             <div className="mb-4 bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs p-3.5 rounded font-medium leading-relaxed">
               📬 {infoMsg}
