@@ -32,7 +32,7 @@ ${result.answers.task2 || '(Aucune réponse)'}
 
 --- TÂCHE 3 (${result.wordCounts.task3} mots / 120-180) ---
 Consigne : ${result.combination.tasks.task3.instruction}
-${result.combination.tasks.task3.document1 ? `Document 1 : ${result.combination.tasks.task3.document1}\n` : ''}${result.combination.tasks.task3.document2 ? `Document 2 : ${result.combination.tasks.task3.document2}\n` : ''}
+${result.combination.tasks.task3.document1 ? `Document - 1 :\n${cleanDocumentText(result.combination.tasks.task3.document1)}\n\n` : ''}${result.combination.tasks.task3.document2 ? `Document - 2 :\n${cleanDocumentText(result.combination.tasks.task3.document2)}\n\n` : ''}
 Réponse :
 ${result.answers.task3 || '(Aucune réponse)'}
 `;

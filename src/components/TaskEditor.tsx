@@ -107,6 +107,10 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
             {/* Document 1 Card */}
             {doc1Clean && (
               <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-4.5 text-slate-800 text-sm leading-relaxed shadow-2xs hover:border-slate-300 transition-colors">
+                <div className="font-bold text-xs text-blue-700 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                  <span>Document - 1</span>
+                </div>
                 <p className="whitespace-pre-line text-slate-800">{doc1Clean}</p>
               </div>
             )}
@@ -114,6 +118,10 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
             {/* Document 2 Card */}
             {doc2Clean && (
               <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-4.5 text-slate-800 text-sm leading-relaxed shadow-2xs hover:border-slate-300 transition-colors">
+                <div className="font-bold text-xs text-blue-700 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                  <span>Document - 2</span>
+                </div>
                 <p className="whitespace-pre-line text-slate-800">{doc2Clean}</p>
               </div>
             )}
