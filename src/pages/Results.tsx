@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ExamResult } from '../types/exam';
 import { formatTime } from '../utils/wordCount';
-import { cleanDocumentText } from '../utils/cleanText';
+import { cleanDocumentText, fixMojibake } from '../utils/cleanText';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 
@@ -25,13 +25,13 @@ Réponse :
 ${result.answers.task1 || '(Aucune réponse)'}
 
 --- TÂCHE 2 (${result.wordCounts.task2} mots / 120-150) ---
-Consigne : ${result.combination.tasks.task2.instruction}
+Consigne : ${fixMojibake(result.combination.tasks.task2.instruction)}
 
 Réponse :
 ${result.answers.task2 || '(Aucune réponse)'}
 
 --- TÂCHE 3 (${result.wordCounts.task3} mots / 120-180) ---
-Consigne : ${result.combination.tasks.task3.instruction}
+Consigne : ${fixMojibake(result.combination.tasks.task3.title || result.combination.tasks.task3.instruction)}
 ${result.combination.tasks.task3.document1 ? `Document - 1 :\n${cleanDocumentText(result.combination.tasks.task3.document1)}\n\n` : ''}${result.combination.tasks.task3.document2 ? `Document - 2 :\n${cleanDocumentText(result.combination.tasks.task3.document2)}\n\n` : ''}
 Réponse :
 ${result.answers.task3 || '(Aucune réponse)'}
@@ -159,12 +159,12 @@ ${result.answers.task3 || '(Aucune réponse)'}
                   <div className="text-xs text-slate-700 bg-slate-50 p-3.5 rounded-lg border border-slate-200 mb-3 leading-relaxed">
                     {t.req.title && (
                       <div className="font-bold text-sm text-blue-700 mb-2">
-                        {t.req.title}
+                        {fixMojibake(t.req.title)}
                       </div>
                     )}
                     {t.key !== 'task3' && (
                       <div>
-                        <strong>Consigne :</strong> {t.req.instruction}
+                        <strong>Consigne :</strong> {fixMojibake(t.req.instruction)}
                       </div>
                     )}
                     {t.req.document1 && (

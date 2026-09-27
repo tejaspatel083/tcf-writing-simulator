@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { TaskKey, TaskRequirement } from '../types/exam';
 import { countFrenchWords } from '../utils/wordCount';
-import { cleanDocumentText } from '../utils/cleanText';
+import { cleanDocumentText, fixMojibake } from '../utils/cleanText';
 
 interface TaskEditorProps {
   taskKey: TaskKey;
@@ -56,7 +56,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
 
   const doc1Clean = cleanDocumentText(taskRequirement.document1);
   const doc2Clean = cleanDocumentText(taskRequirement.document2);
-  const task3Title = taskRequirement.title || taskRequirement.instruction || '';
+  const task3Title = fixMojibake(taskRequirement.title || taskRequirement.instruction || '');
 
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden border-r border-slate-300">
@@ -129,7 +129,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
         ) : (
           /* Task 1 & Task 2 Instructions */
           <div className="text-slate-800 text-sm leading-relaxed whitespace-pre-line border-l-4 border-blue-600 pl-3.5 py-2.5 bg-white border border-slate-200 rounded-lg shadow-2xs">
-            {taskRequirement.instruction || "Veuillez rédiger votre texte ci-dessous."}
+            {fixMojibake(taskRequirement.instruction) || "Veuillez rédiger votre texte ci-dessous."}
           </div>
         )}
       </div>

@@ -79,11 +79,19 @@ def parse_month_page(slug):
         except Exception:
             pass
 
+def safe_clean_rsc_text(val):
+    if not val:
+        return ''
+    # Only decode unicode escapes \uXXXX without double-encoding existing UTF-8 characters
+    val = re.sub(r'\\u([0-9a-fA-F]{4})', lambda m: chr(int(m.group(1), 16)), val)
+    val = val.replace('\\n', '\n').replace('\\"', '"').replace("\\'", "'").replace('\\\\', '\\')
+    return val.strip()
+
     # Method 2: Regex extraction as robust fallback
     # Match pattern: \"tache3\":{\"titre\":\"...\"
     pattern = re.compile(r'\\"tache3\\":\{\\"titre\\":\\"([^\\"]+)\\"')
     for m in pattern.finditer(html):
-        titre = m.group(1).strip()
+        titre = safe_clean_rsc_text(m.group(1))
         p = m.start()
         sub_chunk = html[max(0, p - 4000):p]
         m_ids = re.findall(r'\\"id\\":(\d+)', sub_chunk)
@@ -94,8 +102,8 @@ def parse_month_page(slug):
                 after_chunk = html[m.end():m.end() + 4000]
                 m_d1 = re.search(r'\\"document1\\":\{\\"contenu\\":\\"([^\\"]+)\\"', after_chunk)
                 m_d2 = re.search(r'\\"document2\\":\{\\"contenu\\":\\"([^\\"]+)\\"', after_chunk)
-                d1 = m_d1.group(1).encode().decode('unicode_escape') if m_d1 else ''
-                d2 = m_d2.group(1).encode().decode('unicode_escape') if m_d2 else ''
+                d1 = safe_clean_rsc_text(m_d1.group(1)) if m_d1 else ''
+                d2 = safe_clean_rsc_text(m_d2.group(1)) if m_d2 else ''
                 results[cid] = {
                     'titre': titre,
                     'document1': d1,
