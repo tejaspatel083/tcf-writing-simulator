@@ -76,15 +76,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
+  const getAuthRedirectUrl = (): string => {
+    if (typeof window !== 'undefined' && window.location) {
+      return window.location.origin + window.location.pathname;
+    }
+    return 'https://tejaspatel083.github.io/tcf-writing-simulator/';
+  };
+
   const signUp = async (email: string, pass: string): Promise<SignUpResult> => {
     if (!supabase || !isSupabaseConfigured) {
       demoLogin(email);
       return { error: null, needsVerification: false };
     }
 
+    const redirectUrl = getAuthRedirectUrl();
     const { data, error } = await supabase.auth.signUp({
       email,
-      password: pass
+      password: pass,
+      options: {
+        emailRedirectTo: redirectUrl
+      }
     });
 
     if (error) {
@@ -146,7 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         )
       };
     }
-    const redirectUrl = window.location.origin + window.location.pathname;
+    const redirectUrl = getAuthRedirectUrl();
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
       redirectTo: redirectUrl
     });
@@ -179,9 +190,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const resendVerification = async (email: string) => {
     if (!supabase || !isSupabaseConfigured) return { error: null };
+    const redirectUrl = getAuthRedirectUrl();
     const { error } = await supabase.auth.resend({
       type: 'signup',
-      email
+      email,
+      options: {
+        emailRedirectTo: redirectUrl
+      }
     });
     return { error: error ? new Error(error.message) : null };
   };
