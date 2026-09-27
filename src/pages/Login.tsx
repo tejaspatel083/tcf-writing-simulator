@@ -154,7 +154,9 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
           `Un lien de confirmation a été envoyé à ${email}. Veuillez ouvrir votre boîte de réception (et vérifier vos spams), cliquer sur le lien pour valider votre compte, puis vous connecter.`
         );
         setShowResend(true);
-        switchMode('login');
+        setMode('login');
+        setPassword('');
+        setConfirmPassword('');
       } else {
         if (rememberMe) {
           localStorage.setItem('tcf_remembered_email', email.trim());
@@ -255,44 +257,76 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-between notranslate" translate="no">
       <Header
         onHomeClick={onHomeClick}
         subtitle="Accès obligatoire par authentification"
       />
 
-      <div className="max-w-md mx-auto w-full px-6 py-8 flex-1 flex flex-col justify-center">
+      <div className="max-w-md mx-auto w-full px-6 py-8 flex-1 flex flex-col justify-center notranslate" translate="no">
         <div className="bg-white border border-slate-300 rounded-lg shadow-sm p-6 sm:p-8">
           
+          {/* Mode Selector Tabs (Login / Register) */}
+          {mode !== 'forgot' && mode !== 'recovery' && (
+            <div className="flex border border-slate-200 rounded-lg p-1 bg-slate-100 mb-6">
+              <button
+                type="button"
+                onClick={() => switchMode('login')}
+                className={`flex-1 py-2 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                  mode === 'login'
+                    ? 'bg-white text-blue-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>Se connecter</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => switchMode('register')}
+                className={`flex-1 py-2 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                  mode === 'register'
+                    ? 'bg-white text-blue-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>Créer un compte</span>
+              </button>
+            </div>
+          )}
+
           {/* Header Icon & Title */}
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-700 font-bold text-xl mb-3">
-              {mode === 'register' && '✍️'}
-              {mode === 'login' && '🔒'}
-              {mode === 'forgot' && '🔑'}
-              {mode === 'recovery' && '🛡️'}
+              {mode === 'register' && <span>✍️</span>}
+              {mode === 'login' && <span>🔒</span>}
+              {mode === 'forgot' && <span>🔑</span>}
+              {mode === 'recovery' && <span>🛡️</span>}
             </div>
             <h2 className="text-2xl font-bold text-slate-900 mb-1">
-              {mode === 'register' && 'Créer un compte'}
-              {mode === 'login' && 'Connexion candidat'}
-              {mode === 'forgot' && 'Mot de passe oublié'}
-              {mode === 'recovery' && 'Nouveau mot de passe'}
+              {mode === 'register' && <span>Créer un compte</span>}
+              {mode === 'login' && <span>Connexion candidat</span>}
+              {mode === 'forgot' && <span>Mot de passe oublié</span>}
+              {mode === 'recovery' && <span>Nouveau mot de passe</span>}
             </h2>
             <p className="text-xs text-slate-600 leading-relaxed">
-              {mode === 'register' &&
-                'Créez votre compte unique. Une vérification par e-mail est obligatoire avant votre premier accès.'}
-              {mode === 'login' &&
-                'Connectez-vous avec votre adresse e-mail vérifiée pour accéder au simulateur TCF.'}
-              {mode === 'forgot' &&
-                'Saisissez votre adresse e-mail pour recevoir les instructions de réinitialisation.'}
-              {mode === 'recovery' &&
-                'Choisissez un mot de passe sécurisé pour réactiver l’accès à votre compte.'}
+              {mode === 'register' && (
+                <span>Créez votre compte unique. Une vérification par e-mail est obligatoire avant votre premier accès.</span>
+              )}
+              {mode === 'login' && (
+                <span>Connectez-vous avec votre adresse e-mail vérifiée pour accéder au simulateur TCF.</span>
+              )}
+              {mode === 'forgot' && (
+                <span>Saisissez votre adresse e-mail pour recevoir les instructions de réinitialisation.</span>
+              )}
+              {mode === 'recovery' && (
+                <span>Choisissez un mot de passe sécurisé pour réactiver l’accès à votre compte.</span>
+              )}
             </p>
           </div>
 
           {infoMsg && (
             <div className="mb-4 bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs p-3.5 rounded font-medium leading-relaxed">
-              📬 {infoMsg}
+              <span>📬 {infoMsg}</span>
             </div>
           )}
 
@@ -601,9 +635,11 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
                 onClick={() => switchMode(mode === 'login' ? 'register' : 'login')}
                 className="text-xs font-semibold text-blue-700 hover:text-blue-900 underline cursor-pointer"
               >
-                {mode === 'register'
-                  ? 'Vous avez déjà un compte ? Connectez-vous'
-                  : 'Nouveau candidat ? Créer un compte'}
+                {mode === 'register' ? (
+                  <span>Vous avez déjà un compte ? Connectez-vous</span>
+                ) : (
+                  <span>Nouveau candidat ? Créer un compte</span>
+                )}
               </button>
             </div>
           )}
