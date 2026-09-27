@@ -1,5 +1,6 @@
 export interface TaskRequirement {
   instruction: string;
+  title?: string;
   document1?: string;
   document2?: string;
   minWords: number;

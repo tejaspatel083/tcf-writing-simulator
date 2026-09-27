@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { ExamResult } from '../types/exam';
 import { formatTime } from '../utils/wordCount';
+import { cleanDocumentText } from '../utils/cleanText';
 import { Header } from '../components/Header';
+import { Footer } from '../components/Footer';
 
 interface ResultsProps {
   result: ExamResult;
@@ -153,17 +155,28 @@ ${result.answers.task3 || '(Aucune réponse)'}
                     </div>
                   </div>
 
-                  {/* Task Instruction */}
-                  <div className="text-xs text-slate-700 bg-slate-50 p-3 rounded border border-slate-200 mb-3 whitespace-pre-line leading-relaxed">
-                    <strong>Consigne :</strong> {t.req.instruction}
+                  {/* Task Instruction / Documents */}
+                  <div className="text-xs text-slate-700 bg-slate-50 p-3.5 rounded-lg border border-slate-200 mb-3 leading-relaxed">
+                    {t.req.title && (
+                      <div className="font-bold text-sm text-blue-700 mb-2">
+                        {t.req.title}
+                      </div>
+                    )}
+                    {t.key !== 'task3' && (
+                      <div>
+                        <strong>Consigne :</strong> {t.req.instruction}
+                      </div>
+                    )}
                     {t.req.document1 && (
-                      <div className="mt-2 pt-2 border-t border-slate-200">
-                        <strong>Document 1 :</strong> {t.req.document1}
+                      <div className="mt-2.5 pt-2.5 border-t border-slate-200">
+                        <strong className="text-slate-900 block mb-1">Document 1 :</strong>
+                        <p className="whitespace-pre-line text-slate-700">{cleanDocumentText(t.req.document1)}</p>
                       </div>
                     )}
                     {t.req.document2 && (
-                      <div className="mt-1">
-                        <strong>Document 2 :</strong> {t.req.document2}
+                      <div className="mt-2.5 pt-2.5 border-t border-slate-200">
+                        <strong className="text-slate-900 block mb-1">Document 2 :</strong>
+                        <p className="whitespace-pre-line text-slate-700">{cleanDocumentText(t.req.document2)}</p>
                       </div>
                     )}
                   </div>

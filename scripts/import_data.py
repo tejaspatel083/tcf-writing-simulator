@@ -108,29 +108,53 @@ def clean_html_text(text):
             prev_empty = False
     return '\n'.join(cleaned_lines).strip()
 
+def clean_document_content(doc):
+    if not doc:
+        return None
+    if isinstance(doc, dict):
+        return clean_html_text(doc.get('contenu', ''))
+    doc_str = str(doc).strip()
+    if 'contenu' in doc_str:
+        m = re.search(r"['\"]contenu['\"]\s*:\s*(['\"])([\s\S]*?)\1\s*(?:,\s*['\"]opinion['\"]|})", doc_str)
+        if m:
+            val = m.group(2).replace('\\n', '\n').replace("\\'", "'").replace('\\"', '"')
+            return clean_html_text(val)
+        m2 = re.search(r"['\"]contenu['\"]\s*:\s*['\"](.*?)['\"]", doc_str, re.DOTALL)
+        if m2:
+            val = m2.group(1).replace('\\n', '\n').replace("\\'", "'").replace('\\"', '"')
+            return clean_html_text(val)
+    return clean_html_text(doc_str)
+
 def parse_task(task_obj):
     if not task_obj:
         return None
     instruction = ""
-    for field in ['consigne', 'instruction', 'sujet', 'content', 'description']:
+    for field in ['consigne', 'instruction', 'sujet', 'titre', 'title', 'content', 'description']:
         if field in task_obj and task_obj[field]:
-            instruction = clean_html_text(task_obj[field])
+            instruction = clean_html_text(str(task_obj[field]))
+            break
+
+    title = ""
+    for field in ['titre', 'title']:
+        if field in task_obj and task_obj[field]:
+            title = clean_html_text(str(task_obj[field]))
             break
             
-    doc1 = ""
+    doc1 = None
     for field in ['document1', 'doc1', 'text1', 'source1']:
         if field in task_obj and task_obj[field]:
-            doc1 = clean_html_text(task_obj[field])
+            doc1 = clean_document_content(task_obj[field])
             break
             
-    doc2 = ""
+    doc2 = None
     for field in ['document2', 'doc2', 'text2', 'source2']:
         if field in task_obj and task_obj[field]:
-            doc2 = clean_html_text(task_obj[field])
+            doc2 = clean_document_content(task_obj[field])
             break
             
     return {
-        "instruction": instruction,
+        "instruction": instruction or title,
+        "title": title or instruction,
         "document1": doc1 if doc1 else None,
         "document2": doc2 if doc2 else None
     }
@@ -238,6 +262,7 @@ def main():
             
             task3 = {
                 "instruction": t3.get("instruction") if t3 else "",
+                "title": t3.get("title") if t3 else "",
                 "minWords": 120,
                 "maxWords": 180
             }

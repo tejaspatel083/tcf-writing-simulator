@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { TaskKey, TaskRequirement } from '../types/exam';
 import { countFrenchWords } from '../utils/wordCount';
+import { cleanDocumentText } from '../utils/cleanText';
 
 interface TaskEditorProps {
   taskKey: TaskKey;
@@ -37,15 +38,25 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
     }
   }, [taskKey, disabled]);
 
-  const taskTitleMap: Record<TaskKey, string> = {
-    task1: 'Tâche 1',
-    task2: 'Tâche 2',
-    task3: 'Tâche 3'
+  const taskNumberMap: Record<TaskKey, number> = {
+    task1: 1,
+    task2: 2,
+    task3: 3
+  };
+
+  const taskTypeMap: Record<TaskKey, string> = {
+    task1: 'Description / Message',
+    task2: 'Narration / Récit',
+    task3: 'Argumentation'
   };
 
   const isWithinRange = wordCount >= taskRequirement.minWords && wordCount <= taskRequirement.maxWords;
   const isTooLow = wordCount < taskRequirement.minWords;
   const isTooHigh = wordCount > taskRequirement.maxWords;
+
+  const doc1Clean = cleanDocumentText(taskRequirement.document1);
+  const doc2Clean = cleanDocumentText(taskRequirement.document2);
+  const task3Title = taskRequirement.title || taskRequirement.instruction || '';
 
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden border-r border-slate-300">
@@ -58,39 +69,59 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
       )}
 
       {/* Task Prompt Area */}
-      <div className="p-4 border-b border-slate-300 bg-slate-50 max-h-[40vh] overflow-y-auto">
-        <h2 className="text-lg font-bold text-slate-800 mb-2">
-          {taskTitleMap[taskKey]}
-        </h2>
+      <div className="p-4 sm:p-5 border-b border-slate-300 bg-slate-50 max-h-[46vh] overflow-y-auto">
+        {/* Header Bar matching Reference Website */}
+        <div className="flex items-center justify-between border-b border-slate-200 pb-2.5 mb-3">
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-extrabold shrink-0 shadow-2xs">
+              {taskNumberMap[taskKey]}
+            </span>
+            <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
+              Tâche {taskNumberMap[taskKey]}
+            </h2>
+          </div>
 
-        {/* Task Instruction */}
-        <div className="text-slate-700 text-sm leading-relaxed whitespace-pre-line border-l-4 border-blue-600 pl-3 py-1 bg-white border rounded shadow-xs mb-3">
-          {taskRequirement.instruction || "Veuillez rédiger votre texte ci-dessous."}
+          <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+            <span>{taskTypeMap[taskKey]}</span>
+            <span>•</span>
+            <span className="font-semibold text-slate-700">{taskRequirement.minWords}-{taskRequirement.maxWords} mots</span>
+            {taskKey === 'task3' && (
+              <>
+                <span>•</span>
+                <span>⏱️ 30 min</span>
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Documents for Task 3 */}
-        {taskKey === 'task3' && (
-          <div className="space-y-3 mt-3">
-            {taskRequirement.document1 && (
-              <div className="bg-white border border-slate-300 rounded p-3">
-                <div className="font-semibold text-xs text-blue-700 uppercase tracking-wide mb-1">
-                  Document 1
-                </div>
-                <div className="text-xs text-slate-700 leading-relaxed whitespace-pre-line">
-                  {taskRequirement.document1}
-                </div>
+        {/* Task Content */}
+        {taskKey === 'task3' ? (
+          <div className="space-y-3">
+            {/* Centered Large Blue Title */}
+            {task3Title && (
+              <h3 className="text-center text-lg sm:text-xl font-extrabold text-blue-600 my-3 leading-snug">
+                {task3Title}
+              </h3>
+            )}
+
+            {/* Document 1 Card */}
+            {doc1Clean && (
+              <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-4.5 text-slate-800 text-sm leading-relaxed shadow-2xs hover:border-slate-300 transition-colors">
+                <p className="whitespace-pre-line text-slate-800">{doc1Clean}</p>
               </div>
             )}
-            {taskRequirement.document2 && (
-              <div className="bg-white border border-slate-300 rounded p-3">
-                <div className="font-semibold text-xs text-blue-700 uppercase tracking-wide mb-1">
-                  Document 2
-                </div>
-                <div className="text-xs text-slate-700 leading-relaxed whitespace-pre-line">
-                  {taskRequirement.document2}
-                </div>
+
+            {/* Document 2 Card */}
+            {doc2Clean && (
+              <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-4.5 text-slate-800 text-sm leading-relaxed shadow-2xs hover:border-slate-300 transition-colors">
+                <p className="whitespace-pre-line text-slate-800">{doc2Clean}</p>
               </div>
             )}
+          </div>
+        ) : (
+          /* Task 1 & Task 2 Instructions */
+          <div className="text-slate-800 text-sm leading-relaxed whitespace-pre-line border-l-4 border-blue-600 pl-3.5 py-2.5 bg-white border border-slate-200 rounded-lg shadow-2xs">
+            {taskRequirement.instruction || "Veuillez rédiger votre texte ci-dessous."}
           </div>
         )}
       </div>
@@ -131,7 +162,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
       </div>
 
       {/* Footer / Status Bar */}
-      <div className="px-4 py-3 border-t border-slate-300 bg-slate-50 flex items-center justify-between text-sm">
+      <div className="px-4 py-3 border-t border-slate-300 bg-slate-50 flex items-center justify-between text-sm shrink-0">
         {/* Word Counter */}
         <div className="flex items-center gap-2">
           <span className={`font-bold font-mono text-base px-2 py-0.5 rounded border ${
@@ -170,7 +201,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
             type="button"
             onClick={onPrevTask}
             disabled={isFirstTask}
-            className={`px-3 py-1.5 rounded border text-sm font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded border text-sm font-medium transition-colors cursor-pointer ${
               isFirstTask
                 ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
                 : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
@@ -183,7 +214,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
             type="button"
             onClick={onNextTask}
             disabled={isLastTask}
-            className={`px-3 py-1.5 rounded border text-sm font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded border text-sm font-medium transition-colors cursor-pointer ${
               isLastTask
                 ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
                 : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
@@ -195,7 +226,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
           <button
             type="button"
             onClick={onFinishExam}
-            className="px-4 py-1.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors ml-4 shadow-xs"
+            className="px-4 py-1.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors ml-4 shadow-xs cursor-pointer"
           >
             Terminer l'examen
           </button>
