@@ -49,3 +49,40 @@ export function clearSubmissions(): void {
     console.error('Error clearing submissions:', e);
   }
 }
+
+export function syncStoredSubmissions(submissions: ExamResult[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
+  } catch (e) {
+    console.error('Error syncing submissions to localStorage:', e);
+  }
+}
+
+/**
+ * Merges primary (e.g. Supabase) and secondary (e.g. LocalStorage) submissions
+ * deduplicating by ID or combination date key.
+ */
+export function mergeSubmissions(primary: ExamResult[], secondary: ExamResult[]): ExamResult[] {
+  const map = new Map<string, ExamResult>();
+
+  const getKey = (sub: ExamResult): string => {
+    if (sub.id) return `id_${sub.id}`;
+    const comboNum = sub.combination?.combinationNumber || sub.combination?.combination;
+    return `${sub.year}_${sub.month}_${comboNum}_${sub.date || sub.timeUsedSeconds}`;
+  };
+
+  // Add primary (Supabase) submissions first
+  primary.forEach((sub) => {
+    map.set(getKey(sub), sub);
+  });
+
+  // Add secondary (LocalStorage) submissions if not already in the map
+  secondary.forEach((sub) => {
+    const key = getKey(sub);
+    if (!map.has(key)) {
+      map.set(key, sub);
+    }
+  });
+
+  return Array.from(map.values());
+}

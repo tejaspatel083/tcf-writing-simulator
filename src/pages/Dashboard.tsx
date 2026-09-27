@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { fetchSubmissionsFromSupabase } from '../lib/supabase';
-import { getStoredSubmissions, clearSubmissions } from '../utils/storage';
+import { getStoredSubmissions, clearSubmissions, mergeSubmissions, syncStoredSubmissions } from '../utils/storage';
 import { ExamResult } from '../types/exam';
 import { formatTime } from '../utils/wordCount';
 import { Header } from '../components/Header';
+import { Footer } from '../components/Footer';
 
 interface DashboardProps {
   onStartNewExam: () => void;
@@ -26,17 +27,24 @@ export const Dashboard: React.FC<DashboardProps> = ({
   useEffect(() => {
     async function loadData() {
       setLoading(true);
+      const local = getStoredSubmissions();
+      setSubmissions(local);
+
       if (user && isConfigured) {
-        const { submissions: dbSubs } = await fetchSubmissionsFromSupabase(user.id);
-        if (dbSubs && dbSubs.length > 0) {
-          setSubmissions(dbSubs);
-          setLoading(false);
-          return;
+        try {
+          const { submissions: dbSubs, error } = await fetchSubmissionsFromSupabase(user.id);
+          if (!error && dbSubs && dbSubs.length > 0) {
+            const merged = mergeSubmissions(dbSubs, local);
+            setSubmissions(merged);
+            syncStoredSubmissions(merged);
+            setLoading(false);
+            return;
+          }
+        } catch (e) {
+          console.error('Error fetching submissions for dashboard:', e);
         }
       }
 
-      // Fallback to local storage submissions
-      setSubmissions(getStoredSubmissions());
       setLoading(false);
     }
 
@@ -222,6 +230,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
           🔒 <strong>Respect de la vie privée :</strong> Vos réponses rédigées sont enregistrées de façon confidentielle dans votre compte personnel uniquement. Vos soumissions ne sont jamais publiques, aucun profil public n'est généré, et aucun classement n'est partagé.
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

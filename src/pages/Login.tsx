@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Header } from '../components/Header';
+import { Footer } from '../components/Footer';
 import { Eye, EyeOff } from 'lucide-react';
 
 interface LoginProps {
@@ -615,6 +616,8 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
           </p>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };
