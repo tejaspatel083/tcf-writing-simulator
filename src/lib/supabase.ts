@@ -141,3 +141,28 @@ export async function fetchSubmissionsFromSupabase(
 
   return { submissions: mappedSubmissions, error: null };
 }
+
+/**
+ * Deletes a submission from Supabase by ID for the logged in user
+ */
+export async function deleteSubmissionFromSupabase(
+  id: string,
+  userId: string
+): Promise<{ error: Error | null }> {
+  if (!supabase || !isSupabaseConfigured) {
+    return { error: null };
+  }
+
+  const { error } = await supabase
+    .from('submissions')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error('Error deleting submission from Supabase:', error);
+    return { error: new Error(error.message) };
+  }
+
+  return { error: null };
+}

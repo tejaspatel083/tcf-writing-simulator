@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { fetchSubmissionsFromSupabase } from '../lib/supabase';
-import { getStoredSubmissions, clearSubmissions, mergeSubmissions, syncStoredSubmissions } from '../utils/storage';
+import { fetchSubmissionsFromSupabase, deleteSubmissionFromSupabase } from '../lib/supabase';
+import { getStoredSubmissions, deleteStoredSubmission, mergeSubmissions, syncStoredSubmissions } from '../utils/storage';
 import { ExamResult } from '../types/exam';
 import { formatTime } from '../utils/wordCount';
 import { Header } from '../components/Header';
@@ -51,11 +51,28 @@ export const Dashboard: React.FC<DashboardProps> = ({
     loadData();
   }, [user, isConfigured]);
 
-  const handleClearHistory = () => {
-    if (window.confirm("Voulez-vous vraiment effacer votre historique de soumissions ?")) {
-      clearSubmissions();
-      setSubmissions([]);
+  const handleDeleteSubmission = async (sub: ExamResult) => {
+    if (!sub.id) return;
+    const comboNum = sub.combination?.combinationNumber || sub.combination?.combination;
+    const confirmed = window.confirm(
+      `Voulez-vous vraiment supprimer cette soumission (${sub.month} ${sub.year} — Combinaison ${comboNum}) ?`
+    );
+    if (!confirmed) return;
+
+    // 1. Delete from local storage
+    deleteStoredSubmission(sub.id);
+
+    // 2. Delete from Supabase if logged in
+    if (user && isConfigured) {
+      try {
+        await deleteSubmissionFromSupabase(sub.id, user.id);
+      } catch (err) {
+        console.error('Erreur lors de la suppression sur Supabase:', err);
+      }
     }
+
+    // 3. Update state immediately
+    setSubmissions((prev) => prev.filter((item) => item.id !== sub.id));
   };
 
   const displayName = user?.email ? user.email.split('@')[0] : 'Utilisateur';
@@ -109,16 +126,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 Consultez le détail de vos rédactions passées et leur nombre de mots.
               </p>
             </div>
-
-            {submissions.length > 0 && (
-              <button
-                type="button"
-                onClick={handleClearHistory}
-                className="text-xs font-semibold text-red-600 hover:text-red-800 border border-red-200 bg-red-50 px-2.5 py-1 rounded"
-              >
-                Effacer l'historique
-              </button>
-            )}
           </div>
 
           {loading ? (
@@ -202,7 +209,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             <button
                               type="button"
                               onClick={() => onViewSubmission(sub)}
-                              className="px-3 py-1 rounded bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold hover:bg-blue-100 transition-colors"
+                              className="px-2.5 py-1 rounded bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold hover:bg-blue-100 transition-colors"
                             >
                               Voir
                             </button>
@@ -213,6 +220,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
                               title="Retenter cet examen"
                             >
                               Retenter
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteSubmission(sub)}
+                              className="px-2 py-1 rounded border border-red-200 bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 hover:border-red-300 transition-colors flex items-center gap-1"
+                              title="Supprimer cette soumission"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                              <span>Supprimer</span>
                             </button>
                           </div>
                         </td>

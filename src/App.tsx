@@ -48,13 +48,28 @@ const MainRouter: React.FC = () => {
   };
 
   const handleFinishExam = async (result: ExamResult) => {
-    const savedLocal = saveSubmission(result);
-    setExamResult(savedLocal);
+    let finalResult = result;
 
     if (user) {
-      await saveSubmissionToSupabase(user.id, result, startedAt || new Date().toISOString());
+      try {
+        const { data, error } = await saveSubmissionToSupabase(
+          user.id,
+          result,
+          startedAt || new Date().toISOString()
+        );
+        if (data?.id) {
+          finalResult = {
+            ...result,
+            id: data.id
+          };
+        }
+      } catch (err) {
+        console.error('Error saving submission to Supabase:', err);
+      }
     }
 
+    const savedLocal = saveSubmission(finalResult);
+    setExamResult(savedLocal);
     setView('results');
   };
 

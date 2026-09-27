@@ -42,6 +42,16 @@ export function saveSubmission(result: ExamResult): ExamResult {
   return newSubmission;
 }
 
+export function deleteStoredSubmission(id: string): void {
+  try {
+    const submissions = getStoredSubmissions();
+    const updated = submissions.filter((sub) => sub.id !== id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Error deleting submission from localStorage:', e);
+  }
+}
+
 export function clearSubmissions(): void {
   try {
     localStorage.removeItem(STORAGE_KEY);
@@ -60,29 +70,38 @@ export function syncStoredSubmissions(submissions: ExamResult[]): void {
 
 /**
  * Merges primary (e.g. Supabase) and secondary (e.g. LocalStorage) submissions
- * deduplicating by ID or combination date key.
+ * deduplicating by ID as well as matching combination & content.
  */
 export function mergeSubmissions(primary: ExamResult[], secondary: ExamResult[]): ExamResult[] {
-  const map = new Map<string, ExamResult>();
+  const byId = new Map<string, ExamResult>();
+  const byContent = new Map<string, ExamResult>();
 
-  const getKey = (sub: ExamResult): string => {
-    if (sub.id) return `id_${sub.id}`;
+  const getContentKey = (sub: ExamResult): string => {
     const comboNum = sub.combination?.combinationNumber || sub.combination?.combination;
-    return `${sub.year}_${sub.month}_${comboNum}_${sub.date || sub.timeUsedSeconds}`;
+    const t1 = (sub.answers?.task1 || '').slice(0, 50).trim();
+    const t2 = (sub.answers?.task2 || '').slice(0, 50).trim();
+    const t3 = (sub.answers?.task3 || '').slice(0, 50).trim();
+    return `${sub.year}_${sub.month}_${comboNum}_${sub.timeUsedSeconds}_${t1}_${t2}_${t3}`;
   };
 
-  // Add primary (Supabase) submissions first
-  primary.forEach((sub) => {
-    map.set(getKey(sub), sub);
-  });
+  // Primary (Supabase) is source of truth
+  for (const sub of primary) {
+    if (sub.id) byId.set(sub.id, sub);
+    byContent.set(getContentKey(sub), sub);
+  }
 
-  // Add secondary (LocalStorage) submissions if not already in the map
-  secondary.forEach((sub) => {
-    const key = getKey(sub);
-    if (!map.has(key)) {
-      map.set(key, sub);
+  // Secondary (LocalStorage) added only if not duplicate
+  for (const sub of secondary) {
+    if (sub.id && byId.has(sub.id)) {
+      continue;
     }
-  });
+    const cKey = getContentKey(sub);
+    if (byContent.has(cKey)) {
+      continue;
+    }
+    if (sub.id) byId.set(sub.id, sub);
+    byContent.set(cKey, sub);
+  }
 
-  return Array.from(map.values());
+  return Array.from(byContent.values());
 }
