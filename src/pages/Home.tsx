@@ -11,6 +11,7 @@ import {
   syncStoredSubmissions,
   mergeSubmissions
 } from '../utils/storage';
+import { useLanguage } from '../context/LanguageContext';
 
 export type TrainingMode = 'full_exam' | 'single_task';
 
@@ -90,6 +91,7 @@ export const Home: React.FC<HomeProps> = ({
   userEmail
 }) => {
   const { user, isConfigured } = useAuth();
+  const { t } = useLanguage();
   const db = questionsData as unknown as QuestionsDB;
   const years = Object.keys(db).sort((a, b) => Number(b) - Number(a));
 
@@ -243,7 +245,7 @@ export const Home: React.FC<HomeProps> = ({
         {userEmail ? (
           <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
             <div className="text-xs text-blue-900 font-medium">
-              Connecté en tant que <strong>{userEmail}</strong>
+              {t('Connecté en tant que')} <strong>{userEmail}</strong>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -251,19 +253,19 @@ export const Home: React.FC<HomeProps> = ({
                 onClick={onDashboardClick}
                 className="text-xs font-bold text-blue-700 bg-white border border-blue-300 px-3 py-1.5 rounded hover:bg-blue-50 cursor-pointer transition-colors shadow-2xs"
               >
-                Mon Dashboard (Mes soumissions) →
+                {t('Mon Dashboard (Mes soumissions) →')}
               </button>
             </div>
           </div>
         ) : (
           <div className="mb-6 bg-slate-100 border border-slate-200 rounded p-3 text-xs text-slate-600 flex items-center justify-between">
-            <span>Vous n'êtes pas connecté. Connectez-vous pour synchroniser vos examens avec Supabase.</span>
+            <span>{t("Vous n'êtes pas connecté. Connectez-vous pour synchroniser vos examens avec Supabase.")}</span>
             <button
               type="button"
               onClick={onLoginClick}
               className="text-xs font-bold text-blue-700 underline ml-2 cursor-pointer"
             >
-              Se connecter / Créer un compte
+              {t('Se connecter / Créer un compte')}
             </button>
           </div>
         )}
@@ -271,10 +273,10 @@ export const Home: React.FC<HomeProps> = ({
         {/* Header Title */}
         <div className="text-center mb-8 border-b border-slate-200 pb-6">
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">
-            TCF Canada — Expression Écrite Simulator
+            {t('TCF Canada — Expression Écrite Simulator')}
           </h1>
           <p className="text-slate-600 text-base font-normal">
-            Entraînez-vous dans les conditions de l'examen réel.
+            {t("Entraînez-vous dans les conditions de l'examen réel.")}
           </p>
         </div>
 
@@ -283,12 +285,12 @@ export const Home: React.FC<HomeProps> = ({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-3 mb-6 gap-3">
             <div>
               <h2 className="text-lg font-bold text-slate-800">
-                Mode d'entraînement
+                {t("Mode d'entraînement")}
               </h2>
               <p className="text-xs text-slate-500">
                 {trainingMode === 'full_exam'
-                  ? "Examen complet de 60 minutes avec les 3 tâches consécutives (conditions réelles)."
-                  : "Entraînement ciblé sur une seule tâche avec un minuteur personnalisé défini par vous-même."}
+                  ? t("Examen complet de 60 minutes avec les 3 tâches consécutives (conditions réelles).")
+                  : t("Entraînement ciblé sur une seule tâche avec un minuteur personnalisé défini par vous-même.")}
               </p>
             </div>
 
@@ -304,7 +306,7 @@ export const Home: React.FC<HomeProps> = ({
                 }`}
               >
                 <span>🏆</span>
-                <span>Examen Complet (60 min)</span>
+                <span>{t('Examen Complet (60 min)')}</span>
               </button>
 
               <button
@@ -317,7 +319,7 @@ export const Home: React.FC<HomeProps> = ({
                 }`}
               >
                 <span>⏱️</span>
-                <span>Pratique par Tâche</span>
+                <span>{t('Pratique par Tâche')}</span>
               </button>
             </div>
           </div>
@@ -325,7 +327,7 @@ export const Home: React.FC<HomeProps> = ({
           {/* Year Selection Tabs */}
           <div className="mb-6">
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">
-              Année
+              {t('Année')}
             </label>
             <div className="flex gap-2">
               {years.map((year) => (
@@ -348,7 +350,7 @@ export const Home: React.FC<HomeProps> = ({
           {/* Month Selection Grid */}
           <div className="mb-6">
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">
-              Mois ({selectedYear})
+              {t('Mois')} ({selectedYear})
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
               {monthsForYear.map((month) => {
@@ -369,7 +371,7 @@ export const Home: React.FC<HomeProps> = ({
                   >
                     <div className="flex items-center justify-between">
                       <span className={`text-sm font-bold ${isSelected ? 'text-blue-800' : 'text-slate-800'}`}>
-                        {month}
+                        {t(month)}
                       </span>
                       {completedCount > 0 && (
                         <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-1.5 py-0.5 rounded-full">
@@ -378,9 +380,9 @@ export const Home: React.FC<HomeProps> = ({
                       )}
                     </div>
                     <span className="text-xs text-slate-500 mt-1">
-                      {count} combinaison{count > 1 ? 's' : ''}
+                      {count} {count > 1 ? t('combinaisons') : t('combinaison')}
                       {completedCount > 0 && (
-                        <span className="text-emerald-700 font-semibold"> • {completedCount} faite{completedCount > 1 ? 's' : ''}</span>
+                        <span className="text-emerald-700 font-semibold"> • {completedCount} {completedCount > 1 ? t('faites') : t('faite')}</span>
                       )}
                     </span>
                   </button>
@@ -394,11 +396,11 @@ export const Home: React.FC<HomeProps> = ({
             <div className="mb-6" ref={dropdownRef}>
               <div className="flex items-center justify-between mb-2">
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide">
-                  Combinaison ({selectedMonth} {selectedYear})
+                  {t('Combinaison')} ({t(selectedMonth)} {selectedYear})
                 </label>
                 {isCurrentComboDone && (
                   <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
-                    <span>✓</span> Déjà complétée (Refaire disponible)
+                    <span>✓</span> {t('Déjà complétée (Refaire disponible)')}
                   </span>
                 )}
               </div>
@@ -425,11 +427,11 @@ export const Home: React.FC<HomeProps> = ({
                         <span className="w-2 h-2 rounded-full bg-slate-400 shrink-0"></span>
                       )}
                       <span>
-                        Combinaison {currentCombo?.combinationNumber || selectedComboIndex + 1}
+                        {t('Combinaison')} {currentCombo?.combinationNumber || selectedComboIndex + 1}
                       </span>
                       {isCurrentComboDone && (
                         <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded">
-                          ✓ Faite
+                          ✓ {t('Faite')}
                         </span>
                       )}
                     </div>
@@ -445,8 +447,8 @@ export const Home: React.FC<HomeProps> = ({
                   {comboDropdownOpen && (
                     <div className="absolute z-30 mt-1.5 w-full sm:w-[380px] max-h-72 overflow-y-auto bg-white border border-slate-300 rounded-lg shadow-xl p-1.5 space-y-1 animate-fadeIn">
                       <div className="px-2.5 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1 flex items-center justify-between">
-                        <span>Sélectionner une combinaison</span>
-                        <span className="text-emerald-700 font-semibold normal-case">Vert = Déjà complétée</span>
+                        <span>{t('Sélectionner une combinaison')}</span>
+                        <span className="text-emerald-700 font-semibold normal-case">{t('Vert = Déjà complétée')}</span>
                       </div>
 
                       {combinations.map((c, idx) => {
@@ -483,17 +485,17 @@ export const Home: React.FC<HomeProps> = ({
                                 </span>
                               )}
                               <span className={isDone ? 'font-bold text-emerald-950 text-sm' : 'text-slate-800 font-medium text-sm'}>
-                                Combinaison {comboNum}
+                                {t('Combinaison')} {comboNum}
                               </span>
                             </div>
 
                             {isDone ? (
                               <span className="text-[11px] font-bold text-emerald-800 bg-emerald-200/90 border border-emerald-400 px-2.5 py-0.5 rounded-full whitespace-nowrap">
-                                ✓ Déjà faite (Refaire disponible)
+                                ✓ {t('Déjà faite (Refaire disponible)')}
                               </span>
                             ) : isSelected ? (
                               <span className="text-[10px] font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
-                                Sélectionnée
+                                {t('Sélectionnée')}
                               </span>
                             ) : null}
                           </button>
@@ -508,10 +510,10 @@ export const Home: React.FC<HomeProps> = ({
                     type="button"
                     onClick={handlePickRandomCombo}
                     className="px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
-                    title="Choisir une combinaison au hasard"
+                    title={t('Choisir une combinaison au hasard')}
                   >
                     <span>🎲</span>
-                    <span>Question au hasard</span>
+                    <span>{t('Question au hasard')}</span>
                   </button>
                 )}
               </div>
@@ -522,10 +524,10 @@ export const Home: React.FC<HomeProps> = ({
                   <span className="text-base text-emerald-600 font-bold leading-none mt-0.5 shrink-0">✓</span>
                   <div>
                     <p className="font-bold text-emerald-950">
-                      Vous avez déjà complété la Combinaison {currentComboNum} ({selectedMonth} {selectedYear}).
+                      {t('Vous avez déjà complété la Combinaison')} {currentComboNum} ({t(selectedMonth)} {selectedYear}).
                     </p>
                     <p className="text-emerald-800 mt-0.5">
-                      Vous pouvez la <strong>refaire à tout moment</strong> pour vous réentraîner. Votre nouvelle tentative sera enregistrée séparément dans votre tableau de bord.
+                      {t('Vous pouvez la refaire à tout moment pour vous réentraîner. Votre nouvelle tentative sera enregistrée séparément dans votre tableau de bord.')}
                     </p>
                   </div>
                 </div>
@@ -539,9 +541,9 @@ export const Home: React.FC<HomeProps> = ({
               {/* 1. Task Choice */}
               <div>
                 <label className="block text-xs font-bold text-slate-800 uppercase tracking-wide mb-2 flex items-center justify-between">
-                  <span>1. Choisissez la tâche à pratiquer</span>
+                  <span>{t('1. Choisissez la tâche à pratiquer')}</span>
                   <span className="text-[11px] font-normal text-blue-700 lowercase">
-                    (Question issue de la combinaison sélectionnée)
+                    {t('(Question issue de la combinaison sélectionnée)')}
                   </span>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -570,13 +572,13 @@ export const Home: React.FC<HomeProps> = ({
                       words: '120–180 mots',
                       rec: '30 min'
                     }
-                  ].map((t) => {
-                    const isSelected = selectedTask === t.key;
+                  ].map((tItem) => {
+                    const isSelected = selectedTask === tItem.key;
                     return (
                       <button
-                        key={t.key}
+                        key={tItem.key}
                         type="button"
-                        onClick={() => handleSelectTask(t.key)}
+                        onClick={() => handleSelectTask(tItem.key)}
                         className={`p-3.5 rounded-lg border text-left transition-all cursor-pointer ${
                           isSelected
                             ? 'bg-white border-blue-600 ring-2 ring-blue-500 shadow-xs'
@@ -585,15 +587,15 @@ export const Home: React.FC<HomeProps> = ({
                       >
                         <div className="flex items-center justify-between mb-1">
                           <span className={`text-sm font-bold ${isSelected ? 'text-blue-700' : 'text-slate-900'}`}>
-                            {t.name}
+                            {t(tItem.name)}
                           </span>
                           <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
-                            {t.words}
+                            {tItem.words}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-600 font-medium">{t.desc}</p>
+                        <p className="text-xs text-slate-600 font-medium">{t(tItem.desc)}</p>
                         <p className="text-[11px] text-blue-600 font-semibold mt-1">
-                          Temps recommandé : {t.rec}
+                          {t('Temps recommandé :')} {tItem.rec}
                         </p>
                       </button>
                     );
@@ -605,17 +607,17 @@ export const Home: React.FC<HomeProps> = ({
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="block text-xs font-bold text-slate-800 uppercase tracking-wide">
-                    2. Fixez votre minuteur (Temps libre par vous-même)
+                    {t('2. Fixez votre minuteur (Temps libre par vous-même)')}
                   </label>
                   <span className="text-xs font-semibold text-slate-700">
-                    Minuteur réglé : <strong className="text-blue-700 font-mono text-sm">{customMinutes} minutes</strong>
+                    {t('Minuteur réglé :')} <strong className="text-blue-700 font-mono text-sm">{customMinutes} {t('minutes')}</strong>
                   </span>
                 </div>
 
                 <div className="bg-white border border-slate-300 rounded-lg p-3.5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
                   {/* Preset chips */}
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-xs text-slate-500 font-medium mr-1">Raccourcis :</span>
+                    <span className="text-xs text-slate-500 font-medium mr-1">{t('Raccourcis :')}</span>
                     {[5, 10, 15, 20, 25, 30, 45, 60].map((mins) => (
                       <button
                         key={mins}
@@ -679,20 +681,20 @@ export const Home: React.FC<HomeProps> = ({
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-bold text-slate-900">
                     {trainingMode === 'single_task'
-                      ? `Pratique individuelle : ${selectedTask === 'task1' ? 'Tâche 1' : selectedTask === 'task2' ? 'Tâche 2' : 'Tâche 3'}`
-                      : `Combinaison ${currentCombo.combinationNumber || selectedComboIndex + 1}`}
+                      ? `${t('Pratique individuelle :')} ${selectedTask === 'task1' ? t('Tâche 1') : selectedTask === 'task2' ? t('Tâche 2') : t('Tâche 3')}`
+                      : `${t('Combinaison')} ${currentCombo.combinationNumber || selectedComboIndex + 1}`}
                   </h3>
                   <span className="text-xs text-slate-500">
-                    ({selectedMonth} {selectedYear})
+                    ({t(selectedMonth)} {selectedYear})
                   </span>
                   {trainingMode === 'full_exam' && isCurrentComboDone && (
                     <span className="text-xs font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
-                      ✓ Déjà complétée
+                      ✓ {t('Déjà complétée')}
                     </span>
                   )}
                 </div>
                 <span className="text-xs font-semibold text-slate-700 bg-white border border-slate-300 px-2.5 py-1 rounded font-mono shadow-2xs">
-                  ⏱️ {trainingMode === 'single_task' ? `${customMinutes} minutes` : 'Durée: 60 minutes'}
+                  ⏱️ {trainingMode === 'single_task' ? `${customMinutes} ${t('minutes')}` : t('Durée: 60 minutes')}
                 </span>
               </div>
 
@@ -701,24 +703,24 @@ export const Home: React.FC<HomeProps> = ({
                   <div className="flex items-center gap-2">
                     <span className="text-blue-600 font-bold">✓</span>
                     <span>
-                      <strong>Tâche :</strong>{' '}
+                      <strong>{t('Tâche :')}</strong>{' '}
                       {selectedTask === 'task1'
-                        ? 'Tâche 1 — Message / Description (60 à 120 mots inclus)'
+                        ? `${t('Tâche 1')} — ${t('Message / Description')} (60–120 ${t('mots')})`
                         : selectedTask === 'task2'
-                        ? 'Tâche 2 — Narration / Récit (120 à 150 mots inclus)'
-                        : 'Tâche 3 — Argumentation (120 à 180 mots inclus)'}
+                        ? `${t('Tâche 2')} — ${t('Narration / Récit')} (120–150 ${t('mots')})`
+                        : `${t('Tâche 3')} — ${t('Argumentation (2 documents)')} (120–180 ${t('mots')})`}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-blue-600 font-bold">✓</span>
                     <span>
-                      <strong>Minuteur personnalisé :</strong> {customMinutes} minutes allouées pour cette rédaction.
+                      <strong>{t('Minuteur personnalisé :')}</strong> {customMinutes} {t('minutes')} {t('allouées pour cette rédaction.') || 'allouées.'}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-blue-600 font-bold">✓</span>
                     <span>
-                      <strong>Conditions réelles :</strong> Exacte même interface d'examen TCF avec décompte des mots et clavier d'accents.
+                      <strong>{t('Conditions réelles :')}</strong> {t("Exacte même interface d'examen TCF avec décompte des mots et clavier d'accents.") || "Même interface d'examen TCF."}
                     </span>
                   </div>
                 </div>
@@ -726,15 +728,15 @@ export const Home: React.FC<HomeProps> = ({
                 <div className="space-y-2 mb-6 text-sm text-slate-700">
                   <div className="flex items-center gap-2">
                     <span className="text-emerald-600 font-bold">✓</span>
-                    <span><strong>Tâche 1</strong> — Message (60–120 mots)</span>
+                    <span><strong>{t('Tâche 1')}</strong> — {t('Message (60–120 mots)') || 'Message (60–120 mots)'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-emerald-600 font-bold">✓</span>
-                    <span><strong>Tâche 2</strong> — Narration (120–150 mots)</span>
+                    <span><strong>{t('Tâche 2')}</strong> — {t('Narration (120–150 mots)') || 'Narration (120–150 mots)'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-emerald-600 font-bold">✓</span>
-                    <span><strong>Tâche 3</strong> — Argumentation (120–180 mots)</span>
+                    <span><strong>{t('Tâche 3')}</strong> — {t('Argumentation (120–180 mots)') || 'Argumentation (120–180 mots)'}</span>
                   </div>
                 </div>
               )}
@@ -749,14 +751,14 @@ export const Home: React.FC<HomeProps> = ({
                 }`}
               >
                 {trainingMode === 'single_task' ? (
-                  <span>Commencer l'entraînement ({customMinutes} min)</span>
+                  <span>{t("Commencer l'entraînement")} ({customMinutes} min)</span>
                 ) : isCurrentComboDone ? (
                   <>
-                    <span>Refaire cet examen</span>
+                    <span>{t('Refaire cet examen')}</span>
                     <span>↻</span>
                   </>
                 ) : (
-                  <span>Commencer l'examen</span>
+                  <span>{t("Commencer l'examen")}</span>
                 )}
               </button>
             </div>
@@ -768,10 +770,10 @@ export const Home: React.FC<HomeProps> = ({
           <div className="bg-white border border-slate-300 rounded-lg p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
             <div>
               <h3 className="font-bold text-slate-800 text-sm">
-                Consulter vos soumissions passées
+                {t('Consulter vos soumissions passées')}
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Retrouvez l'historique complet de vos épreuves, vos décomptes de mots et vos rédactions dans votre tableau de bord personnel.
+                {t("Retrouvez l'historique complet de vos épreuves, vos décomptes de mots et vos rédactions dans votre tableau de bord personnel.")}
               </p>
             </div>
             <button
@@ -779,7 +781,7 @@ export const Home: React.FC<HomeProps> = ({
               onClick={onDashboardClick}
               className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors shrink-0 shadow-xs cursor-pointer flex items-center gap-1.5"
             >
-              <span>Accéder au Dashboard</span>
+              <span>{t('Accéder au Dashboard')}</span>
               <span>→</span>
             </button>
           </div>
@@ -791,26 +793,26 @@ export const Home: React.FC<HomeProps> = ({
         isOpen={isConfirmOpen}
         title={
           trainingMode === 'single_task'
-            ? `Prêt pour la ${selectedTask === 'task1' ? 'Tâche 1' : selectedTask === 'task2' ? 'Tâche 2' : 'Tâche 3'} ?`
+            ? `${t('Prêt pour la')} ${selectedTask === 'task1' ? t('Tâche 1') : selectedTask === 'task2' ? t('Tâche 2') : t('Tâche 3')} ?`
             : isCurrentComboDone
-            ? `Refaire la Combinaison ${currentComboNum} ?`
-            : "Vous êtes prêt à commencer l'examen ?"
+            ? `${t('Refaire la Combinaison')} ${currentComboNum} ?`
+            : t("Vous êtes prêt à commencer l'examen ?")
         }
         message={
           trainingMode === 'single_task'
-            ? `Vous aurez ${customMinutes} minutes pour compléter cette tâche dans les conditions d'examen du TCF Canada.`
+            ? `${t('Vous aurez')} ${customMinutes} ${t('minutes pour compléter cette tâche dans les conditions d\'examen du TCF Canada.') || 'minutes pour compléter cette tâche.'}`
             : isCurrentComboDone
-            ? "Vous avez déjà soumis cette combinaison auparavant. Vous pouvez la refaire dans les conditions réelles (60 minutes). Votre nouvelle soumission sera enregistrée séparément dans votre tableau de bord."
-            : "Vous aurez 60 minutes pour compléter les 3 tâches dans les conditions réelles."
+            ? t("Vous avez déjà soumis cette combinaison auparavant. Vous pouvez la refaire dans les conditions réelles (60 minutes). Votre nouvelle soumission sera enregistrée séparément dans votre tableau de bord.")
+            : t("Vous aurez 60 minutes pour compléter les 3 tâches dans les conditions réelles.")
         }
         confirmLabel={
           trainingMode === 'single_task'
-            ? "Commencer l'entraînement"
+            ? t("Commencer l'entraînement")
             : isCurrentComboDone
-            ? 'Refaire l’examen'
-            : 'Commencer'
+            ? t('Refaire l’examen')
+            : t('Commencer')
         }
-        cancelLabel="Annuler"
+        cancelLabel={t('Annuler')}
         onConfirm={() => {
           setIsConfirmOpen(false);
           if (currentCombo) {

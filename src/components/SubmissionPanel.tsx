@@ -1,6 +1,7 @@
 import React from 'react';
 import { CharacterPanel } from './CharacterPanel';
 import { formatTime } from '../utils/wordCount';
+import { useLanguage } from '../context/LanguageContext';
 
 interface SubmissionPanelProps {
   timeRemainingSeconds: number;
@@ -17,6 +18,7 @@ export const SubmissionPanel: React.FC<SubmissionPanelProps> = ({
   isPracticeMode = false,
   practiceTask
 }) => {
+  const { t } = useLanguage();
   const isUrgent = timeRemainingSeconds < 300; // less than 5 min
 
   const allConditions = [
@@ -47,13 +49,12 @@ export const SubmissionPanel: React.FC<SubmissionPanelProps> = ({
     ? allConditions.filter((c) => c.key === practiceTask)
     : allConditions;
 
-
   return (
     <div className="bg-slate-50 border-l border-slate-300 w-72 shrink-0 p-3 flex flex-col gap-4 overflow-y-auto select-none">
       {/* Timer Section */}
       <div>
         <h3 className="font-semibold text-slate-800 border-b border-slate-300 pb-1 mb-2 text-xs uppercase tracking-wide">
-          Temps restant
+          {t('Temps restant')}
         </h3>
         <div
           className={`flex items-center gap-2 text-xl font-bold font-mono px-3 py-2 rounded border bg-white ${
@@ -73,17 +74,16 @@ export const SubmissionPanel: React.FC<SubmissionPanelProps> = ({
       {/* Conditions de soumission */}
       <div className="bg-white border border-slate-300 rounded p-3 text-xs">
         <h3 className="font-semibold text-slate-800 border-b border-slate-200 pb-1 mb-2 uppercase tracking-wide">
-          Conditions de soumission
+          {t('Conditions de soumission')}
         </h3>
         <div className="space-y-3">
           {conditions.map((c) => {
             const isWithin = c.count >= c.min && c.count <= c.max;
             const isTooLow = c.count < c.min;
-            const isTooHigh = c.count > c.max;
             return (
               <div key={c.key} className="border-b border-slate-100 pb-2.5 last:border-b-0 last:pb-0">
                 <div className="font-semibold text-slate-700 flex justify-between items-center mb-1">
-                  <span>{c.name}:</span>
+                  <span>{t(c.name)}:</span>
                   <span
                     className={`font-mono px-2 py-0.5 rounded font-bold text-[11px] border ${
                       isWithin
@@ -100,11 +100,11 @@ export const SubmissionPanel: React.FC<SubmissionPanelProps> = ({
                   }`}
                 >
                   {isWithin ? (
-                    '✓ Nombre de mots conforme'
+                    t('✓ Nombre de mots conforme')
                   ) : isTooLow ? (
-                    `⚠️ Nombre de mots insuffisant (${c.count}/${c.min}-${c.max})`
+                    `${t('⚠️ Nombre de mots insuffisant')} (${c.count}/${c.min}-${c.max})`
                   ) : (
-                    `⚠️ Limite dépassée (${c.count}/${c.max})`
+                    `${t('⚠️ Limite dépassée')} (${c.count}/${c.max})`
                   )}
                 </div>
               </div>

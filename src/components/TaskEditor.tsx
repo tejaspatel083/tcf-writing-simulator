@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { TaskKey, TaskRequirement } from '../types/exam';
 import { countFrenchWords } from '../utils/wordCount';
 import { cleanDocumentText, fixMojibake, normalizeParagraphText } from '../utils/cleanText';
+import { useLanguage } from '../context/LanguageContext';
 
 interface TaskEditorProps {
   taskKey: TaskKey;
@@ -30,6 +31,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
   disabled = false,
   isPracticeMode = false
 }) => {
+  const { t } = useLanguage();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const wordCount = countFrenchWords(value);
 
@@ -65,8 +67,8 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
       {/* Banner if Timer Finished */}
       {disabled && (
         <div className="bg-red-600 text-white font-bold text-xs px-4 py-2 flex items-center justify-between shadow-xs shrink-0">
-          <span>⏱️ Temps écoulé ! La rédaction est désormais bloquée.</span>
-          <span>Veuillez cliquer sur "Terminer l'examen" ci-dessous.</span>
+          <span>{t("⏱️ Temps écoulé ! La rédaction est désormais bloquée.")}</span>
+          <span>{t('Veuillez cliquer sur "Terminer l\'examen" ci-dessous.')}</span>
         </div>
       )}
 
@@ -79,14 +81,14 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
               {taskNumberMap[taskKey]}
             </span>
             <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
-              Tâche {taskNumberMap[taskKey]}
+              {t(`Tâche ${taskNumberMap[taskKey]}`)}
             </h2>
           </div>
 
           <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-            <span>{taskTypeMap[taskKey]}</span>
+            <span>{t(taskTypeMap[taskKey])}</span>
             <span>•</span>
-            <span className="font-semibold text-slate-700">{taskRequirement.minWords}-{taskRequirement.maxWords} mots</span>
+            <span className="font-semibold text-slate-700">{taskRequirement.minWords}-{taskRequirement.maxWords} {t('mots')}</span>
             {taskKey === 'task3' && (
               <>
                 <span>•</span>
@@ -111,7 +113,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
               <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-4.5 text-slate-800 text-sm leading-relaxed shadow-2xs hover:border-slate-300 transition-colors">
                 <div className="font-bold text-xs text-blue-700 uppercase tracking-wide mb-2 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
-                  <span>Document - 1</span>
+                  <span>{t('Document 1 :').replace(' :', '')}</span>
                 </div>
                 <p className="whitespace-pre-line text-slate-800">{doc1Clean}</p>
               </div>
@@ -122,7 +124,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
               <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-4.5 text-slate-800 text-sm leading-relaxed shadow-2xs hover:border-slate-300 transition-colors">
                 <div className="font-bold text-xs text-blue-700 uppercase tracking-wide mb-2 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
-                  <span>Document - 2</span>
+                  <span>{t('Document 2 :').replace(' :', '')}</span>
                 </div>
                 <p className="whitespace-pre-line text-slate-800">{doc2Clean}</p>
               </div>
@@ -131,7 +133,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
         ) : (
           /* Task 1 & Task 2 Instructions */
           <div className="text-slate-800 text-sm leading-relaxed whitespace-pre-line border-l-4 border-blue-600 pl-3.5 py-2.5 bg-white border border-slate-200 rounded-lg shadow-2xs">
-            {normalizeParagraphText(taskRequirement.instruction) || "Veuillez rédiger votre texte ci-dessous."}
+            {normalizeParagraphText(taskRequirement.instruction) || t("Veuillez rédiger votre texte ci-dessous.")}
           </div>
         )}
       </div>
@@ -143,7 +145,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
-          placeholder={disabled ? "Temps écoulé — Rédaction désactivée." : "Saisissez votre texte ici..."}
+          placeholder={disabled ? t("Temps écoulé — Rédaction désactivée.") : t("Saisissez votre texte ici...")}
           spellCheck={false}
           autoCorrect="off"
           autoCapitalize="off"
@@ -183,24 +185,24 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
             {wordCount}
           </span>
           <span className="text-slate-600 font-medium">
-            / ({taskRequirement.minWords}-{taskRequirement.maxWords} mots)
+            / ({taskRequirement.minWords}-{taskRequirement.maxWords} {t('mots')})
           </span>
 
           {isWithinRange && (
             <span className="bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs px-2.5 py-0.5 rounded font-bold ml-2">
-              ✓ Nombre de mots conforme
+              {t('✓ Nombre de mots conforme')}
             </span>
           )}
 
           {isTooLow && (
             <span className="bg-red-100 border border-red-300 text-red-800 text-xs px-2 py-0.5 rounded font-bold ml-2">
-              ⚠️ Mots insuffisants ({wordCount}/{taskRequirement.minWords})
+              {t('⚠️ Mots insuffisants')} ({wordCount}/{taskRequirement.minWords})
             </span>
           )}
 
           {isTooHigh && (
             <span className="bg-red-100 border border-red-300 text-red-800 text-xs px-2 py-0.5 rounded font-bold ml-2">
-              ⚠️ Limite dépassée ({wordCount}/{taskRequirement.maxWords})
+              {t('⚠️ Limite dépassée')} ({wordCount}/{taskRequirement.maxWords})
             </span>
           )}
         </div>
@@ -219,7 +221,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
                     : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
                 }`}
               >
-                Précédent
+                {t('Précédent')}
               </button>
 
               <button
@@ -232,7 +234,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
                     : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
                 }`}
               >
-                Suivant
+                {t('Suivant')}
               </button>
             </>
           )}
@@ -244,7 +246,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
               !isPracticeMode ? 'ml-4' : ''
             }`}
           >
-            {isPracticeMode ? "Terminer l'entraînement" : "Terminer l'examen"}
+            {isPracticeMode ? t("Terminer l'entraînement") : t("Terminer l'examen")}
           </button>
         </div>
       </div>

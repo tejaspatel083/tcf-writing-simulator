@@ -148,10 +148,14 @@ const MainRouter: React.FC = () => {
   );
 };
 
+import { LanguageProvider } from './context/LanguageContext';
+
 export const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <MainRouter />
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <MainRouter />
+      </AuthProvider>
+    </LanguageProvider>
   );
 };

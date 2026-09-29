@@ -4,6 +4,7 @@ import { formatTime } from '../utils/wordCount';
 import { cleanDocumentText, fixMojibake, normalizeParagraphText } from '../utils/cleanText';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ResultsProps {
   result: ExamResult;
@@ -11,6 +12,7 @@ interface ResultsProps {
 }
 
 export const Results: React.FC<ResultsProps> = ({ result, onHomeClick }) => {
+  const { t } = useLanguage();
   const [copiedTask, setCopiedTask] = useState<string | null>(null);
 
   const handleCopyAll = () => {
@@ -70,8 +72,8 @@ ${result.answers.task3 || '(Aucune réponse)'}
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Header
         onHomeClick={onHomeClick}
-        subtitle={isPractice ? "Compte-rendu d'entraînement individuel" : "Compte-rendu de votre session"}
-        combinationTitle={`Combinaison ${result.combination.combinationNumber} — ${result.month} ${result.year}`}
+        subtitle={isPractice ? t("Compte-rendu d'entraînement individuel") : t("Compte-rendu de votre session")}
+        combinationTitle={`${t('Combinaison')} ${result.combination.combinationNumber} — ${t(result.month)} ${result.year}`}
       />
 
       <div className="max-w-4xl mx-auto w-full px-6 py-8 flex-1">
@@ -81,18 +83,18 @@ ${result.answers.task3 || '(Aucune réponse)'}
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <h2 className="text-2xl font-bold text-slate-900">
-                  {isPractice ? `Entraînement terminé — ${practicedTaskObj.name}` : "Examen terminé"}
+                  {isPractice ? `${t('Entraînement terminé')} — ${t(practicedTaskObj.name)}` : t("Examen terminé")}
                 </h2>
                 {isPractice && (
                   <span className="text-xs font-bold text-blue-800 bg-blue-100 border border-blue-300 px-2.5 py-0.5 rounded-full">
-                    Pratique libre
+                    {t("Pratique libre")}
                   </span>
                 )}
               </div>
               <p className="text-sm text-slate-600">
                 {isPractice
-                  ? "Voici le récapitulatif de votre rédaction sur cette tâche. Vous pouvez copier votre texte pour l'évaluer ou le conserver."
-                  : "Voici le récapitulatif complet de vos réponses pour évaluation avec votre tuteur."}
+                  ? t("Voici le récapitulatif de votre rédaction sur cette tâche. Vous pouvez copier votre texte pour l'évaluer ou le conserver.")
+                  : t("Voici le récapitulatif complet de vos réponses pour évaluation avec votre tuteur.")}
               </p>
             </div>
 
@@ -104,10 +106,10 @@ ${result.answers.task3 || '(Aucune réponse)'}
               <span>📋</span>
               <span>
                 {copiedTask === (isPractice ? singleTaskKey : 'all')
-                  ? 'Copié !'
+                  ? t('Copié !')
                   : isPractice
-                  ? 'Copier ma rédaction'
-                  : 'Copier tout pour mon tuteur'}
+                  ? t('Copier ma rédaction')
+                  : t('Copier tout pour mon tuteur')}
               </span>
             </button>
           </div>
@@ -117,7 +119,7 @@ ${result.answers.task3 || '(Aucune réponse)'}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 bg-slate-50 p-4 rounded border border-slate-200">
               <div>
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Temps utilisé
+                  {t('Temps utilisé')}
                 </div>
                 <div className="text-xl font-bold font-mono text-slate-800 mt-1">
                   {formatTime(result.timeUsedSeconds)}
@@ -131,10 +133,10 @@ ${result.answers.task3 || '(Aucune réponse)'}
 
               <div>
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Nombre de mots
+                  {t('Nombre de mots')}
                 </div>
                 <div className="text-xl font-bold font-mono text-slate-800 mt-1 flex items-center gap-2">
-                  <span>{singleCount} mots</span>
+                  <span>{singleCount} {t('mots')}</span>
                   <span
                     className={`text-xs font-sans px-2 py-0.5 rounded font-bold border ${
                       isSingleWithin
@@ -142,17 +144,17 @@ ${result.answers.task3 || '(Aucune réponse)'}
                         : 'bg-red-50 text-red-600 border-red-300'
                     }`}
                   >
-                    {isSingleWithin ? '✓ Conforme' : '⚠️ Non conforme'}
+                    {isSingleWithin ? t('✓ Conforme') : t('⚠️ Non conforme')}
                   </span>
                 </div>
               </div>
 
               <div>
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Objectif exigé
+                  {t('Objectif exigé')}
                 </div>
                 <div className="text-xl font-bold font-mono text-slate-800 mt-1">
-                  {singleMin} – {singleMax} mots
+                  {singleMin} – {singleMax} {t('mots')}
                 </div>
               </div>
             </div>
@@ -161,7 +163,7 @@ ${result.answers.task3 || '(Aucune réponse)'}
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6 bg-slate-50 p-4 rounded border border-slate-200">
               <div>
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Temps utilisé
+                  {t('Temps utilisé')}
                 </div>
                 <div className="text-xl font-bold font-mono text-slate-800 mt-1">
                   {formatTime(result.timeUsedSeconds)}
@@ -170,28 +172,28 @@ ${result.answers.task3 || '(Aucune réponse)'}
 
               <div>
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Tâche 1
+                  {t('Tâche 1')}
                 </div>
                 <div className="text-xl font-bold font-mono text-slate-800 mt-1">
-                  {result.wordCounts.task1} mots
+                  {result.wordCounts.task1} {t('mots')}
                 </div>
               </div>
 
               <div>
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Tâche 2
+                  {t('Tâche 2')}
                 </div>
                 <div className="text-xl font-bold font-mono text-slate-800 mt-1">
-                  {result.wordCounts.task2} mots
+                  {result.wordCounts.task2} {t('mots')}
                 </div>
               </div>
 
               <div>
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Tâche 3
+                  {t('Tâche 3')}
                 </div>
                 <div className="text-xl font-bold font-mono text-slate-800 mt-1">
-                  {result.wordCounts.task3} mots
+                  {result.wordCounts.task3} {t('mots')}
                 </div>
               </div>
             </div>
@@ -199,18 +201,18 @@ ${result.answers.task3 || '(Aucune réponse)'}
 
           {/* Individual Tasks Display */}
           <div className="space-y-6">
-            {tasksList.map((t) => {
-              const text = result.answers[t.key];
-              const count = result.wordCounts[t.key];
-              const min = t.req.minWords;
-              const max = t.req.maxWords;
+            {tasksList.map((tItem) => {
+              const text = result.answers[tItem.key];
+              const count = result.wordCounts[tItem.key];
+              const min = tItem.req.minWords;
+              const max = tItem.req.maxWords;
               const isWithin = count >= min && count <= max;
 
               return (
-                <div key={t.key} className="border border-slate-300 rounded p-4 bg-white">
+                <div key={tItem.key} className="border border-slate-300 rounded p-4 bg-white">
                   <div className="flex items-center justify-between border-b border-slate-200 pb-2 mb-3">
                     <h3 className="font-bold text-slate-800 text-base">
-                      {t.name}
+                      {t(tItem.name)}
                     </h3>
                     <div className="flex items-center gap-3">
                       <span className={`text-xs font-mono px-2 py-0.5 rounded font-bold border ${
@@ -218,47 +220,47 @@ ${result.answers.task3 || '(Aucune réponse)'}
                           ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
                           : 'bg-red-50 text-red-600 border-red-300'
                       }`}>
-                        {count} / {min}-{max} mots
+                        {count} / {min}-{max} {t('mots')}
                       </span>
                       <button
                         type="button"
-                        onClick={() => handleCopy(t.key, `Sujet: ${t.req.instruction}\n\nRéponse:\n${text}`)}
+                        onClick={() => handleCopy(tItem.key, `Sujet: ${tItem.req.instruction || tItem.req.title}\n\nRéponse:\n${text}`)}
                         className="text-xs font-semibold text-blue-700 hover:text-blue-900 border border-blue-200 bg-blue-50 px-2.5 py-1 rounded"
                       >
-                        {copiedTask === t.key ? 'Copié !' : 'Copier cette tâche'}
+                        {copiedTask === tItem.key ? t('Copié !') : t('Copier cette tâche')}
                       </button>
                     </div>
                   </div>
 
                   {/* Task Instruction / Documents */}
                   <div className="text-xs text-slate-700 bg-slate-50 p-3.5 rounded-lg border border-slate-200 mb-3 leading-relaxed">
-                    {t.req.title && (
+                    {tItem.req.title && (
                       <div className="font-bold text-sm text-blue-700 mb-2">
-                        {normalizeParagraphText(t.req.title)}
+                        {normalizeParagraphText(tItem.req.title)}
                       </div>
                     )}
-                    {t.key !== 'task3' && (
+                    {tItem.key !== 'task3' && (
                       <div>
-                        <strong>Consigne :</strong> {normalizeParagraphText(t.req.instruction)}
+                        <strong>{t('Consigne :')}</strong> {normalizeParagraphText(tItem.req.instruction)}
                       </div>
                     )}
-                    {t.req.document1 && (
+                    {tItem.req.document1 && (
                       <div className="mt-2.5 pt-2.5 border-t border-slate-200">
-                        <strong className="text-slate-900 block mb-1">Document 1 :</strong>
-                        <p className="whitespace-pre-line text-slate-700">{cleanDocumentText(t.req.document1)}</p>
+                        <strong className="text-slate-900 block mb-1">{t('Document 1 :')}</strong>
+                        <p className="whitespace-pre-line text-slate-700">{cleanDocumentText(tItem.req.document1)}</p>
                       </div>
                     )}
-                    {t.req.document2 && (
+                    {tItem.req.document2 && (
                       <div className="mt-2.5 pt-2.5 border-t border-slate-200">
-                        <strong className="text-slate-900 block mb-1">Document 2 :</strong>
-                        <p className="whitespace-pre-line text-slate-700">{cleanDocumentText(t.req.document2)}</p>
+                        <strong className="text-slate-900 block mb-1">{t('Document 2 :')}</strong>
+                        <p className="whitespace-pre-line text-slate-700">{cleanDocumentText(tItem.req.document2)}</p>
                       </div>
                     )}
                   </div>
 
                   {/* User Response Text */}
                   <div className="bg-slate-50 border border-slate-200 rounded p-4 font-sans text-sm leading-relaxed text-slate-900 whitespace-pre-wrap min-h-[100px]">
-                    {text ? text : <span className="italic text-slate-400">Aucune réponse rédigée.</span>}
+                    {text ? text : <span className="italic text-slate-400">{t('Aucune réponse rédigée.')}</span>}
                   </div>
                 </div>
               );
@@ -271,7 +273,7 @@ ${result.answers.task3 || '(Aucune réponse)'}
               onClick={onHomeClick}
               className="px-5 py-2.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs"
             >
-              Retour à l'accueil
+              {t("Retour à l'accueil")}
             </button>
           </div>
         </div>

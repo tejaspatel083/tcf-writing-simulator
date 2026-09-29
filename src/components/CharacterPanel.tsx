@@ -1,10 +1,13 @@
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface CharacterPanelProps {
   onInsertCharacter: (char: string) => void;
 }
 
 export const CharacterPanel: React.FC<CharacterPanelProps> = ({ onInsertCharacter }) => {
+  const { t } = useLanguage();
+
   const charRows = [
     ['é', 'è', 'ê', 'ë', 'à'],
     ['â', 'ù', 'û', 'ç', 'ô'],
@@ -15,7 +18,7 @@ export const CharacterPanel: React.FC<CharacterPanelProps> = ({ onInsertCharacte
   return (
     <div className="bg-white border border-slate-300 rounded p-3 text-sm">
       <h3 className="font-semibold text-slate-800 mb-2 border-b border-slate-200 pb-1 text-xs uppercase tracking-wide">
-        Tableau de caractère
+        {t('Tableau de caractère')}
       </h3>
       <div className="space-y-1.5">
         {charRows.map((row, rIdx) => (

@@ -7,6 +7,7 @@ import { SubmissionPanel } from '../components/SubmissionPanel';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { countFrenchWords } from '../utils/wordCount';
 import { Header } from '../components/Header';
+import { useLanguage } from '../context/LanguageContext';
 
 interface SimulatorProps {
   combination: ExamCombination;
@@ -29,6 +30,7 @@ export const Simulator: React.FC<SimulatorProps> = ({
   practiceTask = 'task1',
   durationMinutes = 60
 }) => {
+  const { t } = useLanguage();
   const initialTask: TaskKey = isPracticeMode && practiceTask ? practiceTask : 'task1';
   const [activeTask, setActiveTask] = useState<TaskKey>(initialTask);
   const [answers, setAnswers] = useState<ExamAnswers>({
@@ -153,10 +155,10 @@ export const Simulator: React.FC<SimulatorProps> = ({
         onHomeClick={onCancelExam}
         subtitle={
           isPracticeMode
-            ? `Entraînement individuel — Tâche ${taskNumDisplay} (${initialDurationMinutes} min)`
-            : "Examen en cours"
+            ? `${t('Entraînement individuel')} — ${t(`Tâche ${taskNumDisplay}`)} (${initialDurationMinutes} min)`
+            : t("Examen en cours")
         }
-        combinationTitle={`Combinaison ${combination.combinationNumber} — ${month} ${year}`}
+        combinationTitle={`${t('Combinaison')} ${combination.combinationNumber} — ${t(month)} ${year}`}
       />
 
       {/* Main Exam Grid */}

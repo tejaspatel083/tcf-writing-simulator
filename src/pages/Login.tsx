@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { Eye, EyeOff } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface LoginProps {
   onSuccess: () => void;
@@ -12,6 +13,7 @@ interface LoginProps {
 type AuthMode = 'login' | 'register' | 'forgot' | 'recovery';
 
 export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
+  const { t } = useLanguage();
   const {
     signIn,
     signUp,
@@ -257,13 +259,13 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between notranslate" translate="no">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
       <Header
         onHomeClick={onHomeClick}
-        subtitle="Accès obligatoire par authentification"
+        subtitle={t('Accès obligatoire par authentification')}
       />
 
-      <div className="max-w-md mx-auto w-full px-6 py-8 flex-1 flex flex-col justify-center notranslate" translate="no">
+      <div className="max-w-md mx-auto w-full px-6 py-8 flex-1 flex flex-col justify-center">
         <div className="bg-white border border-slate-300 rounded-lg shadow-sm p-6 sm:p-8">
           
           {/* Mode Selector Tabs (Login / Register) */}
@@ -278,7 +280,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <span>Se connecter</span>
+                <span>{t('Se connecter')}</span>
               </button>
               <button
                 type="button"
@@ -289,7 +291,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <span>Créer un compte</span>
+                <span>{t('Créer un compte')}</span>
               </button>
             </div>
           )}
@@ -303,23 +305,23 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
               {mode === 'recovery' && <span>🛡️</span>}
             </div>
             <h2 className="text-2xl font-bold text-slate-900 mb-1">
-              {mode === 'register' && <span>Créer un compte</span>}
-              {mode === 'login' && <span>Connexion candidat</span>}
-              {mode === 'forgot' && <span>Mot de passe oublié</span>}
-              {mode === 'recovery' && <span>Nouveau mot de passe</span>}
+              {mode === 'register' && <span>{t('Créer un compte')}</span>}
+              {mode === 'login' && <span>{t('Connexion candidat')}</span>}
+              {mode === 'forgot' && <span>{t('Mot de passe oublié')}</span>}
+              {mode === 'recovery' && <span>{t('Nouveau mot de passe')}</span>}
             </h2>
             <p className="text-xs text-slate-600 leading-relaxed">
               {mode === 'register' && (
-                <span>Créez votre compte unique. Une vérification par e-mail est obligatoire avant votre premier accès.</span>
+                <span>{t('Créez votre compte unique. Une vérification par e-mail est obligatoire avant votre premier accès.')}</span>
               )}
               {mode === 'login' && (
-                <span>Connectez-vous avec votre adresse e-mail vérifiée pour accéder au simulateur TCF.</span>
+                <span>{t('Connectez-vous avec votre adresse e-mail vérifiée pour accéder au simulateur TCF.')}</span>
               )}
               {mode === 'forgot' && (
-                <span>Saisissez votre adresse e-mail pour recevoir les instructions de réinitialisation.</span>
+                <span>{t('Saisissez votre adresse e-mail pour recevoir les instructions de réinitialisation.')}</span>
               )}
               {mode === 'recovery' && (
-                <span>Choisissez un mot de passe sécurisé pour réactiver l’accès à votre compte.</span>
+                <span>{t('Choisissez un mot de passe sécurisé pour réactiver l’accès à votre compte.')}</span>
               )}
             </p>
           </div>
@@ -352,7 +354,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
             <form onSubmit={handleLoginSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">
-                  Adresse e-mail
+                  {t('Adresse e-mail')}
                 </label>
                 <input
                   type="email"
@@ -367,14 +369,14 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide">
-                    Mot de passe
+                    {t('Mot de passe')}
                   </label>
                   <button
                     type="button"
                     onClick={() => switchMode('forgot')}
                     className="text-xs text-blue-700 hover:text-blue-900 font-medium underline cursor-pointer"
                   >
-                    Mot de passe oublié ?
+                    {t('Mot de passe oublié ?')}
                   </button>
                 </div>
                 <div className="relative">
@@ -407,7 +409,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded cursor-pointer"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-xs text-slate-700 font-medium cursor-pointer">
-                  Se souvenir de moi (mémoriser mon adresse e-mail)
+                  {t('Se souvenir de moi sur cet appareil')}
                 </label>
               </div>
 
@@ -416,7 +418,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
                 disabled={loading}
                 className="w-full py-2.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs mt-2 disabled:opacity-50 cursor-pointer"
               >
-                {loading ? 'Connexion en cours...' : 'Se connecter'}
+                {loading ? t('Connexion en cours...') : t('Se connecter')}
               </button>
             </form>
           )}
@@ -426,7 +428,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
             <form onSubmit={handleRegisterSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">
-                  Adresse e-mail
+                  {t('Adresse e-mail')}
                 </label>
                 <input
                   type="email"
@@ -440,7 +442,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">
-                  Mot de passe
+                  {t('Mot de passe')}
                 </label>
                 <div className="relative">
                   <input
@@ -461,13 +463,13 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
                   </button>
                 </div>
                 <span className="block text-[11px] text-slate-500 mt-1">
-                  Minimum 6 caractères
+                  {t('Minimum 6 caractères')}
                 </span>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">
-                  Confirmer le mot de passe
+                  {t('Confirmer le mot de passe')}
                 </label>
                 <div className="relative">
                   <input
@@ -498,7 +500,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded cursor-pointer"
                 />
                 <label htmlFor="remember-me-reg" className="ml-2 block text-xs text-slate-700 font-medium cursor-pointer">
-                  Mémoriser mon adresse e-mail sur cet appareil
+                  {t('Se souvenir de moi sur cet appareil')}
                 </label>
               </div>
 
@@ -507,7 +509,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
                 disabled={loading}
                 className="w-full py-2.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs mt-2 disabled:opacity-50 cursor-pointer"
               >
-                {loading ? 'Création en cours...' : 'Créer mon compte et recevoir le lien'}
+                {loading ? t('Création en cours...') : t('Créer mon compte')}
               </button>
             </form>
           )}
@@ -517,7 +519,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
             <form onSubmit={handleForgotSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">
-                  Votre adresse e-mail
+                  {t('Adresse e-mail')}
                 </label>
                 <input
                   type="email"
@@ -534,7 +536,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
                 disabled={loading}
                 className="w-full py-2.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs mt-2 disabled:opacity-50 cursor-pointer"
               >
-                {loading ? 'Envoi en cours...' : 'Envoyer le lien de réinitialisation'}
+                {loading ? t('Envoi en cours...') : t('Envoyer les instructions')}
               </button>
 
               <div className="text-center pt-2">
@@ -543,7 +545,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
                   onClick={() => switchMode('login')}
                   className="text-xs text-slate-600 hover:text-slate-900 font-medium underline cursor-pointer"
                 >
-                  ← Retour à la connexion
+                  {t('← Retour à la connexion')}
                 </button>
               </div>
             </form>
@@ -554,7 +556,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
             <form onSubmit={handleRecoverySubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">
-                  Nouveau mot de passe
+                  {t('Nouveau mot de passe')}
                 </label>
                 <div className="relative">
                   <input
@@ -575,13 +577,13 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
                   </button>
                 </div>
                 <span className="block text-[11px] text-slate-500 mt-1">
-                  Minimum 6 caractères
+                  {t('Minimum 6 caractères')}
                 </span>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">
-                  Confirmer le nouveau mot de passe
+                  {t('Confirmer le mot de passe')}
                 </label>
                 <div className="relative">
                   <input
@@ -608,7 +610,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
                 disabled={loading}
                 className="w-full py-2.5 rounded bg-emerald-600 border border-emerald-700 text-white font-bold text-sm hover:bg-emerald-700 transition-colors shadow-xs mt-2 disabled:opacity-50 cursor-pointer"
               >
-                {loading ? 'Mise à jour en cours...' : 'Enregistrer le nouveau mot de passe'}
+                {loading ? t('Enregistrement du mot de passe...') : t('Enregistrer le nouveau mot de passe')}
               </button>
             </form>
           )}
@@ -622,7 +624,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
                 disabled={resending}
                 className="text-xs text-blue-700 hover:text-blue-900 font-semibold underline cursor-pointer disabled:opacity-50"
               >
-                {resending ? "Renvoi en cours..." : "Renvoyer l'email de confirmation"}
+                {resending ? t('Envoi en cours...') : t("Renvoyer l'e-mail de confirmation")}
               </button>
             </div>
           )}
@@ -636,9 +638,9 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
                 className="text-xs font-semibold text-blue-700 hover:text-blue-900 underline cursor-pointer"
               >
                 {mode === 'register' ? (
-                  <span>Vous avez déjà un compte ? Connectez-vous</span>
+                  <span>{t('Déjà un compte ? Se connecter')}</span>
                 ) : (
-                  <span>Nouveau candidat ? Créer un compte</span>
+                  <span>{t("Pas encore de compte ? S'inscrire")}</span>
                 )}
               </button>
             </div>
@@ -648,7 +650,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
         {/* Security Note */}
         <div className="mt-6 bg-blue-50 border border-blue-100 rounded-lg p-3.5 text-center">
           <p className="text-xs text-blue-800 font-medium">
-            🔒 <strong>1 compte = 1 adresse e-mail unique :</strong> Vos rédactions et vos statistiques d'examen sont protégées de manière sécurisée et confidentielle.
+            🔒 <strong>1 compte = 1 adresse e-mail unique :</strong> {t("Vos rédactions et vos statistiques d'examen sont protégées de manière sécurisée et confidentielle.")}
           </p>
         </div>
       </div>
