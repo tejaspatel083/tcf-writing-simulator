@@ -14,6 +14,7 @@ interface TaskEditorProps {
   isFirstTask: boolean;
   isLastTask: boolean;
   disabled?: boolean;
+  isPracticeMode?: boolean;
 }
 
 export const TaskEditor: React.FC<TaskEditorProps> = ({
@@ -26,7 +27,8 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
   onFinishExam,
   isFirstTask,
   isLastTask,
-  disabled = false
+  disabled = false,
+  isPracticeMode = false
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const wordCount = countFrenchWords(value);
@@ -205,38 +207,44 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
 
         {/* Navigation & Submit Buttons */}
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={onPrevTask}
-            disabled={isFirstTask}
-            className={`px-3 py-1.5 rounded border text-sm font-medium transition-colors cursor-pointer ${
-              isFirstTask
-                ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
-                : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
-            }`}
-          >
-            Précédent
-          </button>
+          {!isPracticeMode && (
+            <>
+              <button
+                type="button"
+                onClick={onPrevTask}
+                disabled={isFirstTask}
+                className={`px-3 py-1.5 rounded border text-sm font-medium transition-colors cursor-pointer ${
+                  isFirstTask
+                    ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+                }`}
+              >
+                Précédent
+              </button>
 
-          <button
-            type="button"
-            onClick={onNextTask}
-            disabled={isLastTask}
-            className={`px-3 py-1.5 rounded border text-sm font-medium transition-colors cursor-pointer ${
-              isLastTask
-                ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
-                : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
-            }`}
-          >
-            Suivant
-          </button>
+              <button
+                type="button"
+                onClick={onNextTask}
+                disabled={isLastTask}
+                className={`px-3 py-1.5 rounded border text-sm font-medium transition-colors cursor-pointer ${
+                  isLastTask
+                    ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+                }`}
+              >
+                Suivant
+              </button>
+            </>
+          )}
 
           <button
             type="button"
             onClick={onFinishExam}
-            className="px-4 py-1.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors ml-4 shadow-xs cursor-pointer"
+            className={`px-4 py-1.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs cursor-pointer ${
+              !isPracticeMode ? 'ml-4' : ''
+            }`}
           >
-            Terminer l'examen
+            {isPracticeMode ? "Terminer l'entraînement" : "Terminer l'examen"}
           </button>
         </div>
       </div>

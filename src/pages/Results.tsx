@@ -47,17 +47,30 @@ ${result.answers.task3 || '(Aucune réponse)'}
     setTimeout(() => setCopiedTask(null), 2000);
   };
 
-  const tasksList = [
+  const isPractice = !!result.isPracticeMode && !!result.practiceTask;
+  const singleTaskKey = result.practiceTask || 'task1';
+
+  const allTasksList = [
     { key: 'task1' as const, name: 'Tâche 1', req: result.combination.tasks.task1 },
     { key: 'task2' as const, name: 'Tâche 2', req: result.combination.tasks.task2 },
     { key: 'task3' as const, name: 'Tâche 3', req: result.combination.tasks.task3 }
   ];
 
+  const tasksList = isPractice
+    ? allTasksList.filter((t) => t.key === singleTaskKey)
+    : allTasksList;
+
+  const practicedTaskObj = allTasksList.find((t) => t.key === singleTaskKey) || allTasksList[0];
+  const singleCount = result.wordCounts[singleTaskKey];
+  const singleMin = practicedTaskObj.req.minWords;
+  const singleMax = practicedTaskObj.req.maxWords;
+  const isSingleWithin = singleCount >= singleMin && singleCount <= singleMax;
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Header
         onHomeClick={onHomeClick}
-        subtitle="Compte-rendu de votre session"
+        subtitle={isPractice ? "Compte-rendu d'entraînement individuel" : "Compte-rendu de votre session"}
         combinationTitle={`Combinaison ${result.combination.combinationNumber} — ${result.month} ${result.year}`}
       />
 
@@ -66,61 +79,123 @@ ${result.answers.task3 || '(Aucune réponse)'}
         <div className="bg-white border border-slate-300 rounded-lg shadow-xs p-6 mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-4 mb-6 gap-3">
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-1">
-                Examen terminé
-              </h2>
+              <div className="flex items-center gap-2 mb-1">
+                <h2 className="text-2xl font-bold text-slate-900">
+                  {isPractice ? `Entraînement terminé — ${practicedTaskObj.name}` : "Examen terminé"}
+                </h2>
+                {isPractice && (
+                  <span className="text-xs font-bold text-blue-800 bg-blue-100 border border-blue-300 px-2.5 py-0.5 rounded-full">
+                    Pratique libre
+                  </span>
+                )}
+              </div>
               <p className="text-sm text-slate-600">
-                Voici le récapitulatif complet de vos réponses pour évaluation avec votre tuteur.
+                {isPractice
+                  ? "Voici le récapitulatif de votre rédaction sur cette tâche. Vous pouvez copier votre texte pour l'évaluer ou le conserver."
+                  : "Voici le récapitulatif complet de vos réponses pour évaluation avec votre tuteur."}
               </p>
             </div>
 
             <button
               type="button"
-              onClick={handleCopyAll}
-              className="px-4 py-2 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs shrink-0 flex items-center justify-center gap-2"
+              onClick={isPractice ? () => handleCopy(singleTaskKey, `Sujet: ${practicedTaskObj.req.instruction || practicedTaskObj.req.title}\n\nRéponse:\n${result.answers[singleTaskKey]}`) : handleCopyAll}
+              className="px-4 py-2 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs shrink-0 flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>📋</span>
-              <span>{copiedTask === 'all' ? 'Tout est copié !' : 'Copier tout pour mon tuteur'}</span>
+              <span>
+                {copiedTask === (isPractice ? singleTaskKey : 'all')
+                  ? 'Copié !'
+                  : isPractice
+                  ? 'Copier ma rédaction'
+                  : 'Copier tout pour mon tuteur'}
+              </span>
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6 bg-slate-50 p-4 rounded border border-slate-200">
-            <div>
-              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Temps utilisé
+          {isPractice ? (
+            /* Single Task Stats Grid */
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 bg-slate-50 p-4 rounded border border-slate-200">
+              <div>
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  Temps utilisé
+                </div>
+                <div className="text-xl font-bold font-mono text-slate-800 mt-1">
+                  {formatTime(result.timeUsedSeconds)}
+                  {result.allocatedMinutes && (
+                    <span className="text-xs text-slate-500 font-normal font-sans ml-1">
+                      / {result.allocatedMinutes} min
+                    </span>
+                  )}
+                </div>
               </div>
-              <div className="text-xl font-bold font-mono text-slate-800 mt-1">
-                {formatTime(result.timeUsedSeconds)}
-              </div>
-            </div>
 
-            <div>
-              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Tâche 1
+              <div>
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  Nombre de mots
+                </div>
+                <div className="text-xl font-bold font-mono text-slate-800 mt-1 flex items-center gap-2">
+                  <span>{singleCount} mots</span>
+                  <span
+                    className={`text-xs font-sans px-2 py-0.5 rounded font-bold border ${
+                      isSingleWithin
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                        : 'bg-red-50 text-red-600 border-red-300'
+                    }`}
+                  >
+                    {isSingleWithin ? '✓ Conforme' : '⚠️ Non conforme'}
+                  </span>
+                </div>
               </div>
-              <div className="text-xl font-bold font-mono text-slate-800 mt-1">
-                {result.wordCounts.task1} mots
-              </div>
-            </div>
 
-            <div>
-              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Tâche 2
-              </div>
-              <div className="text-xl font-bold font-mono text-slate-800 mt-1">
-                {result.wordCounts.task2} mots
+              <div>
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  Objectif exigé
+                </div>
+                <div className="text-xl font-bold font-mono text-slate-800 mt-1">
+                  {singleMin} – {singleMax} mots
+                </div>
               </div>
             </div>
+          ) : (
+            /* Full Exam Stats Grid */
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6 bg-slate-50 p-4 rounded border border-slate-200">
+              <div>
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  Temps utilisé
+                </div>
+                <div className="text-xl font-bold font-mono text-slate-800 mt-1">
+                  {formatTime(result.timeUsedSeconds)}
+                </div>
+              </div>
 
-            <div>
-              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Tâche 3
+              <div>
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  Tâche 1
+                </div>
+                <div className="text-xl font-bold font-mono text-slate-800 mt-1">
+                  {result.wordCounts.task1} mots
+                </div>
               </div>
-              <div className="text-xl font-bold font-mono text-slate-800 mt-1">
-                {result.wordCounts.task3} mots
+
+              <div>
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  Tâche 2
+                </div>
+                <div className="text-xl font-bold font-mono text-slate-800 mt-1">
+                  {result.wordCounts.task2} mots
+                </div>
+              </div>
+
+              <div>
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  Tâche 3
+                </div>
+                <div className="text-xl font-bold font-mono text-slate-800 mt-1">
+                  {result.wordCounts.task3} mots
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Individual Tasks Display */}
           <div className="space-y-6">

@@ -163,6 +163,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <tbody className="divide-y divide-slate-200 text-sm">
                   {submissions.map((sub) => {
                     const comboNum = sub.combination?.combinationNumber || sub.combination?.combination;
+                    const isPract = !!sub.isPracticeMode && !!sub.practiceTask;
+                    const pTask = sub.practiceTask;
+
                     const t1Ok = sub.wordCounts.task1 >= 60 && sub.wordCounts.task1 <= 120;
                     const t2Ok = sub.wordCounts.task2 >= 120 && sub.wordCounts.task2 <= 150;
                     const t3Ok = sub.wordCounts.task3 >= 120 && sub.wordCounts.task3 <= 180;
@@ -175,34 +178,53 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         <td className="py-3 px-3 text-slate-700 font-semibold">{sub.year}</td>
                         <td className="py-3 px-3 text-slate-700 font-semibold">{sub.month}</td>
                         <td className="py-3 px-3 font-bold text-slate-900">
-                          Combinaison {comboNum}
+                          <div className="flex items-center gap-1.5">
+                            <span>Combinaison {comboNum}</span>
+                            {isPract && (
+                              <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.2 rounded whitespace-nowrap">
+                                Pratique T{pTask?.slice(-1)}
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="py-3 px-3">
-                          <span className={`px-2 py-0.5 rounded font-mono text-xs font-bold border inline-block ${
-                            t1Ok
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
-                              : 'bg-red-50 text-red-600 border-red-300'
-                          }`}>
-                            {sub.wordCounts.task1} mots
-                          </span>
+                          {isPract && pTask !== 'task1' ? (
+                            <span className="text-slate-400 text-xs font-mono">—</span>
+                          ) : (
+                            <span className={`px-2 py-0.5 rounded font-mono text-xs font-bold border inline-block ${
+                              t1Ok
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                                : 'bg-red-50 text-red-600 border-red-300'
+                            }`}>
+                              {sub.wordCounts.task1} mots
+                            </span>
+                          )}
                         </td>
                         <td className="py-3 px-3">
-                          <span className={`px-2 py-0.5 rounded font-mono text-xs font-bold border inline-block ${
-                            t2Ok
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
-                              : 'bg-red-50 text-red-600 border-red-300'
-                          }`}>
-                            {sub.wordCounts.task2} mots
-                          </span>
+                          {isPract && pTask !== 'task2' ? (
+                            <span className="text-slate-400 text-xs font-mono">—</span>
+                          ) : (
+                            <span className={`px-2 py-0.5 rounded font-mono text-xs font-bold border inline-block ${
+                              t2Ok
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                                : 'bg-red-50 text-red-600 border-red-300'
+                            }`}>
+                              {sub.wordCounts.task2} mots
+                            </span>
+                          )}
                         </td>
                         <td className="py-3 px-3">
-                          <span className={`px-2 py-0.5 rounded font-mono text-xs font-bold border inline-block ${
-                            t3Ok
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
-                              : 'bg-red-50 text-red-600 border-red-300'
-                          }`}>
-                            {sub.wordCounts.task3} mots
-                          </span>
+                          {isPract && pTask !== 'task3' ? (
+                            <span className="text-slate-400 text-xs font-mono">—</span>
+                          ) : (
+                            <span className={`px-2 py-0.5 rounded font-mono text-xs font-bold border inline-block ${
+                              t3Ok
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                                : 'bg-red-50 text-red-600 border-red-300'
+                            }`}>
+                              {sub.wordCounts.task3} mots
+                            </span>
+                          )}
                         </td>
                         <td className="py-3 px-3 text-right">
                           <div className="flex items-center justify-end gap-2">

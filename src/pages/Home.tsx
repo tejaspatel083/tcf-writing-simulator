@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { QuestionsDB, ExamCombination, ExamResult } from '../types/exam';
+import { QuestionsDB, ExamCombination, ExamResult, TaskKey } from '../types/exam';
 import questionsData from '../data/questions.json';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { Header } from '../components/Header';
@@ -12,8 +12,17 @@ import {
   mergeSubmissions
 } from '../utils/storage';
 
+export type TrainingMode = 'full_exam' | 'single_task';
+
 interface HomeProps {
-  onStartExam: (combo: ExamCombination, year: string, month: string) => void;
+  onStartExam: (
+    combo: ExamCombination,
+    year: string,
+    month: string,
+    isPracticeMode?: boolean,
+    practiceTask?: TaskKey,
+    durationMinutes?: number
+  ) => void;
   onViewSubmission?: (result: ExamResult) => void;
   onDashboardClick?: () => void;
   onLoginClick?: () => void;
@@ -104,10 +113,28 @@ export const Home: React.FC<HomeProps> = ({
   );
 
   const [selectedComboIndex, setSelectedComboIndex] = useState<number>(0);
+  const [trainingMode, setTrainingMode] = useState<TrainingMode>('full_exam');
+  const [selectedTask, setSelectedTask] = useState<TaskKey>('task1');
+  const [customMinutes, setCustomMinutes] = useState<number>(15);
   const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
   const [pastSubmissions, setPastSubmissions] = useState<ExamResult[]>([]);
   const [comboDropdownOpen, setComboDropdownOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleSelectTask = (task: TaskKey) => {
+    setSelectedTask(task);
+    if (task === 'task1') setCustomMinutes(15);
+    else if (task === 'task2') setCustomMinutes(20);
+    else if (task === 'task3') setCustomMinutes(30);
+  };
+
+  const handlePickRandomCombo = () => {
+    if (combinations.length > 0) {
+      const randIdx = Math.floor(Math.random() * combinations.length);
+      setSelectedComboIndex(randIdx);
+      setComboDropdownOpen(false);
+    }
+  };
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -253,9 +280,47 @@ export const Home: React.FC<HomeProps> = ({
 
         {/* Practice Selection Box */}
         <div className="bg-white border border-slate-300 rounded-lg shadow-xs p-6 mb-8">
-          <h2 className="text-lg font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">
-            Choisissez votre entraînement
-          </h2>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-3 mb-6 gap-3">
+            <div>
+              <h2 className="text-lg font-bold text-slate-800">
+                Mode d'entraînement
+              </h2>
+              <p className="text-xs text-slate-500">
+                {trainingMode === 'full_exam'
+                  ? "Examen complet de 60 minutes avec les 3 tâches consécutives (conditions réelles)."
+                  : "Entraînement ciblé sur une seule tâche avec un minuteur personnalisé défini par vous-même."}
+              </p>
+            </div>
+
+            {/* Mode Switcher Tabs */}
+            <div className="inline-flex p-1 bg-slate-100 rounded-lg border border-slate-200 shrink-0">
+              <button
+                type="button"
+                onClick={() => setTrainingMode('full_exam')}
+                className={`px-3.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  trainingMode === 'full_exam'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>🏆</span>
+                <span>Examen Complet (60 min)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setTrainingMode('single_task')}
+                className={`px-3.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  trainingMode === 'single_task'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>⏱️</span>
+                <span>Pratique par Tâche</span>
+              </button>
+            </div>
+          </div>
 
           {/* Year Selection Tabs */}
           <div className="mb-6">
@@ -339,106 +404,120 @@ export const Home: React.FC<HomeProps> = ({
               </div>
 
               {/* Interactive Custom Dropdown */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setComboDropdownOpen(!comboDropdownOpen)}
-                  className={`w-full sm:w-auto min-w-[280px] px-3.5 py-2.5 rounded-lg border text-left flex items-center justify-between gap-3 text-sm font-semibold transition-all cursor-pointer shadow-2xs ${
-                    isCurrentComboDone
-                      ? 'bg-emerald-50/80 border-emerald-400 text-emerald-950 ring-1 ring-emerald-400/50'
-                      : 'bg-white border-slate-300 text-slate-800 hover:border-slate-400 focus:border-blue-600'
-                  }`}
-                  aria-expanded={comboDropdownOpen}
-                >
-                  <div className="flex items-center gap-2">
-                    {isCurrentComboDone ? (
-                      <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
-                        ✓
-                      </span>
-                    ) : (
-                      <span className="w-2 h-2 rounded-full bg-slate-400 shrink-0"></span>
-                    )}
-                    <span>
-                      Combinaison {currentCombo?.combinationNumber || selectedComboIndex + 1}
-                    </span>
-                    {isCurrentComboDone && (
-                      <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded">
-                        ✓ Faite
-                      </span>
-                    )}
-                  </div>
-                  <span
-                    className="text-xs text-slate-500 transition-transform duration-200 inline-block"
-                    style={{ transform: comboDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+              <div className="flex flex-wrap items-center gap-2.5">
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setComboDropdownOpen(!comboDropdownOpen)}
+                    className={`w-full sm:w-auto min-w-[280px] px-3.5 py-2.5 rounded-lg border text-left flex items-center justify-between gap-3 text-sm font-semibold transition-all cursor-pointer shadow-2xs ${
+                      isCurrentComboDone
+                        ? 'bg-emerald-50/80 border-emerald-400 text-emerald-950 ring-1 ring-emerald-400/50'
+                        : 'bg-white border-slate-300 text-slate-800 hover:border-slate-400 focus:border-blue-600'
+                    }`}
+                    aria-expanded={comboDropdownOpen}
                   >
-                    ▼
-                  </span>
-                </button>
-
-                {/* Dropdown Menu Options */}
-                {comboDropdownOpen && (
-                  <div className="absolute z-30 mt-1.5 w-full sm:w-[380px] max-h-72 overflow-y-auto bg-white border border-slate-300 rounded-lg shadow-xl p-1.5 space-y-1 animate-fadeIn">
-                    <div className="px-2.5 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1 flex items-center justify-between">
-                      <span>Sélectionner une combinaison</span>
-                      <span className="text-emerald-700 font-semibold normal-case">Vert = Déjà complétée</span>
+                    <div className="flex items-center gap-2">
+                      {isCurrentComboDone ? (
+                        <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
+                          ✓
+                        </span>
+                      ) : (
+                        <span className="w-2 h-2 rounded-full bg-slate-400 shrink-0"></span>
+                      )}
+                      <span>
+                        Combinaison {currentCombo?.combinationNumber || selectedComboIndex + 1}
+                      </span>
+                      {isCurrentComboDone && (
+                        <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded">
+                          ✓ Faite
+                        </span>
+                      )}
                     </div>
+                    <span
+                      className="text-xs text-slate-500 transition-transform duration-200 inline-block"
+                      style={{ transform: comboDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                    >
+                      ▼
+                    </span>
+                  </button>
 
-                    {combinations.map((c, idx) => {
-                      const comboNum = c.combinationNumber || idx + 1;
-                      const isDone = isCombinationCompleted(comboNum);
-                      const isSelected = selectedComboIndex === idx;
+                  {/* Dropdown Menu Options */}
+                  {comboDropdownOpen && (
+                    <div className="absolute z-30 mt-1.5 w-full sm:w-[380px] max-h-72 overflow-y-auto bg-white border border-slate-300 rounded-lg shadow-xl p-1.5 space-y-1 animate-fadeIn">
+                      <div className="px-2.5 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1 flex items-center justify-between">
+                        <span>Sélectionner une combinaison</span>
+                        <span className="text-emerald-700 font-semibold normal-case">Vert = Déjà complétée</span>
+                      </div>
 
-                      return (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => {
-                            setSelectedComboIndex(idx);
-                            setComboDropdownOpen(false);
-                          }}
-                          className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs transition-all flex items-center justify-between gap-3 cursor-pointer ${
-                            isDone
-                              ? isSelected
-                                ? 'bg-emerald-100 text-emerald-950 font-bold border-2 border-emerald-500 shadow-xs'
-                                : 'bg-emerald-50 text-emerald-900 hover:bg-emerald-100 font-semibold border border-emerald-300'
-                              : isSelected
-                              ? 'bg-blue-50 text-blue-900 font-bold border border-blue-300'
-                              : 'text-slate-700 hover:bg-slate-100 border border-transparent'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5">
+                      {combinations.map((c, idx) => {
+                        const comboNum = c.combinationNumber || idx + 1;
+                        const isDone = isCombinationCompleted(comboNum);
+                        const isSelected = selectedComboIndex === idx;
+
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                              setSelectedComboIndex(idx);
+                              setComboDropdownOpen(false);
+                            }}
+                            className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs transition-all flex items-center justify-between gap-3 cursor-pointer ${
+                              isDone
+                                ? isSelected
+                                  ? 'bg-emerald-100 text-emerald-950 font-bold border-2 border-emerald-500 shadow-xs'
+                                  : 'bg-emerald-50 text-emerald-900 hover:bg-emerald-100 font-semibold border border-emerald-300'
+                                : isSelected
+                                ? 'bg-blue-50 text-blue-900 font-bold border border-blue-300'
+                                : 'text-slate-700 hover:bg-slate-100 border border-transparent'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5">
+                              {isDone ? (
+                                <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs">
+                                  ✓
+                                </span>
+                              ) : (
+                                <span className="w-5 h-5 rounded-full border border-slate-300 bg-white text-slate-400 flex items-center justify-center text-[10px] shrink-0">
+                                  •
+                                </span>
+                              )}
+                              <span className={isDone ? 'font-bold text-emerald-950 text-sm' : 'text-slate-800 font-medium text-sm'}>
+                                Combinaison {comboNum}
+                              </span>
+                            </div>
+
                             {isDone ? (
-                              <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs">
-                                ✓
+                              <span className="text-[11px] font-bold text-emerald-800 bg-emerald-200/90 border border-emerald-400 px-2.5 py-0.5 rounded-full whitespace-nowrap">
+                                ✓ Déjà faite (Refaire disponible)
                               </span>
-                            ) : (
-                              <span className="w-5 h-5 rounded-full border border-slate-300 bg-white text-slate-400 flex items-center justify-center text-[10px] shrink-0">
-                                •
+                            ) : isSelected ? (
+                              <span className="text-[10px] font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                Sélectionnée
                               </span>
-                            )}
-                            <span className={isDone ? 'font-bold text-emerald-950 text-sm' : 'text-slate-800 font-medium text-sm'}>
-                              Combinaison {comboNum}
-                            </span>
-                          </div>
+                            ) : null}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
 
-                          {isDone ? (
-                            <span className="text-[11px] font-bold text-emerald-800 bg-emerald-200/90 border border-emerald-400 px-2.5 py-0.5 rounded-full whitespace-nowrap">
-                              ✓ Déjà faite (Refaire disponible)
-                            </span>
-                          ) : isSelected ? (
-                            <span className="text-[10px] font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
-                              Sélectionnée
-                            </span>
-                          ) : null}
-                        </button>
-                      );
-                    })}
-                  </div>
+                {combinations.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={handlePickRandomCombo}
+                    className="px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                    title="Choisir une combinaison au hasard"
+                  >
+                    <span>🎲</span>
+                    <span>Question au hasard</span>
+                  </button>
                 )}
               </div>
 
               {/* Informative Banner if Selected Combo is Already Done */}
-              {isCurrentComboDone && (
+              {isCurrentComboDone && trainingMode === 'full_exam' && (
                 <div className="mt-3 p-3.5 rounded-lg bg-emerald-50 border border-emerald-300 flex items-start gap-2.5 text-xs text-emerald-900 shadow-2xs">
                   <span className="text-base text-emerald-600 font-bold leading-none mt-0.5 shrink-0">✓</span>
                   <div>
@@ -454,50 +533,224 @@ export const Home: React.FC<HomeProps> = ({
             </div>
           )}
 
-          {/* Selected Combination Summary Card */}
+          {/* Single Task Practice Options: Task Selection & Custom Timer */}
+          {trainingMode === 'single_task' && currentCombo && (
+            <div className="mt-6 p-5 bg-blue-50/60 border border-blue-200 rounded-lg space-y-5 animate-fadeIn">
+              {/* 1. Task Choice */}
+              <div>
+                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wide mb-2 flex items-center justify-between">
+                  <span>1. Choisissez la tâche à pratiquer</span>
+                  <span className="text-[11px] font-normal text-blue-700 lowercase">
+                    (Question issue de la combinaison sélectionnée)
+                  </span>
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {[
+                    {
+                      key: 'task1' as TaskKey,
+                      num: 1,
+                      name: 'Tâche 1',
+                      desc: 'Message / Description',
+                      words: '60–120 mots',
+                      rec: '15 min'
+                    },
+                    {
+                      key: 'task2' as TaskKey,
+                      num: 2,
+                      name: 'Tâche 2',
+                      desc: 'Narration / Récit',
+                      words: '120–150 mots',
+                      rec: '20 min'
+                    },
+                    {
+                      key: 'task3' as TaskKey,
+                      num: 3,
+                      name: 'Tâche 3',
+                      desc: 'Argumentation (2 documents)',
+                      words: '120–180 mots',
+                      rec: '30 min'
+                    }
+                  ].map((t) => {
+                    const isSelected = selectedTask === t.key;
+                    return (
+                      <button
+                        key={t.key}
+                        type="button"
+                        onClick={() => handleSelectTask(t.key)}
+                        className={`p-3.5 rounded-lg border text-left transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-white border-blue-600 ring-2 ring-blue-500 shadow-xs'
+                            : 'bg-white/80 border-slate-200 hover:border-slate-400 hover:bg-white text-slate-700'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <span className={`text-sm font-bold ${isSelected ? 'text-blue-700' : 'text-slate-900'}`}>
+                            {t.name}
+                          </span>
+                          <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
+                            {t.words}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-600 font-medium">{t.desc}</p>
+                        <p className="text-[11px] text-blue-600 font-semibold mt-1">
+                          Temps recommandé : {t.rec}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 2. Custom Timer Setter */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wide">
+                    2. Fixez votre minuteur (Temps libre par vous-même)
+                  </label>
+                  <span className="text-xs font-semibold text-slate-700">
+                    Minuteur réglé : <strong className="text-blue-700 font-mono text-sm">{customMinutes} minutes</strong>
+                  </span>
+                </div>
+
+                <div className="bg-white border border-slate-300 rounded-lg p-3.5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
+                  {/* Preset chips */}
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-xs text-slate-500 font-medium mr-1">Raccourcis :</span>
+                    {[5, 10, 15, 20, 25, 30, 45, 60].map((mins) => (
+                      <button
+                        key={mins}
+                        type="button"
+                        onClick={() => setCustomMinutes(mins)}
+                        className={`px-2.5 py-1 rounded text-xs font-semibold border transition-all cursor-pointer ${
+                          customMinutes === mins
+                            ? 'bg-blue-600 border-blue-700 text-white shadow-2xs font-bold'
+                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        {mins} min
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Number Stepper Input */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setCustomMinutes((prev) => Math.max(1, prev - 1))}
+                      className="w-8 h-8 rounded border border-slate-300 bg-slate-50 hover:bg-slate-100 font-bold text-slate-700 flex items-center justify-center cursor-pointer transition-colors"
+                      title="Diminuer d'une minute"
+                    >
+                      –
+                    </button>
+                    <div className="flex items-center gap-1 border border-slate-300 rounded px-2.5 py-1 bg-white focus-within:ring-1 focus-within:ring-blue-600">
+                      <input
+                        type="number"
+                        min="1"
+                        max="180"
+                        value={customMinutes}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value, 10);
+                          if (!isNaN(val) && val > 0 && val <= 180) {
+                            setCustomMinutes(val);
+                          }
+                        }}
+                        className="w-12 text-center font-mono font-bold text-sm text-slate-900 focus:outline-none"
+                      />
+                      <span className="text-xs text-slate-500 font-medium">min</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setCustomMinutes((prev) => Math.min(180, prev + 1))}
+                      className="w-8 h-8 rounded border border-slate-300 bg-slate-50 hover:bg-slate-100 font-bold text-slate-700 flex items-center justify-center cursor-pointer transition-colors"
+                      title="Augmenter d'une minute"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Selected Summary Card */}
           {currentCombo && (
             <div className="bg-slate-50 border border-slate-300 rounded p-4 mt-6">
               <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-3">
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-bold text-slate-900">
-                    Combinaison {currentCombo.combinationNumber || selectedComboIndex + 1}
+                    {trainingMode === 'single_task'
+                      ? `Pratique individuelle : ${selectedTask === 'task1' ? 'Tâche 1' : selectedTask === 'task2' ? 'Tâche 2' : 'Tâche 3'}`
+                      : `Combinaison ${currentCombo.combinationNumber || selectedComboIndex + 1}`}
                   </h3>
-                  {isCurrentComboDone && (
+                  <span className="text-xs text-slate-500">
+                    ({selectedMonth} {selectedYear})
+                  </span>
+                  {trainingMode === 'full_exam' && isCurrentComboDone && (
                     <span className="text-xs font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
                       ✓ Déjà complétée
                     </span>
                   )}
                 </div>
-                <span className="text-xs font-semibold text-slate-600 bg-white border border-slate-300 px-2.5 py-1 rounded">
-                  Durée: 60 minutes
+                <span className="text-xs font-semibold text-slate-700 bg-white border border-slate-300 px-2.5 py-1 rounded font-mono shadow-2xs">
+                  ⏱️ {trainingMode === 'single_task' ? `${customMinutes} minutes` : 'Durée: 60 minutes'}
                 </span>
               </div>
 
-              <div className="space-y-2 mb-6 text-sm text-slate-700">
-                <div className="flex items-center gap-2">
-                  <span className="text-emerald-600 font-bold">✓</span>
-                  <span><strong>Tâche 1</strong> — Message (60–120 mots)</span>
+              {trainingMode === 'single_task' ? (
+                <div className="space-y-2 mb-6 text-sm text-slate-700">
+                  <div className="flex items-center gap-2">
+                    <span className="text-blue-600 font-bold">✓</span>
+                    <span>
+                      <strong>Tâche :</strong>{' '}
+                      {selectedTask === 'task1'
+                        ? 'Tâche 1 — Message / Description (60 à 120 mots inclus)'
+                        : selectedTask === 'task2'
+                        ? 'Tâche 2 — Narration / Récit (120 à 150 mots inclus)'
+                        : 'Tâche 3 — Argumentation (120 à 180 mots inclus)'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-blue-600 font-bold">✓</span>
+                    <span>
+                      <strong>Minuteur personnalisé :</strong> {customMinutes} minutes allouées pour cette rédaction.
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-blue-600 font-bold">✓</span>
+                    <span>
+                      <strong>Conditions réelles :</strong> Exacte même interface d'examen TCF avec décompte des mots et clavier d'accents.
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-emerald-600 font-bold">✓</span>
-                  <span><strong>Tâche 2</strong> — Narration (120–150 mots)</span>
+              ) : (
+                <div className="space-y-2 mb-6 text-sm text-slate-700">
+                  <div className="flex items-center gap-2">
+                    <span className="text-emerald-600 font-bold">✓</span>
+                    <span><strong>Tâche 1</strong> — Message (60–120 mots)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-emerald-600 font-bold">✓</span>
+                    <span><strong>Tâche 2</strong> — Narration (120–150 mots)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-emerald-600 font-bold">✓</span>
+                    <span><strong>Tâche 3</strong> — Argumentation (120–180 mots)</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-emerald-600 font-bold">✓</span>
-                  <span><strong>Tâche 3</strong> — Argumentation (120–180 mots)</span>
-                </div>
-              </div>
+              )}
 
               <button
                 type="button"
                 onClick={() => setIsConfirmOpen(true)}
                 className={`w-full sm:w-auto px-6 py-2.5 rounded font-bold text-sm transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer ${
-                  isCurrentComboDone
+                  trainingMode === 'full_exam' && isCurrentComboDone
                     ? 'bg-emerald-600 border border-emerald-700 text-white hover:bg-emerald-700'
                     : 'bg-blue-600 border border-blue-700 text-white hover:bg-blue-700'
                 }`}
               >
-                {isCurrentComboDone ? (
+                {trainingMode === 'single_task' ? (
+                  <span>Commencer l'entraînement ({customMinutes} min)</span>
+                ) : isCurrentComboDone ? (
                   <>
                     <span>Refaire cet examen</span>
                     <span>↻</span>
@@ -533,25 +786,39 @@ export const Home: React.FC<HomeProps> = ({
         )}
       </div>
 
-      {/* Confirmation Modal before starting exam */}
+      {/* Confirmation Modal before starting exam or practice */}
       <ConfirmationModal
         isOpen={isConfirmOpen}
         title={
-          isCurrentComboDone
+          trainingMode === 'single_task'
+            ? `Prêt pour la ${selectedTask === 'task1' ? 'Tâche 1' : selectedTask === 'task2' ? 'Tâche 2' : 'Tâche 3'} ?`
+            : isCurrentComboDone
             ? `Refaire la Combinaison ${currentComboNum} ?`
             : "Vous êtes prêt à commencer l'examen ?"
         }
         message={
-          isCurrentComboDone
+          trainingMode === 'single_task'
+            ? `Vous aurez ${customMinutes} minutes pour compléter cette tâche dans les conditions d'examen du TCF Canada.`
+            : isCurrentComboDone
             ? "Vous avez déjà soumis cette combinaison auparavant. Vous pouvez la refaire dans les conditions réelles (60 minutes). Votre nouvelle soumission sera enregistrée séparément dans votre tableau de bord."
             : "Vous aurez 60 minutes pour compléter les 3 tâches dans les conditions réelles."
         }
-        confirmLabel={isCurrentComboDone ? 'Refaire l’examen' : 'Commencer'}
+        confirmLabel={
+          trainingMode === 'single_task'
+            ? "Commencer l'entraînement"
+            : isCurrentComboDone
+            ? 'Refaire l’examen'
+            : 'Commencer'
+        }
         cancelLabel="Annuler"
         onConfirm={() => {
           setIsConfirmOpen(false);
           if (currentCombo) {
-            onStartExam(currentCombo, selectedYear, selectedMonth);
+            if (trainingMode === 'single_task') {
+              onStartExam(currentCombo, selectedYear, selectedMonth, true, selectedTask, customMinutes);
+            } else {
+              onStartExam(currentCombo, selectedYear, selectedMonth, false, 'task1', 60);
+            }
           }
         }}
         onCancel={() => setIsConfirmOpen(false)}

@@ -14,6 +14,9 @@ interface SimulatorProps {
   month: string;
   onFinishExam: (result: ExamResult) => void;
   onCancelExam: () => void;
+  isPracticeMode?: boolean;
+  practiceTask?: TaskKey;
+  durationMinutes?: number;
 }
 
 export const Simulator: React.FC<SimulatorProps> = ({
@@ -21,10 +24,13 @@ export const Simulator: React.FC<SimulatorProps> = ({
   year,
   month,
   onFinishExam,
-  onCancelExam
+  onCancelExam,
+  isPracticeMode = false,
+  practiceTask = 'task1',
+  durationMinutes = 60
 }) => {
-  const [activeTask, setActiveTask] = useState<TaskKey>('task1');
-  const [startedAt] = useState<string>(() => new Date().toISOString());
+  const initialTask: TaskKey = isPracticeMode && practiceTask ? practiceTask : 'task1';
+  const [activeTask, setActiveTask] = useState<TaskKey>(initialTask);
   const [answers, setAnswers] = useState<ExamAnswers>({
     task1: '',
     task2: '',
@@ -32,7 +38,12 @@ export const Simulator: React.FC<SimulatorProps> = ({
   });
   const [isFinishModalOpen, setIsFinishModalOpen] = useState<boolean>(false);
 
-  const draftKey = `tcf_draft_${combination.combinationNumber}_${year}_${month}`;
+  const initialDurationMinutes = isPracticeMode ? (durationMinutes || 15) : 60;
+  const initialDurationSeconds = initialDurationMinutes * 60;
+
+  const draftKey = isPracticeMode
+    ? `tcf_practice_${practiceTask}_${combination.combinationNumber}_${year}_${month}`
+    : `tcf_draft_${combination.combinationNumber}_${year}_${month}`;
 
   // Load draft from localStorage if present
   useEffect(() => {
@@ -56,18 +67,21 @@ export const Simulator: React.FC<SimulatorProps> = ({
       combination,
       year,
       month,
-      timeUsedSeconds: 3600,
+      timeUsedSeconds: initialDurationSeconds,
       answers,
       wordCounts: {
         task1: countFrenchWords(answers.task1),
         task2: countFrenchWords(answers.task2),
         task3: countFrenchWords(answers.task3)
-      }
+      },
+      isPracticeMode,
+      practiceTask,
+      allocatedMinutes: initialDurationMinutes
     });
-  }, [combination, year, month, answers, onFinishExam, draftKey]);
+  }, [combination, year, month, answers, onFinishExam, draftKey, isPracticeMode, practiceTask, initialDurationMinutes, initialDurationSeconds]);
 
   const { secondsRemaining, timeUsedSeconds, isFinished } = useExamTimer({
-    initialMinutes: 60,
+    initialMinutes: initialDurationMinutes,
     onExpire: handleTimerExpire
   });
 
@@ -82,8 +96,6 @@ export const Simulator: React.FC<SimulatorProps> = ({
   };
 
   const handleInsertCharacter = (char: string) => {
-    // Inserts character into active task answer
-    // TaskEditor handles textarea focus and cursor placement
     const activeTextarea = document.querySelector('textarea');
     if (activeTextarea) {
       const start = activeTextarea.selectionStart;
@@ -125,16 +137,25 @@ export const Simulator: React.FC<SimulatorProps> = ({
       month,
       timeUsedSeconds,
       answers,
-      wordCounts
+      wordCounts,
+      isPracticeMode,
+      practiceTask,
+      allocatedMinutes: initialDurationMinutes
     });
   };
+
+  const taskNumDisplay = activeTask === 'task1' ? 1 : activeTask === 'task2' ? 2 : 3;
 
   return (
     <div className="h-screen w-screen flex flex-col bg-white overflow-hidden select-none">
       {/* Header */}
       <Header
         onHomeClick={onCancelExam}
-        subtitle="Examen en cours"
+        subtitle={
+          isPracticeMode
+            ? `Entraînement individuel — Tâche ${taskNumDisplay} (${initialDurationMinutes} min)`
+            : "Examen en cours"
+        }
         combinationTitle={`Combinaison ${combination.combinationNumber} — ${month} ${year}`}
       />
 
@@ -145,6 +166,8 @@ export const Simulator: React.FC<SimulatorProps> = ({
           activeTask={activeTask}
           onSelectTask={setActiveTask}
           wordCounts={wordCounts}
+          isPracticeMode={isPracticeMode}
+          practiceTask={practiceTask}
         />
 
         {/* Center: Active Task Editor */}
@@ -159,6 +182,7 @@ export const Simulator: React.FC<SimulatorProps> = ({
           isFirstTask={currentIndex === 0}
           isLastTask={currentIndex === taskKeys.length - 1}
           disabled={isFinished}
+          isPracticeMode={isPracticeMode}
         />
 
         {/* Right Sidebar: Timer, Accent Keyboard, Submission Conditions */}
@@ -166,15 +190,21 @@ export const Simulator: React.FC<SimulatorProps> = ({
           timeRemainingSeconds={secondsRemaining}
           wordCounts={wordCounts}
           onInsertCharacter={handleInsertCharacter}
+          isPracticeMode={isPracticeMode}
+          practiceTask={practiceTask}
         />
       </div>
 
-      {/* Finish Exam Confirmation Modal */}
+      {/* Finish Confirmation Modal */}
       <ConfirmationModal
         isOpen={isFinishModalOpen}
-        title="Voulez-vous vraiment terminer l'examen ?"
-        message="Vous ne pourrez plus modifier vos réponses une fois la soumission validée."
-        confirmLabel="Terminer"
+        title={isPracticeMode ? "Terminer cet entraînement ?" : "Voulez-vous vraiment terminer l'examen ?"}
+        message={
+          isPracticeMode
+            ? "Vous ne pourrez plus modifier votre réponse pour cette tâche."
+            : "Vous ne pourrez plus modifier vos réponses une fois la soumission validée."
+        }
+        confirmLabel={isPracticeMode ? "Terminer l'entraînement" : "Terminer"}
         cancelLabel="Annuler"
         onConfirm={confirmFinish}
         onCancel={() => setIsFinishModalOpen(false)}

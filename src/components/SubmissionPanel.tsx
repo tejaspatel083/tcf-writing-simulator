@@ -6,16 +6,20 @@ interface SubmissionPanelProps {
   timeRemainingSeconds: number;
   wordCounts: { task1: number; task2: number; task3: number };
   onInsertCharacter: (char: string) => void;
+  isPracticeMode?: boolean;
+  practiceTask?: 'task1' | 'task2' | 'task3';
 }
 
 export const SubmissionPanel: React.FC<SubmissionPanelProps> = ({
   timeRemainingSeconds,
   wordCounts,
-  onInsertCharacter
+  onInsertCharacter,
+  isPracticeMode = false,
+  practiceTask
 }) => {
   const isUrgent = timeRemainingSeconds < 300; // less than 5 min
 
-  const conditions = [
+  const allConditions = [
     {
       key: 'task1',
       name: 'Tâche 1',
@@ -38,6 +42,11 @@ export const SubmissionPanel: React.FC<SubmissionPanelProps> = ({
       count: wordCounts.task3
     }
   ];
+
+  const conditions = isPracticeMode && practiceTask
+    ? allConditions.filter((c) => c.key === practiceTask)
+    : allConditions;
+
 
   return (
     <div className="bg-slate-50 border-l border-slate-300 w-72 shrink-0 p-3 flex flex-col gap-4 overflow-y-auto select-none">

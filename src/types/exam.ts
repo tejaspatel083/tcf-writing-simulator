@@ -44,4 +44,8 @@ export interface ExamResult {
     task2: number;
     task3: number;
   };
+  isPracticeMode?: boolean;
+  practiceTask?: TaskKey;
+  allocatedMinutes?: number;
 }
+
