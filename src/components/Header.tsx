@@ -4,6 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 interface HeaderProps {
   onHomeClick?: () => void;
   onDashboardClick?: () => void;
+  onFeedbackClick?: () => void;
   onLoginClick?: () => void;
   onLogoutClick?: () => void;
   userEmail?: string | null;
@@ -16,6 +17,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   onHomeClick,
   onDashboardClick,
+  onFeedbackClick,
   onLoginClick,
   onLogoutClick,
   userEmail,
@@ -96,6 +98,19 @@ export const Header: React.FC<HeaderProps> = ({
               EN
             </button>
           </div>
+        )}
+
+        {/* Feedback Link */}
+        {onFeedbackClick && (
+          <button
+            type="button"
+            onClick={onFeedbackClick}
+            className="text-xs font-semibold text-slate-700 hover:text-blue-700 hover:bg-slate-100 border border-slate-300 px-2.5 py-1 rounded transition-colors cursor-pointer hidden sm:inline-flex items-center gap-1"
+            title={t('Envoyer un feedback ou des remerciements')}
+          >
+            <span>💬</span>
+            <span>{t('Feedback')}</span>
+          </button>
         )}
 
         {/* Auth status buttons */}

@@ -26,6 +26,7 @@ interface HomeProps {
   ) => void;
   onViewSubmission?: (result: ExamResult) => void;
   onDashboardClick?: () => void;
+  onFeedbackClick?: () => void;
   onLoginClick?: () => void;
   onLogoutClick?: () => void;
   userEmail?: string | null;
@@ -86,6 +87,7 @@ export const normalizeMonth = (m?: string): string => {
 export const Home: React.FC<HomeProps> = ({
   onStartExam,
   onDashboardClick,
+  onFeedbackClick,
   onLoginClick,
   onLogoutClick,
   userEmail
@@ -234,6 +236,7 @@ export const Home: React.FC<HomeProps> = ({
       {/* App Header */}
       <Header
         onDashboardClick={onDashboardClick}
+        onFeedbackClick={onFeedbackClick}
         onLoginClick={onLoginClick}
         onLogoutClick={onLogoutClick}
         userEmail={userEmail}
@@ -827,7 +830,7 @@ export const Home: React.FC<HomeProps> = ({
       />
 
       {/* Footer with Terms and Conditions */}
-      <Footer />
+      <Footer onFeedbackClick={onFeedbackClick} />
     </div>
   );
 };

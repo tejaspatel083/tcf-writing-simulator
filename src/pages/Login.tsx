@@ -8,11 +8,12 @@ import { useLanguage } from '../context/LanguageContext';
 interface LoginProps {
   onSuccess: () => void;
   onHomeClick?: () => void;
+  onFeedbackClick?: () => void;
 }
 
 type AuthMode = 'login' | 'register' | 'forgot' | 'recovery';
 
-export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
+export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedbackClick }) => {
   const { t } = useLanguage();
   const {
     signIn,
@@ -655,7 +656,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick }) => {
         </div>
       </div>
 
-      <Footer />
+      <Footer onFeedbackClick={onFeedbackClick} />
     </div>
   );
 };

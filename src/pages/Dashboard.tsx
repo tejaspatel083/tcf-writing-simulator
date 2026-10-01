@@ -13,13 +13,15 @@ interface DashboardProps {
   onViewSubmission: (result: ExamResult) => void;
   onRetakeCombination: (combo: any, year: string, month: string) => void;
   onHomeClick: () => void;
+  onFeedbackClick?: () => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
   onStartNewExam,
   onViewSubmission,
   onRetakeCombination,
-  onHomeClick
+  onHomeClick,
+  onFeedbackClick
 }) => {
   const { user, signOut, isConfigured } = useAuth();
   const { t } = useLanguage();
@@ -83,6 +85,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
       <Header
         onHomeClick={onHomeClick}
+        onFeedbackClick={onFeedbackClick}
+        userEmail={user?.email}
         subtitle={t('Tableau de bord utilisateur')}
       />
 
@@ -273,7 +277,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
       </div>
 
-      <Footer />
+      <Footer onFeedbackClick={onFeedbackClick} />
     </div>
   );
 };

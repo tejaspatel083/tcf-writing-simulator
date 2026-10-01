@@ -9,9 +9,10 @@ import { useLanguage } from '../context/LanguageContext';
 interface ResultsProps {
   result: ExamResult;
   onHomeClick: () => void;
+  onFeedbackClick?: () => void;
 }
 
-export const Results: React.FC<ResultsProps> = ({ result, onHomeClick }) => {
+export const Results: React.FC<ResultsProps> = ({ result, onHomeClick, onFeedbackClick }) => {
   const { t } = useLanguage();
   const [copiedTask, setCopiedTask] = useState<string | null>(null);
 
@@ -267,17 +268,30 @@ ${result.answers.task3 || '(Aucune réponse)'}
             })}
           </div>
 
-          <div className="mt-8 pt-4 border-t border-slate-200 flex justify-between items-center">
+          <div className="mt-8 pt-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
             <button
               type="button"
               onClick={onHomeClick}
-              className="px-5 py-2.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs"
+              className="w-full sm:w-auto px-5 py-2.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs cursor-pointer"
             >
               {t("Retour à l'accueil")}
             </button>
+
+            {onFeedbackClick && (
+              <button
+                type="button"
+                onClick={onFeedbackClick}
+                className="w-full sm:w-auto px-4 py-2 rounded bg-blue-50 border border-blue-200 text-blue-700 font-semibold text-xs hover:bg-blue-100 transition-colors shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span>💌</span>
+                <span>{t('Un mot pour le développeur / Feedback')}</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      <Footer onFeedbackClick={onFeedbackClick} />
     </div>
   );
 };

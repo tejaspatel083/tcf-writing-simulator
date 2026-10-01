@@ -4,6 +4,7 @@ import { Simulator } from './pages/Simulator';
 import { Results } from './pages/Results';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
+import { Feedback } from './pages/Feedback';
 import { ExamCombination, ExamResult, TaskKey } from './types/exam';
 import { saveSubmission } from './utils/storage';
 import { saveSubmissionToSupabase } from './lib/supabase';
@@ -12,7 +13,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 const MainRouter: React.FC = () => {
   const { user, loading, isEmailVerified, signOut } = useAuth();
 
-  const [view, setView] = useState<'home' | 'simulator' | 'results' | 'dashboard'>('home');
+  const [view, setView] = useState<'home' | 'simulator' | 'results' | 'dashboard' | 'feedback'>('home');
   const [activeCombo, setActiveCombo] = useState<ExamCombination | null>(null);
   const [activeYear, setActiveYear] = useState<string>('2026');
   const [activeMonth, setActiveMonth] = useState<string>('Septembre');
@@ -32,11 +33,22 @@ const MainRouter: React.FC = () => {
     );
   }
 
+  // 1.5. If view is feedback, accessible by any user
+  if (view === 'feedback') {
+    return (
+      <Feedback
+        onHomeClick={() => setView('home')}
+        userEmail={user?.email}
+      />
+    );
+  }
+
   // 2. Gatekeeper: If user is not logged in OR email is not verified, show Login page as the 1st page
   if (!user || !isEmailVerified) {
     return (
       <Login
         onSuccess={() => setView('home')}
+        onFeedbackClick={() => setView('feedback')}
       />
     );
   }
@@ -114,6 +126,7 @@ const MainRouter: React.FC = () => {
           onStartExam={handleStartExam}
           onViewSubmission={handleViewPastSubmission}
           onDashboardClick={() => setView('dashboard')}
+          onFeedbackClick={() => setView('feedback')}
           onLogoutClick={handleSignOut}
           userEmail={user.email}
         />
@@ -125,6 +138,7 @@ const MainRouter: React.FC = () => {
           onViewSubmission={handleViewPastSubmission}
           onRetakeCombination={handleRetakeCombination}
           onHomeClick={handleGoHome}
+          onFeedbackClick={() => setView('feedback')}
         />
       )}
 
@@ -142,7 +156,11 @@ const MainRouter: React.FC = () => {
       )}
 
       {view === 'results' && examResult && (
-        <Results result={examResult} onHomeClick={handleGoHome} />
+        <Results
+          result={examResult}
+          onHomeClick={handleGoHome}
+          onFeedbackClick={() => setView('feedback')}
+        />
       )}
     </React.Fragment>
   );
