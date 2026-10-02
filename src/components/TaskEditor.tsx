@@ -33,7 +33,6 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
 }) => {
   const { t } = useLanguage();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [isPromptOpen, setIsPromptOpen] = React.useState<boolean>(true);
   const wordCount = countFrenchWords(value);
 
   // Keep focus on textarea when task changes
@@ -64,7 +63,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
   const task3Title = normalizeParagraphText(taskRequirement.title || taskRequirement.instruction || '');
 
   return (
-    <div className="flex-1 flex flex-col bg-slate-50 overflow-hidden border-r border-slate-300">
+    <div className="flex-1 flex flex-col bg-white overflow-hidden border-r border-slate-300">
       {/* Banner if Timer Finished */}
       {disabled && (
         <div className="bg-red-600 text-white font-bold text-xs px-4 py-2 flex items-center justify-between shadow-xs shrink-0">
@@ -73,171 +72,153 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
         </div>
       )}
 
-      {/* Task Prompt Accordion Panel */}
-      <div className="border-b border-slate-300 bg-white transition-all shadow-none">
-        {/* Accordion Header */}
-        <div className="px-4 sm:px-6 py-2.5 flex items-center justify-between bg-slate-50 border-b border-slate-200">
-          <div className="flex items-center gap-2.5">
-            <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
+      {/* Task Prompt Area */}
+      <div className="p-4 sm:p-5 border-b border-slate-300 bg-slate-50 max-h-[46vh] overflow-y-auto">
+        {/* Header Bar matching Reference Website */}
+        <div className="flex items-center justify-between border-b border-slate-200 pb-2.5 mb-3">
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-extrabold shrink-0 shadow-2xs">
               {taskNumberMap[taskKey]}
             </span>
-            <h2 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight">
+            <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
               {t(`Tâche ${taskNumberMap[taskKey]}`)}
             </h2>
-            <span className="text-xs text-slate-400 hidden sm:inline">•</span>
-            <span className="text-xs text-slate-600 font-medium hidden sm:inline">{t(taskTypeMap[taskKey])}</span>
-            <span className="text-[11px] font-semibold text-slate-600 bg-white border border-slate-300 px-2 py-0.5 rounded font-mono">
-              {taskRequirement.minWords}–{taskRequirement.maxWords} {t('mots')}
-            </span>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsPromptOpen(!isPromptOpen)}
-            className="text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-300 px-2.5 py-1 rounded transition-colors cursor-pointer flex items-center gap-1.5"
-            title={isPromptOpen ? t('Masquer la consigne') : t('Afficher la consigne')}
-          >
-            <span className="text-[10px] text-blue-600 font-bold">{isPromptOpen ? '▲' : '▼'}</span>
-            <span className="hidden sm:inline">{isPromptOpen ? t('Masquer la consigne') : t('Afficher la consigne')}</span>
-          </button>
+          <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+            <span>{t(taskTypeMap[taskKey])}</span>
+            <span>•</span>
+            <span className="font-semibold text-slate-700">{taskRequirement.minWords}-{taskRequirement.maxWords} {t('mots')}</span>
+            {taskKey === 'task3' && (
+              <>
+                <span>•</span>
+                <span>⏱️ 30 min</span>
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Accordion Body */}
-        {isPromptOpen && (
-          <div className="p-4 sm:p-5 max-h-[38vh] overflow-y-auto bg-white space-y-3">
-            {taskKey === 'task3' ? (
-              <div className="space-y-3">
-                {task3Title && (
-                  <h3 className="text-center text-base sm:text-lg font-bold text-slate-800 my-2 leading-snug border-b border-slate-200 pb-2">
-                    {task3Title}
-                  </h3>
-                )}
+        {/* Task Content */}
+        {taskKey === 'task3' ? (
+          <div className="space-y-3">
+            {/* Centered Large Blue Title */}
+            {task3Title && (
+              <h3 className="text-center text-lg sm:text-xl font-extrabold text-blue-600 my-3 leading-snug">
+                {task3Title}
+              </h3>
+            )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {doc1Clean && (
-                    <div className="bg-slate-50 border border-slate-200 rounded p-3.5 text-slate-800 text-xs sm:text-sm leading-relaxed">
-                      <div className="font-bold text-xs text-blue-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
-                        <span>{t('Document 1 :').replace(' :', '')}</span>
-                      </div>
-                      <p className="whitespace-pre-line text-slate-700">{doc1Clean}</p>
-                    </div>
-                  )}
-
-                  {doc2Clean && (
-                    <div className="bg-slate-50 border border-slate-200 rounded p-3.5 text-slate-800 text-xs sm:text-sm leading-relaxed">
-                      <div className="font-bold text-xs text-blue-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
-                        <span>{t('Document 2 :').replace(' :', '')}</span>
-                      </div>
-                      <p className="whitespace-pre-line text-slate-700">{doc2Clean}</p>
-                    </div>
-                  )}
+            {/* Document 1 Card */}
+            {doc1Clean && (
+              <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-4.5 text-slate-800 text-sm leading-relaxed shadow-2xs hover:border-slate-300 transition-colors">
+                <div className="font-bold text-xs text-blue-700 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                  <span>{t('Document 1 :').replace(' :', '')}</span>
                 </div>
-              </div>
-            ) : (
-              <div className="text-slate-800 text-sm leading-relaxed whitespace-pre-line border-l-4 border-blue-600 pl-3 py-1 bg-slate-50 rounded-r">
-                {normalizeParagraphText(taskRequirement.instruction) || t("Veuillez rédiger votre texte ci-dessous.")}
+                <p className="whitespace-pre-line text-slate-800">{doc1Clean}</p>
               </div>
             )}
+
+            {/* Document 2 Card */}
+            {doc2Clean && (
+              <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-4.5 text-slate-800 text-sm leading-relaxed shadow-2xs hover:border-slate-300 transition-colors">
+                <div className="font-bold text-xs text-blue-700 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                  <span>{t('Document 2 :').replace(' :', '')}</span>
+                </div>
+                <p className="whitespace-pre-line text-slate-800">{doc2Clean}</p>
+              </div>
+            )}
+          </div>
+        ) : (
+          /* Task 1 & Task 2 Instructions */
+          <div className="text-slate-800 text-sm leading-relaxed whitespace-pre-line border-l-4 border-blue-600 pl-3.5 py-2.5 bg-white border border-slate-200 rounded-lg shadow-2xs">
+            {normalizeParagraphText(taskRequirement.instruction) || t("Veuillez rédiger votre texte ci-dessous.")}
           </div>
         )}
       </div>
 
-      {/* Editor Workspace */}
-      <div className="flex-1 p-3 sm:p-4 flex flex-col relative bg-slate-50/50">
-        <div className="relative flex-1 flex flex-col bg-white rounded border border-slate-300 shadow-2xs overflow-hidden focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
-          {/* Live Floating Word Counter Badge */}
-          <div className="absolute top-3 right-3 z-10 pointer-events-none">
-            <div className={`px-2.5 py-1 rounded text-xs font-bold font-mono border backdrop-blur-md shadow-2xs flex items-center gap-1.5 ${
-              isWithinRange
-                ? 'bg-emerald-50/95 text-emerald-800 border-emerald-300'
-                : isTooHigh
-                ? 'bg-red-50/95 text-red-600 border-red-300'
-                : 'bg-white/95 text-slate-700 border-slate-300'
-            }`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${isWithinRange ? 'bg-emerald-600' : isTooHigh ? 'bg-red-600' : 'bg-slate-400'}`}></span>
-              <span>{wordCount} / {taskRequirement.minWords}–{taskRequirement.maxWords} {t('mots')}</span>
-            </div>
-          </div>
-
-          <textarea
-            ref={textareaRef}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            disabled={disabled}
-            placeholder={disabled ? t("Temps écoulé — Rédaction désactivée.") : t("Saisissez votre texte ici...")}
-            spellCheck={false}
-            autoCorrect="off"
-            autoCapitalize="off"
-            autoComplete="off"
-            onCopy={(e) => e.preventDefault()}
-            onCut={(e) => e.preventDefault()}
-            onPaste={(e) => e.preventDefault()}
-            onDrop={(e) => e.preventDefault()}
-            onContextMenu={(e) => e.preventDefault()}
-            onKeyDown={(e) => {
-              const isCtrlOrCmd = e.ctrlKey || e.metaKey;
-              if (isCtrlOrCmd) {
-                const key = e.key.toLowerCase();
-                if (['a', 'z', 'y', 'c', 'v', 'x'].includes(key)) {
-                  e.preventDefault();
-                }
+      {/* Writing Textarea Area */}
+      <div className="flex-1 p-4 flex flex-col relative bg-white">
+        <textarea
+          ref={textareaRef}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          placeholder={disabled ? t("Temps écoulé — Rédaction désactivée.") : t("Saisissez votre texte ici...")}
+          spellCheck={false}
+          autoCorrect="off"
+          autoCapitalize="off"
+          autoComplete="off"
+          onCopy={(e) => e.preventDefault()}
+          onCut={(e) => e.preventDefault()}
+          onPaste={(e) => e.preventDefault()}
+          onDrop={(e) => e.preventDefault()}
+          onContextMenu={(e) => e.preventDefault()}
+          onKeyDown={(e) => {
+            const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+            if (isCtrlOrCmd) {
+              const key = e.key.toLowerCase();
+              // Block Ctrl/Cmd + A (select all), Z (undo), Y (redo), C (copy), V (paste), X (cut)
+              if (['a', 'z', 'y', 'c', 'v', 'x'].includes(key)) {
+                e.preventDefault();
               }
-            }}
-            className={`w-full flex-1 p-4 sm:p-5 focus:outline-none resize-none font-sans text-base leading-relaxed bg-white text-slate-900 ${
-              disabled ? 'bg-slate-100 text-slate-500 cursor-not-allowed' : ''
-            }`}
-          />
-        </div>
+            }
+          }}
+          className={`w-full flex-1 p-3 border rounded focus:outline-none resize-none font-sans text-base leading-relaxed ${
+            disabled
+              ? 'bg-slate-100 text-slate-500 border-slate-300 cursor-not-allowed'
+              : 'bg-white text-slate-900 border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600'
+          }`}
+        />
       </div>
 
       {/* Footer / Status Bar */}
-      <div className="px-4 sm:px-6 py-2.5 border-t border-slate-300 bg-white flex flex-col sm:flex-row items-center justify-between text-sm shrink-0 gap-3">
+      <div className="px-4 py-3 border-t border-slate-300 bg-slate-50 flex items-center justify-between text-sm shrink-0">
         {/* Word Counter */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className={`font-bold font-mono text-base px-2.5 py-0.5 rounded border ${
+        <div className="flex items-center gap-2">
+          <span className={`font-bold font-mono text-base px-2 py-0.5 rounded border ${
             isWithinRange
-              ? 'text-emerald-800 bg-emerald-50 border-emerald-300'
+              ? 'text-emerald-700 bg-emerald-50 border-emerald-300'
               : 'text-red-600 bg-red-50 border-red-300'
           }`}>
             {wordCount}
           </span>
-          <span className="text-slate-600 font-medium text-xs sm:text-sm">
-            / ({taskRequirement.minWords}–{taskRequirement.maxWords} {t('mots')})
+          <span className="text-slate-600 font-medium">
+            / ({taskRequirement.minWords}-{taskRequirement.maxWords} {t('mots')})
           </span>
 
           {isWithinRange && (
-            <span className="bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs px-2.5 py-0.5 rounded font-bold ml-1 inline-flex items-center gap-1">
-              <span>✓</span> {t('✓ Nombre de mots conforme')}
+            <span className="bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs px-2.5 py-0.5 rounded font-bold ml-2">
+              {t('✓ Nombre de mots conforme')}
             </span>
           )}
 
           {isTooLow && (
-            <span className="bg-red-50 border border-red-300 text-red-600 text-xs px-2.5 py-0.5 rounded font-bold ml-1 inline-flex items-center gap-1">
-              <span>⚠️</span> {t('⚠️ Mots insuffisants')} ({wordCount}/{taskRequirement.minWords})
+            <span className="bg-red-100 border border-red-300 text-red-800 text-xs px-2 py-0.5 rounded font-bold ml-2">
+              {t('⚠️ Mots insuffisants')} ({wordCount}/{taskRequirement.minWords})
             </span>
           )}
 
           {isTooHigh && (
-            <span className="bg-red-50 border border-red-300 text-red-600 text-xs px-2.5 py-0.5 rounded font-bold ml-1 inline-flex items-center gap-1">
-              <span>⚠️</span> {t('⚠️ Limite dépassée')} ({wordCount}/{taskRequirement.maxWords})
+            <span className="bg-red-100 border border-red-300 text-red-800 text-xs px-2 py-0.5 rounded font-bold ml-2">
+              {t('⚠️ Limite dépassée')} ({wordCount}/{taskRequirement.maxWords})
             </span>
           )}
         </div>
 
-        {/* Navigation & Action Buttons */}
-        <div className="flex items-center gap-2.5">
+        {/* Navigation & Submit Buttons */}
+        <div className="flex items-center gap-2">
           {!isPracticeMode && (
             <>
               <button
                 type="button"
                 onClick={onPrevTask}
                 disabled={isFirstTask}
-                className={`px-3.5 py-1.5 rounded border text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${
+                className={`px-3 py-1.5 rounded border text-sm font-medium transition-colors cursor-pointer ${
                   isFirstTask
                     ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
-                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
                 }`}
               >
                 {t('Précédent')}
@@ -247,10 +228,10 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
                 type="button"
                 onClick={onNextTask}
                 disabled={isLastTask}
-                className={`px-3.5 py-1.5 rounded border text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${
+                className={`px-3 py-1.5 rounded border text-sm font-medium transition-colors cursor-pointer ${
                   isLastTask
                     ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
-                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
                 }`}
               >
                 {t('Suivant')}
@@ -258,16 +239,14 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
             </>
           )}
 
-          {/* Action Button */}
           <button
             type="button"
             onClick={onFinishExam}
-            className={`px-4 sm:px-5 py-2 rounded bg-blue-600 hover:bg-blue-700 border border-blue-700 text-white font-bold text-xs sm:text-sm transition-colors shadow-xs cursor-pointer flex items-center gap-1.5 ${
-              !isPracticeMode ? 'ml-2' : ''
+            className={`px-4 py-1.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs cursor-pointer ${
+              !isPracticeMode ? 'ml-4' : ''
             }`}
           >
-            <span>✓</span>
-            <span>{isPracticeMode ? t("Terminer l'entraînement") : t("Terminer l'examen")}</span>
+            {isPracticeMode ? t("Terminer l'entraînement") : t("Terminer l'examen")}
           </button>
         </div>
       </div>

@@ -160,7 +160,7 @@ export const Simulator: React.FC<SimulatorProps> = ({
   const practiceTitleLabel = activeTaskKeys.map((k) => t(`Tâche ${k.slice(-1)}`)).join(' + ');
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-slate-100 overflow-hidden select-none">
+    <div className="h-screen w-screen flex flex-col bg-white overflow-hidden select-none">
       {/* Header */}
       <Header
         onHomeClick={onCancelExam}
@@ -170,17 +170,6 @@ export const Simulator: React.FC<SimulatorProps> = ({
             : t("Examen en cours")
         }
         combinationTitle={`${t('Combinaison')} ${combination.combinationNumber} — ${t(month)} ${year}`}
-        timerSlot={
-          <div className="flex items-center gap-2 bg-slate-100 border border-slate-300 px-3 sm:px-3.5 py-1 rounded-lg">
-            <span className={`w-2 h-2 rounded-full ${secondsRemaining < 300 ? 'bg-red-500 animate-ping' : 'bg-blue-600'}`}></span>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600 hidden sm:inline">
-              {t('Temps restant')} :
-            </span>
-            <span className={`font-mono font-bold text-sm sm:text-base tracking-wide ${secondsRemaining < 300 ? 'text-red-600 animate-pulse' : 'text-slate-800'}`}>
-              {formatTime(secondsRemaining)}
-            </span>
-          </div>
-        }
       />
 
       {/* Main Exam Grid */}
