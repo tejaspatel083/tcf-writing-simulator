@@ -29,6 +29,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     async function loadData() {
       setLoading(true);
       const local = getStoredSubmissions();

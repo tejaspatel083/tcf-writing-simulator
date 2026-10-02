@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExamResult, TaskKey } from '../types/exam';
 import { formatTime } from '../utils/wordCount';
 import { cleanDocumentText, fixMojibake, normalizeParagraphText } from '../utils/cleanText';
@@ -15,6 +15,10 @@ interface ResultsProps {
 export const Results: React.FC<ResultsProps> = ({ result, onHomeClick, onFeedbackClick }) => {
   const { t } = useLanguage();
   const [copiedTask, setCopiedTask] = useState<string | null>(null);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, []);
 
   const handleCopyAll = () => {
     const fullText = `TCF CANADA - EXPRESSION ÉCRITE
@@ -356,7 +360,10 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
           <div className="mt-8 pt-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
             <button
               type="button"
-              onClick={onHomeClick}
+              onClick={() => {
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                onHomeClick();
+              }}
               className="w-full sm:w-auto px-5 py-2.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs cursor-pointer"
             >
               {t("Retour à l'accueil")}

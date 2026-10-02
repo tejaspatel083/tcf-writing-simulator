@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Home } from './pages/Home';
 import { Simulator } from './pages/Simulator';
 import { Results } from './pages/Results';
@@ -24,6 +24,11 @@ const MainRouter: React.FC = () => {
   const [practiceTask, setPracticeTask] = useState<TaskKey>('task1');
   const [practiceTasks, setPracticeTasks] = useState<TaskKey[]>(['task1']);
   const [practiceDuration, setPracticeDuration] = useState<number>(60);
+
+  // Automatically scroll to the top of the page whenever the view/route changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [view]);
 
   // 1. Loading screen while determining auth session
   if (loading) {
@@ -104,10 +109,12 @@ const MainRouter: React.FC = () => {
     setStartedAt('');
     const savedLocal = saveSubmission(finalResult);
     setExamResult(savedLocal);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     setView('results');
   };
 
   const handleViewPastSubmission = (result: ExamResult) => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     setExamResult(result);
     setView('results');
   };
@@ -117,6 +124,7 @@ const MainRouter: React.FC = () => {
   };
 
   const handleGoHome = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     setView('home');
     setActiveCombo(null);
     setExamResult(null);
@@ -125,6 +133,7 @@ const MainRouter: React.FC = () => {
   };
 
   const handleSignOut = async () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     await signOut();
     setView('home');
   };

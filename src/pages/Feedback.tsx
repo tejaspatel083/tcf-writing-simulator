@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
@@ -10,6 +10,10 @@ interface FeedbackProps {
 
 export const Feedback: React.FC<FeedbackProps> = ({ onHomeClick, userEmail }) => {
   const { t } = useLanguage();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, []);
 
   const [type, setType] = useState<'thanks' | 'suggestion' | 'bug' | 'question'>('thanks');
   const [name, setName] = useState<string>('');

@@ -164,6 +164,11 @@ export const Home: React.FC<HomeProps> = ({
     }
   };
 
+  // Ensure Home page loads from the top
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, []);
+
   // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
