@@ -8,6 +8,7 @@ import { Feedback } from './pages/Feedback';
 import { ExamCombination, ExamResult, TaskKey } from './types/exam';
 import { saveSubmission } from './utils/storage';
 import { saveSubmissionToSupabase } from './lib/supabase';
+import { getLocalISOString } from './utils/dateUtils';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const MainRouter: React.FC = () => {
@@ -21,6 +22,7 @@ const MainRouter: React.FC = () => {
   const [examResult, setExamResult] = useState<ExamResult | null>(null);
   const [isPracticeMode, setIsPracticeMode] = useState<boolean>(false);
   const [practiceTask, setPracticeTask] = useState<TaskKey>('task1');
+  const [practiceTasks, setPracticeTasks] = useState<TaskKey[]>(['task1']);
   const [practiceDuration, setPracticeDuration] = useState<number>(60);
 
   // 1. Loading screen while determining auth session
@@ -59,16 +61,22 @@ const MainRouter: React.FC = () => {
     year: string,
     month: string,
     practiceMode: boolean = false,
-    task: TaskKey = 'task1',
+    task: TaskKey | TaskKey[] = 'task1',
     duration: number = 60
   ) => {
     setActiveCombo(combo);
     setActiveYear(year);
     setActiveMonth(month);
     setIsPracticeMode(practiceMode);
-    setPracticeTask(task);
+    if (Array.isArray(task)) {
+      setPracticeTasks(task);
+      setPracticeTask(task[0] || 'task1');
+    } else {
+      setPracticeTasks([task]);
+      setPracticeTask(task);
+    }
     setPracticeDuration(duration);
-    setStartedAt(new Date().toISOString());
+    setStartedAt(getLocalISOString());
     setView('simulator');
   };
 
@@ -80,7 +88,7 @@ const MainRouter: React.FC = () => {
         const { data, error } = await saveSubmissionToSupabase(
           user.id,
           result,
-          startedAt || new Date().toISOString()
+          startedAt || getLocalISOString(new Date(Date.now() - (result.timeUsedSeconds || 0) * 1000))
         );
         if (data?.id) {
           finalResult = {
@@ -93,6 +101,7 @@ const MainRouter: React.FC = () => {
       }
     }
 
+    setStartedAt('');
     const savedLocal = saveSubmission(finalResult);
     setExamResult(savedLocal);
     setView('results');
@@ -111,6 +120,7 @@ const MainRouter: React.FC = () => {
     setView('home');
     setActiveCombo(null);
     setExamResult(null);
+    setStartedAt('');
     setIsPracticeMode(false);
   };
 
@@ -148,7 +158,8 @@ const MainRouter: React.FC = () => {
           year={activeYear}
           month={activeMonth}
           isPracticeMode={isPracticeMode}
-          practiceTask={practiceTask}
+          practiceTask={practiceTasks.join(',')}
+          practiceTasks={practiceTasks}
           durationMinutes={practiceDuration}
           onFinishExam={handleFinishExam}
           onCancelExam={handleGoHome}

@@ -12,6 +12,7 @@ interface HeaderProps {
   combinationTitle?: string;
   forceFrench?: boolean;
   hideLanguageToggle?: boolean;
+  timerSlot?: React.ReactNode;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -24,7 +25,8 @@ export const Header: React.FC<HeaderProps> = ({
   subtitle,
   combinationTitle,
   forceFrench = false,
-  hideLanguageToggle = false
+  hideLanguageToggle = false,
+  timerSlot
 }) => {
   const { language, setLanguage, t } = useLanguage();
 
@@ -52,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({
             {tr('header.home')}
           </button>
         )}
-        <div>
+        <div onClick={onHomeClick} className={onHomeClick ? 'cursor-pointer' : ''}>
           <h1 className="text-base font-bold text-slate-800 tracking-tight flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span>
             {tr('header.title')}
@@ -63,6 +65,14 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
+      {/* Middle Slot: Optional Timer (during exam) */}
+      {timerSlot && (
+        <div className="flex items-center justify-center">
+          {timerSlot}
+        </div>
+      )}
+
+      {/* Right Actions */}
       <div className="flex items-center gap-3">
         {combinationTitle && (
           <div className="text-xs font-medium text-slate-600 bg-slate-100 border border-slate-300 px-3 py-1 rounded hidden sm:block">
@@ -70,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         )}
 
-        {/* Language Switcher Toggle - hidden during exam with 60min timer */}
+        {/* Language Switcher Toggle */}
         {!hideLanguageToggle && !forceFrench && (
           <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-300 text-xs font-bold">
             <button

@@ -5,7 +5,7 @@ import { TaskSidebar } from '../components/TaskSidebar';
 import { TaskEditor } from '../components/TaskEditor';
 import { SubmissionPanel } from '../components/SubmissionPanel';
 import { ConfirmationModal } from '../components/ConfirmationModal';
-import { countFrenchWords } from '../utils/wordCount';
+import { countFrenchWords, formatTime } from '../utils/wordCount';
 import { Header } from '../components/Header';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -16,7 +16,8 @@ interface SimulatorProps {
   onFinishExam: (result: ExamResult) => void;
   onCancelExam: () => void;
   isPracticeMode?: boolean;
-  practiceTask?: TaskKey;
+  practiceTask?: TaskKey | string;
+  practiceTasks?: TaskKey[];
   durationMinutes?: number;
 }
 
@@ -28,10 +29,18 @@ export const Simulator: React.FC<SimulatorProps> = ({
   onCancelExam,
   isPracticeMode = false,
   practiceTask = 'task1',
+  practiceTasks,
   durationMinutes = 60
 }) => {
   const { t } = useLanguage();
-  const initialTask: TaskKey = isPracticeMode && practiceTask ? practiceTask : 'task1';
+
+  const activeTaskKeys: TaskKey[] = isPracticeMode && practiceTasks && practiceTasks.length > 0
+    ? practiceTasks
+    : isPracticeMode && practiceTask
+    ? (typeof practiceTask === 'string' ? (practiceTask.split(',') as TaskKey[]) : [practiceTask])
+    : ['task1', 'task2', 'task3'];
+
+  const initialTask: TaskKey = activeTaskKeys[0] || 'task1';
   const [activeTask, setActiveTask] = useState<TaskKey>(initialTask);
   const [answers, setAnswers] = useState<ExamAnswers>({
     task1: '',
@@ -44,7 +53,7 @@ export const Simulator: React.FC<SimulatorProps> = ({
   const initialDurationSeconds = initialDurationMinutes * 60;
 
   const draftKey = isPracticeMode
-    ? `tcf_practice_${practiceTask}_${combination.combinationNumber}_${year}_${month}`
+    ? `tcf_practice_${activeTaskKeys.join('_')}_${combination.combinationNumber}_${year}_${month}`
     : `tcf_draft_${combination.combinationNumber}_${year}_${month}`;
 
   // Load draft from localStorage if present
@@ -77,10 +86,11 @@ export const Simulator: React.FC<SimulatorProps> = ({
         task3: countFrenchWords(answers.task3)
       },
       isPracticeMode,
-      practiceTask,
+      practiceTask: activeTaskKeys.join(','),
+      practiceTasks: activeTaskKeys,
       allocatedMinutes: initialDurationMinutes
     });
-  }, [combination, year, month, answers, onFinishExam, draftKey, isPracticeMode, practiceTask, initialDurationMinutes, initialDurationSeconds]);
+  }, [combination, year, month, answers, onFinishExam, draftKey, isPracticeMode, activeTaskKeys, initialDurationMinutes, initialDurationSeconds]);
 
   const { secondsRemaining, timeUsedSeconds, isFinished } = useExamTimer({
     initialMinutes: initialDurationMinutes,
@@ -115,7 +125,7 @@ export const Simulator: React.FC<SimulatorProps> = ({
     }
   };
 
-  const taskKeys: TaskKey[] = ['task1', 'task2', 'task3'];
+  const taskKeys: TaskKey[] = activeTaskKeys;
   const currentIndex = taskKeys.indexOf(activeTask);
 
   const handlePrevTask = () => {
@@ -141,24 +151,36 @@ export const Simulator: React.FC<SimulatorProps> = ({
       answers,
       wordCounts,
       isPracticeMode,
-      practiceTask,
+      practiceTask: activeTaskKeys.join(','),
+      practiceTasks: activeTaskKeys,
       allocatedMinutes: initialDurationMinutes
     });
   };
 
-  const taskNumDisplay = activeTask === 'task1' ? 1 : activeTask === 'task2' ? 2 : 3;
+  const practiceTitleLabel = activeTaskKeys.map((k) => t(`Tâche ${k.slice(-1)}`)).join(' + ');
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-white overflow-hidden select-none">
+    <div className="h-screen w-screen flex flex-col bg-slate-100 overflow-hidden select-none">
       {/* Header */}
       <Header
         onHomeClick={onCancelExam}
         subtitle={
           isPracticeMode
-            ? `${t('Entraînement individuel')} — ${t(`Tâche ${taskNumDisplay}`)} (${initialDurationMinutes} min)`
+            ? `${t('Entraînement')} — ${practiceTitleLabel}`
             : t("Examen en cours")
         }
         combinationTitle={`${t('Combinaison')} ${combination.combinationNumber} — ${t(month)} ${year}`}
+        timerSlot={
+          <div className="flex items-center gap-2 bg-slate-100 border border-slate-300 px-3 sm:px-3.5 py-1 rounded-lg">
+            <span className={`w-2 h-2 rounded-full ${secondsRemaining < 300 ? 'bg-red-500 animate-ping' : 'bg-blue-600'}`}></span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600 hidden sm:inline">
+              {t('Temps restant')} :
+            </span>
+            <span className={`font-mono font-bold text-sm sm:text-base tracking-wide ${secondsRemaining < 300 ? 'text-red-600 animate-pulse' : 'text-slate-800'}`}>
+              {formatTime(secondsRemaining)}
+            </span>
+          </div>
+        }
       />
 
       {/* Main Exam Grid */}
@@ -169,7 +191,8 @@ export const Simulator: React.FC<SimulatorProps> = ({
           onSelectTask={setActiveTask}
           wordCounts={wordCounts}
           isPracticeMode={isPracticeMode}
-          practiceTask={practiceTask}
+          practiceTask={activeTaskKeys.join(',')}
+          practiceTasks={activeTaskKeys}
         />
 
         {/* Center: Active Task Editor */}
@@ -193,7 +216,8 @@ export const Simulator: React.FC<SimulatorProps> = ({
           wordCounts={wordCounts}
           onInsertCharacter={handleInsertCharacter}
           isPracticeMode={isPracticeMode}
-          practiceTask={practiceTask}
+          practiceTask={activeTaskKeys.join(',')}
+          practiceTasks={activeTaskKeys as any}
         />
       </div>
 

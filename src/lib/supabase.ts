@@ -29,25 +29,33 @@ export interface DBSubmission {
   created_at?: string;
 }
 
+import { getLocalISOString } from '../utils/dateUtils';
+
 /**
  * Saves a completed exam submission to Supabase
  */
 export async function saveSubmissionToSupabase(
   userId: string,
   result: ExamResult,
-  startedAt: string
+  startedAt?: string
 ): Promise<{ data: DBSubmission | null; error: Error | null }> {
   if (!supabase || !isSupabaseConfigured) {
     return { data: null, error: new Error('Supabase configuration missing.') };
   }
+
+  const now = new Date();
+  const completedAt = getLocalISOString(now);
+  const calculatedStartedAt = startedAt
+    ? startedAt
+    : getLocalISOString(new Date(now.getTime() - (result.timeUsedSeconds || 0) * 1000));
 
   const payload = {
     user_id: userId,
     year: result.year,
     month: result.month,
     combination: result.combination.combinationNumber || result.combination.combination,
-    started_at: startedAt,
-    completed_at: new Date().toISOString(),
+    started_at: calculatedStartedAt,
+    completed_at: completedAt,
     duration_seconds: result.timeUsedSeconds,
     task1_answer: result.answers.task1 || '',
     task1_word_count: result.wordCounts.task1 || 0,

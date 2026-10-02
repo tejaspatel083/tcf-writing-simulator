@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { fetchSubmissionsFromSupabase, deleteSubmissionFromSupabase } from '../lib/supabase';
 import { getStoredSubmissions, deleteStoredSubmission, mergeSubmissions, syncStoredSubmissions } from '../utils/storage';
-import { ExamResult } from '../types/exam';
+import { ExamResult, TaskKey } from '../types/exam';
 import { formatTime } from '../utils/wordCount';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
@@ -90,14 +90,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
         subtitle={t('Tableau de bord utilisateur')}
       />
 
-      <div className="max-w-5xl mx-auto w-full px-6 py-8 flex-1">
+      <div className="w-full px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex-1">
         {/* User Greeting & Primary CTA */}
-        <div className="bg-white border border-slate-300 rounded-lg p-6 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+        <div className="bg-white border border-slate-300 rounded-lg p-5 sm:p-6 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
               {t('Bonjour,')} <span className="text-blue-700">{displayName}</span>
             </h1>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 mt-1">
               {user?.email} • {t('Bienvenue sur votre tableau de bord personnel.')}
             </p>
           </div>
@@ -106,9 +106,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <button
               type="button"
               onClick={onStartNewExam}
-              className="flex-1 sm:flex-initial px-5 py-2.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs cursor-pointer"
+              className="flex-1 sm:flex-initial px-5 py-2.5 rounded bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
             >
-              {t('+ Commencer un nouvel examen')}
+              <span>+</span>
+              <span>{t('Commencer un nouvel examen')}</span>
             </button>
 
             <button
@@ -122,31 +123,31 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* Previous Exam Submissions Table / List */}
-        <div className="bg-white border border-slate-300 rounded-lg p-6 shadow-xs">
+        <div className="bg-white border border-slate-300 rounded-lg p-5 sm:p-6 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-6">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">
+              <h2 className="text-base sm:text-lg font-bold text-slate-800">
                 {t('Mes examens précédents')}
               </h2>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 mt-0.5">
                 {t('Consultez le détail de vos rédactions passées et leur nombre de mots.')}
               </p>
             </div>
           </div>
 
           {loading ? (
-            <div className="text-center py-8 text-slate-500 text-sm">
+            <div className="text-center py-8 text-slate-500 text-sm font-medium">
               {t('Chargement de vos soumissions...')}
             </div>
           ) : submissions.length === 0 ? (
-            <div className="text-center py-10 text-slate-500 bg-slate-50 border border-slate-200 rounded p-6">
+            <div className="text-center py-10 text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-6">
               <p className="text-sm font-medium text-slate-700 mb-2">
                 {t('Aucun examen enregistré pour le moment.')}
               </p>
               <button
                 type="button"
                 onClick={onStartNewExam}
-                className="inline-block px-4 py-2 rounded bg-blue-600 border border-blue-700 text-white text-xs font-bold hover:bg-blue-700 transition-colors mt-1 cursor-pointer"
+                className="inline-block px-5 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors mt-1 cursor-pointer shadow-xs"
               >
                 {t('Passer votre premier examen')}
               </button>
@@ -155,46 +156,70 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-200 text-xs uppercase font-bold text-slate-500 bg-slate-50">
-                    <th className="py-3 px-3">{t('Date')}</th>
-                    <th className="py-3 px-3">{t('Année')}</th>
-                    <th className="py-3 px-3">{t('Mois')}</th>
-                    <th className="py-3 px-3">{t('Combinaison')}</th>
-                    <th className="py-3 px-3">{t('Tâche 1')}</th>
-                    <th className="py-3 px-3">{t('Tâche 2')}</th>
-                    <th className="py-3 px-3">{t('Tâche 3')}</th>
-                    <th className="py-3 px-3 text-right">{t('Actions')}</th>
+                  <tr className="border-b border-slate-200 text-xs uppercase font-bold text-slate-700 bg-slate-50">
+                    <th className="py-3 px-3.5">{t('Date')}</th>
+                    <th className="py-3 px-3.5 whitespace-nowrap">{t('Série / Combinaison')}</th>
+                    <th className="py-3 px-3.5">{t('Tâche 1')}</th>
+                    <th className="py-3 px-3.5">{t('Tâche 2')}</th>
+                    <th className="py-3 px-3.5">{t('Tâche 3')}</th>
+                    <th className="py-3 px-3.5 text-left whitespace-nowrap">{t('Actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 text-sm">
                   {submissions.map((sub) => {
                     const comboNum = sub.combination?.combinationNumber || sub.combination?.combination;
-                    const isPract = !!sub.isPracticeMode && !!sub.practiceTask;
-                    const pTask = sub.practiceTask;
+                    const isPract = !!sub.isPracticeMode && (!!sub.practiceTasks || !!sub.practiceTask);
+                    
+                    // Determine which tasks were practiced (supports 1, 2, or 3 tasks)
+                    const activeTasksList: TaskKey[] = sub.practiceTasks && sub.practiceTasks.length > 0
+                      ? sub.practiceTasks
+                      : typeof sub.practiceTask === 'string'
+                      ? (sub.practiceTask.split(',') as TaskKey[])
+                      : sub.practiceTask
+                      ? [sub.practiceTask as TaskKey]
+                      : [];
+
+                    const practLabel = activeTasksList.length > 0
+                      ? `${t('Pratique')} ${activeTasksList.map((k) => `T${k.slice(-1)}`).join(' + ')}`
+                      : t('Pratique');
 
                     const t1Ok = sub.wordCounts.task1 >= 60 && sub.wordCounts.task1 <= 120;
                     const t2Ok = sub.wordCounts.task2 >= 120 && sub.wordCounts.task2 <= 150;
                     const t3Ok = sub.wordCounts.task3 >= 120 && sub.wordCounts.task3 <= 180;
 
+                    // Split date and time (e.g. "02/10/2026 10:07")
+                    const dateParts = sub.date ? sub.date.split(/(?: à |[ ,]+)/) : [];
+                    const dPart = dateParts[0] || sub.date || '—';
+                    const tPart = dateParts.length >= 2 ? dateParts[1] : '';
+
                     return (
                       <tr key={sub.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-3 font-medium text-slate-800 text-xs">
-                          {sub.date || '—'}
-                        </td>
-                        <td className="py-3 px-3 text-slate-700 font-semibold">{sub.year}</td>
-                        <td className="py-3 px-3 text-slate-700 font-semibold">{t(sub.month)}</td>
-                        <td className="py-3 px-3 font-bold text-slate-900">
-                          <div className="flex items-center gap-1.5">
-                            <span>{t('Combinaison')} {comboNum}</span>
-                            {isPract && (
-                              <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.2 rounded whitespace-nowrap">
-                                {t('Pratique')} T{pTask?.slice(-1)}
+                        <td className="py-3 px-3.5 font-medium text-slate-800 text-xs whitespace-nowrap">
+                          <div className="flex flex-col leading-tight">
+                            <span className="font-semibold">{dPart}</span>
+                            {tPart && (
+                              <span className="text-[11px] text-slate-500 font-mono mt-0.5">
+                                {tPart}
                               </span>
                             )}
                           </div>
                         </td>
-                        <td className="py-3 px-3">
-                          {isPract && pTask !== 'task1' ? (
+                        <td className="py-3 px-3.5 font-medium text-slate-800 whitespace-nowrap">
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                              <span>{sub.year} / {t(sub.month)} / {t('Combinaison')} {comboNum}</span>
+                            </div>
+                            {isPract && (
+                              <div>
+                                <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded whitespace-nowrap inline-block">
+                                  {practLabel}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-3 px-3.5">
+                          {isPract && !activeTasksList.includes('task1') ? (
                             <span className="text-slate-400 text-xs font-mono">—</span>
                           ) : (
                             <span className={`px-2 py-0.5 rounded font-mono text-xs font-bold border inline-block ${
@@ -206,8 +231,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             </span>
                           )}
                         </td>
-                        <td className="py-3 px-3">
-                          {isPract && pTask !== 'task2' ? (
+                        <td className="py-3 px-3.5">
+                          {isPract && !activeTasksList.includes('task2') ? (
                             <span className="text-slate-400 text-xs font-mono">—</span>
                           ) : (
                             <span className={`px-2 py-0.5 rounded font-mono text-xs font-bold border inline-block ${
@@ -219,8 +244,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             </span>
                           )}
                         </td>
-                        <td className="py-3 px-3">
-                          {isPract && pTask !== 'task3' ? (
+                        <td className="py-3 px-3.5">
+                          {isPract && !activeTasksList.includes('task3') ? (
                             <span className="text-slate-400 text-xs font-mono">—</span>
                           ) : (
                             <span className={`px-2 py-0.5 rounded font-mono text-xs font-bold border inline-block ${
@@ -232,8 +257,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             </span>
                           )}
                         </td>
-                        <td className="py-3 px-3 text-right">
-                          <div className="flex items-center justify-end gap-2">
+                        <td className="py-3 px-3.5 text-left whitespace-nowrap">
+                          <div className="flex items-center justify-start gap-2">
                             <button
                               type="button"
                               onClick={() => onViewSubmission(sub)}
@@ -243,22 +268,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             </button>
                             <button
                               type="button"
-                              onClick={() => onRetakeCombination(sub.combination, sub.year, sub.month)}
-                              className="px-2.5 py-1 rounded border border-slate-300 bg-white text-slate-700 text-xs font-medium hover:bg-slate-100 transition-colors cursor-pointer"
-                              title={t('Retenter cet examen')}
-                            >
-                              {t('Retenter')}
-                            </button>
-                            <button
-                              type="button"
                               onClick={() => handleDeleteSubmission(sub)}
-                              className="px-2 py-1 rounded border border-red-200 bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 hover:border-red-300 transition-colors flex items-center gap-1 cursor-pointer"
+                              className="w-7 h-7 flex items-center justify-center rounded border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-300 transition-colors cursor-pointer"
                               title={t('Supprimer cette soumission')}
+                              aria-label={t('Supprimer')}
                             >
                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                               </svg>
-                              <span>{t('Supprimer')}</span>
                             </button>
                           </div>
                         </td>

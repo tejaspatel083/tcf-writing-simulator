@@ -21,7 +21,7 @@ interface HomeProps {
     year: string,
     month: string,
     isPracticeMode?: boolean,
-    practiceTask?: TaskKey,
+    practiceTask?: TaskKey | TaskKey[],
     durationMinutes?: number
   ) => void;
   onViewSubmission?: (result: ExamResult) => void;
@@ -118,18 +118,42 @@ export const Home: React.FC<HomeProps> = ({
 
   const [selectedComboIndex, setSelectedComboIndex] = useState<number>(0);
   const [trainingMode, setTrainingMode] = useState<TrainingMode>('full_exam');
-  const [selectedTask, setSelectedTask] = useState<TaskKey>('task1');
+  const [selectedTasks, setSelectedTasks] = useState<TaskKey[]>(['task1']);
   const [customMinutes, setCustomMinutes] = useState<number>(15);
   const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
   const [pastSubmissions, setPastSubmissions] = useState<ExamResult[]>([]);
   const [comboDropdownOpen, setComboDropdownOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleSelectTask = (task: TaskKey) => {
-    setSelectedTask(task);
-    if (task === 'task1') setCustomMinutes(15);
-    else if (task === 'task2') setCustomMinutes(20);
-    else if (task === 'task3') setCustomMinutes(30);
+  const TASK_DEFAULT_MINUTES: Record<TaskKey, number> = {
+    task1: 15,
+    task2: 20,
+    task3: 30
+  };
+
+  const getRecommendedMinutes = (tasks: TaskKey[]): number => {
+    return tasks.reduce((sum, t) => sum + (TASK_DEFAULT_MINUTES[t] || 0), 0);
+  };
+
+  const handleToggleTask = (task: TaskKey) => {
+    let next: TaskKey[];
+    if (selectedTasks.includes(task)) {
+      if (selectedTasks.length === 1) {
+        // Keep at least one task selected
+        return;
+      }
+      next = selectedTasks.filter((t) => t !== task);
+    } else {
+      const all: TaskKey[] = ['task1', 'task2', 'task3'];
+      next = all.filter((t) => t === task || selectedTasks.includes(t));
+    }
+    setSelectedTasks(next);
+    setCustomMinutes(getRecommendedMinutes(next));
+  };
+
+  const handlePresetTasks = (tasks: TaskKey[]) => {
+    setSelectedTasks(tasks);
+    setCustomMinutes(getRecommendedMinutes(tasks));
   };
 
   const handlePickRandomCombo = () => {
@@ -242,8 +266,8 @@ export const Home: React.FC<HomeProps> = ({
         userEmail={userEmail}
       />
 
-      {/* Main Container */}
-      <div className="max-w-4xl mx-auto w-full px-6 py-10 flex-1">
+      {/* Main Container - Full Screen Width */}
+      <div className="w-full px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex-1">
         {/* Banner if authenticated */}
         {userEmail ? (
           <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
@@ -355,7 +379,7 @@ export const Home: React.FC<HomeProps> = ({
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">
               {t('Mois')} ({selectedYear})
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
               {monthsForYear.map((month) => {
                 const count = db[selectedYear][month].length;
                 const isSelected = selectedMonth === month;
@@ -398,7 +422,7 @@ export const Home: React.FC<HomeProps> = ({
           {combinations.length > 0 && (
             <div className="mb-6" ref={dropdownRef}>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide">
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
                   {t('Combinaison')} ({t(selectedMonth)} {selectedYear})
                 </label>
                 {isCurrentComboDone && (
@@ -538,17 +562,99 @@ export const Home: React.FC<HomeProps> = ({
             </div>
           )}
 
-          {/* Single Task Practice Options: Task Selection & Custom Timer */}
+          {/* Practice Options: Task Selection & Custom Timer */}
           {trainingMode === 'single_task' && currentCombo && (
             <div className="mt-6 p-5 bg-blue-50/60 border border-blue-200 rounded-lg space-y-5 animate-fadeIn">
               {/* 1. Task Choice */}
               <div>
-                <label className="block text-xs font-bold text-slate-800 uppercase tracking-wide mb-2 flex items-center justify-between">
-                  <span>{t('1. Choisissez la tâche à pratiquer')}</span>
-                  <span className="text-[11px] font-normal text-blue-700 lowercase">
-                    {t('(Question issue de la combinaison sélectionnée)')}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2.5">
+                  <label className="text-xs font-bold text-slate-800 uppercase tracking-wide">
+                    {t('1. Choisissez la ou les tâches à pratiquer')}
+                  </label>
+                  <span className="text-[11px] font-semibold text-blue-700">
+                    {t('Sélectionnez 1 tâche ou combinez 2 tâches (ex: T1+T2, T1+T3, T2+T3)')}
                   </span>
-                </label>
+                </div>
+
+                {/* Quick Presets for 1 task and 2 tasks */}
+                <div className="mb-3.5 p-2.5 bg-white border border-blue-100 rounded-lg flex flex-wrap items-center gap-1.5 shadow-2xs">
+                  <span className="text-xs text-slate-500 font-bold mr-1 flex items-center gap-1">
+                    <span>⚡</span> {t('Combinaisons rapides :')}
+                  </span>
+                  
+                  {/* Single Tasks */}
+                  {[
+                    { label: 'T1', tasks: ['task1' as TaskKey], mins: 15 },
+                    { label: 'T2', tasks: ['task2' as TaskKey], mins: 20 },
+                    { label: 'T3', tasks: ['task3' as TaskKey], mins: 30 }
+                  ].map((p) => {
+                    const isActive = selectedTasks.length === 1 && selectedTasks[0] === p.tasks[0];
+                    return (
+                      <button
+                        key={p.label}
+                        type="button"
+                        onClick={() => handlePresetTasks(p.tasks)}
+                        className={`px-2.5 py-1 rounded text-xs font-semibold border transition-all cursor-pointer ${
+                          isActive
+                            ? 'bg-blue-600 border-blue-700 text-white font-bold shadow-2xs'
+                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        {p.label} ({p.mins} min)
+                      </button>
+                    );
+                  })}
+
+                  <span className="text-slate-300 font-bold mx-1">|</span>
+
+                  {/* 2 Tasks combinations */}
+                  {[
+                    { label: 'T1 + T2', tasks: ['task1' as TaskKey, 'task2' as TaskKey], mins: 35 },
+                    { label: 'T1 + T3', tasks: ['task1' as TaskKey, 'task3' as TaskKey], mins: 45 },
+                    { label: 'T2 + T3', tasks: ['task2' as TaskKey, 'task3' as TaskKey], mins: 50 }
+                  ].map((p) => {
+                    const isActive =
+                      selectedTasks.length === 2 &&
+                      selectedTasks.includes(p.tasks[0]) &&
+                      selectedTasks.includes(p.tasks[1]);
+                    return (
+                      <button
+                        key={p.label}
+                        type="button"
+                        onClick={() => handlePresetTasks(p.tasks)}
+                        className={`px-2.5 py-1 rounded text-xs font-semibold border transition-all cursor-pointer ${
+                          isActive
+                            ? 'bg-blue-600 border-blue-700 text-white font-bold shadow-2xs'
+                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        {p.label} ({p.mins} min)
+                      </button>
+                    );
+                  })}
+
+                  <span className="text-slate-300 font-bold mx-1">|</span>
+
+                  {/* All 3 tasks */}
+                  {(() => {
+                    const isActive = selectedTasks.length === 3;
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => handlePresetTasks(['task1', 'task2', 'task3'])}
+                        className={`px-2.5 py-1 rounded text-xs font-semibold border transition-all cursor-pointer ${
+                          isActive
+                            ? 'bg-blue-600 border-blue-700 text-white font-bold shadow-2xs'
+                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        T1 + T2 + T3 (65 min)
+                      </button>
+                    );
+                  })()}
+                </div>
+
+                {/* Task Selection Cards with Checkbox Indicators */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {[
                     {
@@ -576,28 +682,39 @@ export const Home: React.FC<HomeProps> = ({
                       rec: '30 min'
                     }
                   ].map((tItem) => {
-                    const isSelected = selectedTask === tItem.key;
+                    const isSelected = selectedTasks.includes(tItem.key);
                     return (
                       <button
                         key={tItem.key}
                         type="button"
-                        onClick={() => handleSelectTask(tItem.key)}
-                        className={`p-3.5 rounded-lg border text-left transition-all cursor-pointer ${
+                        onClick={() => handleToggleTask(tItem.key)}
+                        className={`p-3.5 rounded-lg border text-left transition-all cursor-pointer relative ${
                           isSelected
                             ? 'bg-white border-blue-600 ring-2 ring-blue-500 shadow-xs'
                             : 'bg-white/80 border-slate-200 hover:border-slate-400 hover:bg-white text-slate-700'
                         }`}
                       >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className={`text-sm font-bold ${isSelected ? 'text-blue-700' : 'text-slate-900'}`}>
-                            {t(tItem.name)}
-                          </span>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`w-5 h-5 rounded flex items-center justify-center text-xs font-bold transition-colors ${
+                                isSelected
+                                  ? 'bg-blue-600 text-white'
+                                  : 'border border-slate-300 text-transparent bg-white'
+                              }`}
+                            >
+                              ✓
+                            </span>
+                            <span className={`text-sm font-bold ${isSelected ? 'text-blue-700' : 'text-slate-900'}`}>
+                              {t(tItem.name)}
+                            </span>
+                          </div>
                           <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
                             {tItem.words}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-600 font-medium">{t(tItem.desc)}</p>
-                        <p className="text-[11px] text-blue-600 font-semibold mt-1">
+                        <p className="text-xs text-slate-600 font-medium ml-7">{t(tItem.desc)}</p>
+                        <p className="text-[11px] text-blue-600 font-semibold mt-1 ml-7">
                           {t('Temps recommandé :')} {tItem.rec}
                         </p>
                       </button>
@@ -621,7 +738,7 @@ export const Home: React.FC<HomeProps> = ({
                   {/* Preset chips */}
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-xs text-slate-500 font-medium mr-1">{t('Raccourcis :')}</span>
-                    {[5, 10, 15, 20, 25, 30, 45, 60].map((mins) => (
+                    {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 65].map((mins) => (
                       <button
                         key={mins}
                         type="button"
@@ -684,7 +801,7 @@ export const Home: React.FC<HomeProps> = ({
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-bold text-slate-900">
                     {trainingMode === 'single_task'
-                      ? `${t('Pratique individuelle :')} ${selectedTask === 'task1' ? t('Tâche 1') : selectedTask === 'task2' ? t('Tâche 2') : t('Tâche 3')}`
+                      ? `${t('Pratique ciblée :')} ${selectedTasks.map((k) => t(k === 'task1' ? 'Tâche 1' : k === 'task2' ? 'Tâche 2' : 'Tâche 3')).join(' + ')}`
                       : `${t('Combinaison')} ${currentCombo.combinationNumber || selectedComboIndex + 1}`}
                   </h3>
                   <span className="text-xs text-slate-500">
@@ -703,27 +820,39 @@ export const Home: React.FC<HomeProps> = ({
 
               {trainingMode === 'single_task' ? (
                 <div className="space-y-2 mb-6 text-sm text-slate-700">
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-600 font-bold mt-0.5">✓</span>
+                    <div>
+                      <strong>{selectedTasks.length > 1 ? t('Tâches sélectionnées :') : t('Tâche :')}</strong>
+                      <div className="mt-1 space-y-1">
+                        {selectedTasks.includes('task1') && (
+                          <div className="text-xs text-slate-700">
+                            • <strong>{t('Tâche 1')}</strong> — {t('Message / Description')} (60–120 {t('mots')})
+                          </div>
+                        )}
+                        {selectedTasks.includes('task2') && (
+                          <div className="text-xs text-slate-700">
+                            • <strong>{t('Tâche 2')}</strong> — {t('Narration / Récit')} (120–150 {t('mots')})
+                          </div>
+                        )}
+                        {selectedTasks.includes('task3') && (
+                          <div className="text-xs text-slate-700">
+                            • <strong>{t('Tâche 3')}</strong> — {t('Argumentation (2 documents)')} (120–180 {t('mots')})
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                   <div className="flex items-center gap-2">
                     <span className="text-blue-600 font-bold">✓</span>
                     <span>
-                      <strong>{t('Tâche :')}</strong>{' '}
-                      {selectedTask === 'task1'
-                        ? `${t('Tâche 1')} — ${t('Message / Description')} (60–120 ${t('mots')})`
-                        : selectedTask === 'task2'
-                        ? `${t('Tâche 2')} — ${t('Narration / Récit')} (120–150 ${t('mots')})`
-                        : `${t('Tâche 3')} — ${t('Argumentation (2 documents)')} (120–180 ${t('mots')})`}
+                      <strong>{t('Minuteur personnalisé :')}</strong> {customMinutes} {t('minutes')} {selectedTasks.length > 1 ? t('allouées pour ces rédactions.') : t('allouées pour cette rédaction.')}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-blue-600 font-bold">✓</span>
                     <span>
-                      <strong>{t('Minuteur personnalisé :')}</strong> {customMinutes} {t('minutes')} {t('allouées pour cette rédaction.') || 'allouées.'}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-blue-600 font-bold">✓</span>
-                    <span>
-                      <strong>{t('Conditions réelles :')}</strong> {t("Exacte même interface d'examen TCF avec décompte des mots et clavier d'accents.") || "Même interface d'examen TCF."}
+                      <strong>{t('Conditions réelles :')}</strong> {t("Exacte même interface d'examen TCF avec décompte des mots et clavier d'accents.")}
                     </span>
                   </div>
                 </div>
@@ -796,14 +925,14 @@ export const Home: React.FC<HomeProps> = ({
         isOpen={isConfirmOpen}
         title={
           trainingMode === 'single_task'
-            ? `${t('Prêt pour la')} ${selectedTask === 'task1' ? t('Tâche 1') : selectedTask === 'task2' ? t('Tâche 2') : t('Tâche 3')} ?`
+            ? `${t('Prêt pour l\'entraînement')} (${selectedTasks.map((k) => t(k === 'task1' ? 'Tâche 1' : k === 'task2' ? 'Tâche 2' : 'Tâche 3')).join(' + ')}) ?`
             : isCurrentComboDone
             ? `${t('Refaire la Combinaison')} ${currentComboNum} ?`
             : t("Vous êtes prêt à commencer l'examen ?")
         }
         message={
           trainingMode === 'single_task'
-            ? `${t('Vous aurez')} ${customMinutes} ${t('minutes pour compléter cette tâche dans les conditions d\'examen du TCF Canada.') || 'minutes pour compléter cette tâche.'}`
+            ? `${t('Vous aurez')} ${customMinutes} ${t('minutes pour compléter')} ${selectedTasks.length > 1 ? t('ces tâches') : t('cette tâche')} ${t('dans les conditions d\'examen du TCF Canada.')}`
             : isCurrentComboDone
             ? t("Vous avez déjà soumis cette combinaison auparavant. Vous pouvez la refaire dans les conditions réelles (60 minutes). Votre nouvelle soumission sera enregistrée séparément dans votre tableau de bord.")
             : t("Vous aurez 60 minutes pour compléter les 3 tâches dans les conditions réelles.")
@@ -820,7 +949,7 @@ export const Home: React.FC<HomeProps> = ({
           setIsConfirmOpen(false);
           if (currentCombo) {
             if (trainingMode === 'single_task') {
-              onStartExam(currentCombo, selectedYear, selectedMonth, true, selectedTask, customMinutes);
+              onStartExam(currentCombo, selectedYear, selectedMonth, true, selectedTasks, customMinutes);
             } else {
               onStartExam(currentCombo, selectedYear, selectedMonth, false, 'task1', 60);
             }

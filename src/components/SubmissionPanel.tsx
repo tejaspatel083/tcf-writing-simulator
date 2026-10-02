@@ -8,7 +8,8 @@ interface SubmissionPanelProps {
   wordCounts: { task1: number; task2: number; task3: number };
   onInsertCharacter: (char: string) => void;
   isPracticeMode?: boolean;
-  practiceTask?: 'task1' | 'task2' | 'task3';
+  practiceTask?: string;
+  practiceTasks?: ('task1' | 'task2' | 'task3')[];
 }
 
 export const SubmissionPanel: React.FC<SubmissionPanelProps> = ({
@@ -16,7 +17,8 @@ export const SubmissionPanel: React.FC<SubmissionPanelProps> = ({
   wordCounts,
   onInsertCharacter,
   isPracticeMode = false,
-  practiceTask
+  practiceTask,
+  practiceTasks
 }) => {
   const { t } = useLanguage();
   const isUrgent = timeRemainingSeconds < 300; // less than 5 min
@@ -45,25 +47,38 @@ export const SubmissionPanel: React.FC<SubmissionPanelProps> = ({
     }
   ];
 
-  const conditions = isPracticeMode && practiceTask
-    ? allConditions.filter((c) => c.key === practiceTask)
+  const activeFilterList = practiceTasks && practiceTasks.length > 0
+    ? practiceTasks
+    : typeof practiceTask === 'string'
+    ? (practiceTask.split(',') as ('task1' | 'task2' | 'task3')[])
+    : practiceTask
+    ? [practiceTask as ('task1' | 'task2' | 'task3')]
+    : null;
+
+  const conditions = isPracticeMode && activeFilterList
+    ? allConditions.filter((c) => activeFilterList.includes(c.key as any))
     : allConditions;
 
   return (
-    <div className="bg-slate-50 border-l border-slate-300 w-72 shrink-0 p-3 flex flex-col gap-4 overflow-y-auto select-none">
-      {/* Timer Section */}
-      <div>
-        <h3 className="font-semibold text-slate-800 border-b border-slate-300 pb-1 mb-2 text-xs uppercase tracking-wide">
-          {t('Temps restant')}
-        </h3>
+    <div className="bg-slate-50 border-l border-slate-200 w-72 shrink-0 p-3 flex flex-col gap-4 overflow-y-auto select-none">
+      {/* Sleek Digital Countdown Timer */}
+      <div className="bg-white border border-slate-300 rounded-lg p-3 shadow-2xs">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-1.5 mb-2">
+          <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider">
+            {t('Temps restant')}
+          </h3>
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+            {isUrgent ? 'URGENT' : 'CHRONO'}
+          </span>
+        </div>
         <div
-          className={`flex items-center gap-2 text-xl font-bold font-mono px-3 py-2 rounded border bg-white ${
+          className={`flex items-center justify-center gap-2 text-2xl font-bold font-mono py-2 rounded-lg border transition-all ${
             isUrgent
-              ? 'text-red-600 border-red-300 animate-pulse'
-              : 'text-slate-800 border-slate-300'
+              ? 'text-red-600 border-red-300 bg-red-50 animate-pulse shadow-2xs'
+              : 'text-slate-800 border-slate-200 bg-slate-50 shadow-2xs'
           }`}
         >
-          <span className="text-red-500">🔴</span>
+          <span className={`w-2 h-2 rounded-full ${isUrgent ? 'bg-red-500 animate-ping' : 'bg-blue-600'}`}></span>
           <span>{formatTime(timeRemainingSeconds)}</span>
         </div>
       </div>
@@ -72,9 +87,10 @@ export const SubmissionPanel: React.FC<SubmissionPanelProps> = ({
       <CharacterPanel onInsertCharacter={onInsertCharacter} />
 
       {/* Conditions de soumission */}
-      <div className="bg-white border border-slate-300 rounded p-3 text-xs">
-        <h3 className="font-semibold text-slate-800 border-b border-slate-200 pb-1 mb-2 uppercase tracking-wide">
-          {t('Conditions de soumission')}
+      <div className="bg-white border border-slate-300 rounded-lg p-3 text-xs shadow-2xs">
+        <h3 className="font-bold text-slate-800 border-b border-slate-200 pb-1.5 mb-2.5 uppercase tracking-wider flex items-center justify-between">
+          <span>{t('Conditions de soumission')}</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
         </h3>
         <div className="space-y-3">
           {conditions.map((c) => {
@@ -82,12 +98,12 @@ export const SubmissionPanel: React.FC<SubmissionPanelProps> = ({
             const isTooLow = c.count < c.min;
             return (
               <div key={c.key} className="border-b border-slate-100 pb-2.5 last:border-b-0 last:pb-0">
-                <div className="font-semibold text-slate-700 flex justify-between items-center mb-1">
+                <div className="font-semibold text-slate-800 flex justify-between items-center mb-1">
                   <span>{t(c.name)}:</span>
                   <span
                     className={`font-mono px-2 py-0.5 rounded font-bold text-[11px] border ${
                       isWithin
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
                         : 'bg-red-50 text-red-600 border-red-300'
                     }`}
                   >
@@ -95,7 +111,7 @@ export const SubmissionPanel: React.FC<SubmissionPanelProps> = ({
                   </span>
                 </div>
                 <div
-                  className={`text-[11px] font-semibold ${
+                  className={`text-[11px] font-bold ${
                     isWithin ? 'text-emerald-700' : 'text-red-600'
                   }`}
                 >

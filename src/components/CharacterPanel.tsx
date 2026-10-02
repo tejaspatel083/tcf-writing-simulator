@@ -17,9 +17,9 @@ export const CharacterPanel: React.FC<CharacterPanelProps> = ({ onInsertCharacte
   ];
 
   return (
-    <div className="bg-white border border-slate-300 rounded p-3 text-sm">
-      <div className="flex items-center justify-between mb-2 border-b border-slate-200 pb-1">
-        <h3 className="font-semibold text-slate-800 text-xs uppercase tracking-wide">
+    <div className="bg-white border border-slate-300 rounded-lg p-3 text-sm shadow-2xs">
+      <div className="flex items-center justify-between mb-2 border-b border-slate-200 pb-1.5">
+        <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wide">
           {t('Tableau de caractère')}
         </h3>
         {isUppercase && (
@@ -41,11 +41,10 @@ export const CharacterPanel: React.FC<CharacterPanelProps> = ({ onInsertCharacte
                     key={char}
                     type="button"
                     onMouseDown={(e) => {
-                      // Prevent default focus shift away from textarea
                       e.preventDefault();
                       onInsertCharacter(displayChar);
                     }}
-                    className="w-8 h-8 flex items-center justify-center bg-slate-50 border border-slate-300 rounded text-slate-800 font-medium hover:bg-slate-200 hover:border-slate-400 active:bg-blue-100 transition-colors text-base shadow-none select-none"
+                    className="w-8 h-8 flex items-center justify-center bg-white border border-slate-300 rounded-lg text-slate-800 font-semibold hover:bg-slate-50 hover:border-slate-400 active:bg-slate-100 transition-colors text-base shadow-2xs select-none cursor-pointer"
                     title={`${t('Insérer')} ${displayChar}`}
                   >
                     {displayChar}
@@ -57,14 +56,13 @@ export const CharacterPanel: React.FC<CharacterPanelProps> = ({ onInsertCharacte
                 <button
                   type="button"
                   onMouseDown={(e) => {
-                    // Prevent default focus shift away from textarea
                     e.preventDefault();
                     setIsUppercase((prev) => !prev);
                   }}
-                  className={`flex-1 h-8 flex items-center justify-center gap-1.5 px-2 rounded font-semibold text-xs transition-all border select-none ${
+                  className={`flex-1 h-8 flex items-center justify-center gap-1.5 px-2 rounded-lg font-bold text-xs transition-all border select-none cursor-pointer shadow-2xs ${
                     isUppercase
-                      ? 'bg-blue-600 border-blue-700 text-white shadow-inner hover:bg-blue-700 active:bg-blue-800'
-                      : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200 hover:border-slate-400 active:bg-slate-300'
+                      ? 'bg-blue-600 border-blue-700 text-white shadow-xs'
+                      : 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200'
                   }`}
                   title={
                     isUppercase
@@ -73,7 +71,7 @@ export const CharacterPanel: React.FC<CharacterPanelProps> = ({ onInsertCharacte
                   }
                   aria-pressed={isUppercase}
                 >
-                  <span className="text-sm font-bold leading-none">⇧</span>
+                  <span className="text-sm font-black leading-none">⇧</span>
                   <span>{isUppercase ? t('MAJ (Actif)') : t('Majuscules')}</span>
                 </button>
               )}
