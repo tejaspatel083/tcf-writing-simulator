@@ -42,27 +42,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     if (!supabase || !isSupabaseConfigured) {
-      // Check demo user in localStorage
-      const demoEmail = localStorage.getItem('tcf_demo_user');
-      if (demoEmail) {
-        setUser({
-          id: 'demo_user_id',
-          email: demoEmail,
-          email_confirmed_at: new Date().toISOString()
-        } as unknown as User);
+      // Check demo user in localStorage safely
+      try {
+        const demoEmail = localStorage.getItem('tcf_demo_user');
+        if (demoEmail) {
+          setUser({
+            id: 'demo_user_id',
+            email: demoEmail,
+            email_confirmed_at: new Date().toISOString()
+          } as unknown as User);
+        }
+      } catch (e) {
+        console.warn('LocalStorage unavailable for demo user:', e);
       }
       setLoading(false);
       return;
     }
 
-    // Initialize Supabase Auth session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    // Safety timeout: on slow or throttled mobile networks, never block the app indefinitely
+    const sessionTimeout = setTimeout(() => {
+      setLoading((current) => {
+        if (current) {
+          console.warn('Supabase getSession timed out after 4 seconds; unblocking UI.');
+          return false;
+        }
+        return false;
+      });
+    }, 4000);
+
+    // Initialize Supabase Auth session with catch handler
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        clearTimeout(sessionTimeout);
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      })
+      .catch((err) => {
+        clearTimeout(sessionTimeout);
+        console.warn('Supabase getSession failed:', err);
+        setLoading(false);
+      });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      clearTimeout(sessionTimeout);
       setSession(session);
       setUser(session?.user ?? null);
       if (event === 'PASSWORD_RECOVERY') {
@@ -72,6 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     return () => {
+      clearTimeout(sessionTimeout);
       subscription.unsubscribe();
     };
   }, []);
@@ -141,9 +165,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     if (supabase && isSupabaseConfigured) {
-      await supabase.auth.signOut();
+      try {
+        await supabase.auth.signOut();
+      } catch (e) {
+        console.warn('Error during signOut:', e);
+      }
     }
-    localStorage.removeItem('tcf_demo_user');
+    try {
+      localStorage.removeItem('tcf_demo_user');
+    } catch {}
     setUser(null);
     setSession(null);
     setIsPasswordRecovery(false);
@@ -202,7 +232,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const demoLogin = (email: string) => {
-    localStorage.setItem('tcf_demo_user', email);
+    try {
+      localStorage.setItem('tcf_demo_user', email);
+    } catch {}
     setUser({
       id: 'demo_user_id',
       email,

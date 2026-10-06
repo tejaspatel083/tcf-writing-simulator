@@ -48,11 +48,13 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
 
   // Load remembered email on mount
   useEffect(() => {
-    const savedEmail = localStorage.getItem('tcf_remembered_email');
-    if (savedEmail) {
-      setEmail(savedEmail);
-      setRememberMe(true);
-    }
+    try {
+      const savedEmail = localStorage.getItem('tcf_remembered_email');
+      if (savedEmail) {
+        setEmail(savedEmail);
+        setRememberMe(true);
+      }
+    } catch {}
   }, []);
 
   // Enter password recovery mode if user arrives via password reset link
@@ -104,11 +106,13 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
         }
       } else {
         // Handle "Remember Me"
-        if (rememberMe) {
-          localStorage.setItem('tcf_remembered_email', email.trim());
-        } else {
-          localStorage.removeItem('tcf_remembered_email');
-        }
+        try {
+          if (rememberMe) {
+            localStorage.setItem('tcf_remembered_email', email.trim());
+          } else {
+            localStorage.removeItem('tcf_remembered_email');
+          }
+        } catch {}
         onSuccess();
       }
     } catch (err: any) {
@@ -161,9 +165,11 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
         setPassword('');
         setConfirmPassword('');
       } else {
-        if (rememberMe) {
-          localStorage.setItem('tcf_remembered_email', email.trim());
-        }
+        try {
+          if (rememberMe) {
+            localStorage.setItem('tcf_remembered_email', email.trim());
+          }
+        } catch {}
         onSuccess();
       }
     } catch (err: any) {

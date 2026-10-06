@@ -25,6 +25,18 @@ const MainRouter: React.FC = () => {
   const [practiceTasks, setPracticeTasks] = useState<TaskKey[]>(['task1']);
   const [practiceDuration, setPracticeDuration] = useState<number>(60);
 
+  const [showSlowNotice, setShowSlowNotice] = useState(false);
+
+  useEffect(() => {
+    let t: any;
+    if (loading) {
+      t = setTimeout(() => setShowSlowNotice(true), 3500);
+    } else {
+      setShowSlowNotice(false);
+    }
+    return () => clearTimeout(t);
+  }, [loading]);
+
   // Automatically scroll to the top of the page whenever the view/route changes
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -33,9 +45,24 @@ const MainRouter: React.FC = () => {
   // 1. Loading screen while determining auth session
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+      <div
+        className="min-h-screen flex flex-col items-center justify-center p-4 text-center"
+        style={{ backgroundColor: '#f8fafc', color: '#0f172a' }}
+      >
         <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-slate-600 font-medium text-sm">Chargement de votre session...</p>
+        <p className="text-slate-600 font-medium text-sm mb-2">Chargement de votre session...</p>
+        {showSlowNotice && (
+          <div className="mt-4 p-3 bg-white border border-slate-200 rounded-lg max-w-xs text-xs text-slate-500 shadow-xs">
+            <p className="mb-2">La vérification réseau prend du temps en raison de votre connexion.</p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="px-3 py-1.5 bg-blue-600 text-white font-medium rounded text-xs hover:bg-blue-700 transition-colors"
+            >
+              Recharger
+            </button>
+          </div>
+        )}
       </div>
     );
   }

@@ -421,13 +421,19 @@ const LanguageContext = createContext<LanguageContextType>({
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>(() => {
-    const saved = localStorage.getItem('tcf_language');
-    return (saved === 'en' || saved === 'fr') ? saved : 'fr';
+    try {
+      const saved = localStorage.getItem('tcf_language');
+      return (saved === 'en' || saved === 'fr') ? saved : 'fr';
+    } catch {
+      return 'fr';
+    }
   });
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem('tcf_language', lang);
+    try {
+      localStorage.setItem('tcf_language', lang);
+    } catch {}
   };
 
   const toggleLanguage = () => {

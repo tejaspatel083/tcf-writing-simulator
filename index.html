@@ -1,15 +1,87 @@
 <!DOCTYPE html>
-<html lang="fr" translate="no" class="notranslate">
+<html lang="fr" translate="no" class="notranslate" style="background-color: #f8fafc; color: #0f172a;">
   <head>
     <meta charset="UTF-8" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#f8fafc" />
     <meta name="google" content="notranslate" />
     <meta name="googlebot" content="notranslate" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TCF Écriture Simulator — TCF Canada Expression Écrite</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        min-height: 100vh;
+        -webkit-text-size-adjust: 100%;
+      }
+      #app-fallback-loader {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 1.5rem;
+        text-align: center;
+        box-sizing: border-box;
+      }
+      .fallback-spinner {
+        width: 38px;
+        height: 38px;
+        border: 3.5px solid #cbd5e1;
+        border-top-color: #2563eb;
+        border-radius: 50%;
+        animation: fallback-spin 0.8s linear infinite;
+        margin-bottom: 1rem;
+      }
+      @keyframes fallback-spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
   </head>
-  <body class="notranslate bg-slate-50 text-slate-900 antialiased select-none font-sans" translate="no">
-    <div id="root" class="notranslate" translate="no"></div>
+  <body class="notranslate bg-slate-50 text-slate-900 antialiased select-none font-sans" translate="no" style="background-color: #f8fafc !important;">
+    <div id="root" class="notranslate" translate="no">
+      <div id="app-fallback-loader">
+        <div class="fallback-spinner"></div>
+        <div style="font-weight: 700; font-size: 16px; color: #0f172a; margin-bottom: 6px;">
+          TCF Écriture Simulator
+        </div>
+        <p style="font-size: 13px; color: #64748b; margin: 0 0 12px 0;">
+          Chargement de l'application...
+        </p>
+        <div id="slow-conn-notice" style="display: none; max-width: 300px; font-size: 12px; color: #475569; background: #f1f5f9; padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1; margin-top: 8px;">
+          Connexion lente détectée. Le chargement des données peut prendre quelques secondes.
+          <br /><br />
+          <button type="button" onclick="window.location.reload(true)" style="background: #2563eb; color: #ffffff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer;">
+            Recharger la page
+          </button>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Show slow connection notice after 7 seconds if React hasn't replaced root yet
+      setTimeout(function() {
+        var notice = document.getElementById('slow-conn-notice');
+        if (notice) notice.style.display = 'block';
+      }, 7000);
+
+      // Catch critical script errors and display helpful UI instead of a blank screen
+      window.addEventListener('error', function(event) {
+        var loader = document.getElementById('app-fallback-loader');
+        if (loader) {
+          loader.innerHTML = '<div style="background:#fee2e2; border:1px solid #f87171; color:#991b1b; padding:16px 20px; border-radius:10px; max-width:320px; text-align:center;">' +
+            '<div style="font-size:24px; margin-bottom:8px;">⚠️</div>' +
+            '<strong style="font-size:14px; display:block; margin-bottom:4px;">Erreur de chargement</strong>' +
+            '<p style="font-size:12px; margin:0 0 12px 0;">Votre navigateur ou votre connexion n\'a pas pu charger le module. Veuillez recharger la page ou vérifier vos mises à jour.</p>' +
+            '<button onclick="location.reload(true)" style="background:#dc2626; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:600; font-size:12px; cursor:pointer;">Recharger</button>' +
+            '</div>';
+        }
+      });
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
