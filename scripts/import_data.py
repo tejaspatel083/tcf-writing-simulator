@@ -40,6 +40,61 @@ def extract_month_links():
     return month_links
 
 def extract_month_data(html):
+    if not html:
+        return None
+
+    # Strategy 1: Check Next.js self.__next_f.push RSC chunks
+    pos = 0
+    while True:
+        idx = html.find('self.__next_f.push([1,', pos)
+        if idx == -1:
+            break
+        end_call = html.find('])</script>', idx)
+        if end_call != -1:
+            raw_arg = html[idx + len('self.__next_f.push(') : end_call + 1]
+            try:
+                parsed_arg = json.loads(raw_arg)
+                chunk_str = parsed_arg[1]
+                if '"monthData"' in chunk_str or 'monthData' in chunk_str:
+                    m_pos = chunk_str.find('"monthData"')
+                    if m_pos == -1:
+                        m_pos = chunk_str.find('monthData')
+                    brace_idx = chunk_str.find('{', m_pos)
+                    if brace_idx != -1:
+                        depth = 0
+                        end_brace = -1
+                        in_str = False
+                        escape = False
+                        for i in range(brace_idx, len(chunk_str)):
+                            ch = chunk_str[i]
+                            if escape:
+                                escape = False
+                                continue
+                            if ch == '\\':
+                                escape = True
+                                continue
+                            if ch == '"':
+                                in_str = not in_str
+                                continue
+                            if not in_str:
+                                if ch == '{':
+                                    depth += 1
+                                elif ch == '}':
+                                    depth -= 1
+                                    if depth == 0:
+                                        end_brace = i + 1
+                                        break
+                        if end_brace != -1:
+                            json_str = chunk_str[brace_idx:end_brace]
+                            try:
+                                return json.loads(json_str)
+                            except Exception:
+                                pass
+            except Exception:
+                pass
+        pos = idx + 1
+
+    # Strategy 2: Direct JSON in HTML
     pos = html.find('monthData')
     if pos == -1:
         return None
@@ -153,16 +208,16 @@ def parse_task(task_obj):
             break
             
     return {
-        "instruction": instruction or title,
-        "title": title or instruction,
-        "document1": doc1 if doc1 else None,
-        "document2": doc2 if doc2 else None
+        "instruction": (instruction or title).strip(),
+        "title": (title or instruction).strip(),
+        "document1": doc1.strip() if doc1 else None,
+        "document2": doc2.strip() if doc2 else None
     }
 
 def normalize_month_name(month_str):
     if not month_str:
         return "Janvier"
-    month_str = month_str.strip().capitalize()
+    month_str = re.sub(r'\d+', '', month_str).strip().capitalize()
     mapping = {
         "Fevrier": "Février",
         "Février": "Février",
@@ -192,22 +247,21 @@ def main():
 
     print("Fetching main page to discover available months...")
     links = extract_month_links()
-    print(f"Found {len(links)} dynamic month links from main page.")
+    print(f"Found {len(links)} dynamic month links from main page: {links}")
     
-    french_months_slugs = [
-        "janvier", "fevrier", "fvrier", "mars", "avril", "mai", "juin",
-        "juillet", "aout", "aot", "septembre", "octobre", "novembre", "decembre"
+    known_slugs = [
+        "octobre-2026", "septembre-2026", "aot-2026", "juillet-2026", "juin-2026",
+        "mai-2026", "avril", "mars-2026", "fvrier-2026",
+        "httpsstaging-tcf-canada-nextbendevaiepreuveexpression-ecritesujets-actualitesjanvier-2026",
+        "janvier-2025", "fevrier-2025", "fvrier-2025", "mars-2025", "avril-2025",
+        "mai-2025", "juin-2025", "juillet-2025", "aout-2025", "aot-2025",
+        "septembre-2025", "octobre-2025", "novembre-2025", "decembre-2025",
+        "juillet-2024", "aout-2024", "aot-2024", "septembre-2024", "octobre-2024",
+        "novembre-2024", "decembre-2024"
     ]
-    years_to_check = [2024, 2025, 2026, 2027, 2028]
     
-    generated_slugs = []
-    for y in years_to_check:
-        for m in french_months_slugs:
-            generated_slugs.append(f"{m}-{y}")
-            generated_slugs.append(m)
-            
     all_links = set(links)
-    for slug in generated_slugs:
+    for slug in known_slugs:
         all_links.add(f"/epreuve/expression-ecrite/sujets-actualites/{slug}")
         
     found_any_new = False

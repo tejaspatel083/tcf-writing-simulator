@@ -2643,11 +2643,11 @@
           },
           "task3": {
             "instruction": "Les Produits Faits Maison : Pour Ou Contre ?",
+            "title": "Les Produits Faits Maison : Pour Ou Contre ?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Fabriquer vos propres produits biologiques à la maison offre un contrôle total sur les ingrédients, garantissant des options plus saines et personnalisées. Cela contribue également à réduire les déchets plastiques grâce à des emballages réutilisables. De plus, vous économiserez de l’argent à long terme et développerez des compétences créatives, favorisant ainsi un mode de vie plus durable.",
-            "document2": "Cependant, la fabrication de produits biologiques à domicile comporte des risques. Les erreurs de formulation peuvent entraîner des produits inefficaces ou irritants. De plus, le temps et les efforts nécessaires pour trouver et préparer les ingrédients peuvent être contraignants. Il y a également un manque de garantie de sécurité et de stabilité des produits faits maison, avec un risque accru de contamination bactérienne si les produits ne sont pas correctement conservés. Enfin, le coût initial élevé pour l’achat d’ingrédients de qualité peut être dissuasif pour certains.",
-            "title": "Les Produits Faits Maison : Pour Ou Contre ?"
+            "document2": "Cependant, la fabrication de produits biologiques à domicile comporte des risques. Les erreurs de formulation peuvent entraîner des produits inefficaces ou irritants. De plus, le temps et les efforts nécessaires pour trouver et préparer les ingrédients peuvent être contraignants. Il y a également un manque de garantie de sécurité et de stabilité des produits faits maison, avec un risque accru de contamination bactérienne si les produits ne sont pas correctement conservés. Enfin, le coût initial élevé pour l’achat d’ingrédients de qualité peut être dissuasif pour certains."
           }
         }
       },
@@ -2667,11 +2667,11 @@
           },
           "task3": {
             "instruction": "Les Écoles Privées Ou Publiques ?",
+            "title": "Les Écoles Privées Ou Publiques ?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "À la rentrée, le nombre d’élèves inscrits dans des écoles privées a augmenté en France. Le succès des établissements privés n’est pas directement lié aux bons résultats scolaires de leurs élèves. C’est la réputation de ces lieux qui explique un tel enthousiasme. Aux yeux de nombreux parents, les élèves y sont mieux encadrés, mieux surveillés et les professeurs sont plus présents. Les parents sont aussi rassurés parce que les classes sont homogènes : elles accueillent généralement des élèves de milieux sociaux favorisés. En effet, les études dans ces établissements sont payantes, ce qui n’est pas le cas dans les écoles publiques.",
-            "document2": "Dans les collèges privés, il y a peu d’élèves de milieux sociaux défavorisés. Comme les études dans ces établissements sont payantes, certaines catégories de population en sont exclues. Ce système qui oppose écoles publiques et écoles privées ne facilite pas la mixité sociale. Ainsi, les élèves du privé ont rarement l’occasion de rencontrer d’autres jeunes issus de milieux sociaux moins favorisés qu’eux et inversement. Ce modèle scolaire reproduit les inégalités sociales et renforce le sentiment d’exclusion de certains jeunes.",
-            "title": "Les Écoles Privées Ou Publiques ?"
+            "document2": "Dans les collèges privés, il y a peu d’élèves de milieux sociaux défavorisés. Comme les études dans ces établissements sont payantes, certaines catégories de population en sont exclues. Ce système qui oppose écoles publiques et écoles privées ne facilite pas la mixité sociale. Ainsi, les élèves du privé ont rarement l’occasion de rencontrer d’autres jeunes issus de milieux sociaux moins favorisés qu’eux et inversement. Ce modèle scolaire reproduit les inégalités sociales et renforce le sentiment d’exclusion de certains jeunes."
           }
         }
       },
@@ -2691,11 +2691,11 @@
           },
           "task3": {
             "instruction": "Les Devoirs à la Maison.",
+            "title": "Les Devoirs à la Maison.",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Selon des associations de parents d’élèves, les devoirs à la maison sont utiles, car ils permettent aux élèves d’apprendre à organiser leur temps de manière autonome. Pour les parents, les devoirs sont un lien quotidien avec l’école. Même s’il est parfois difficile de suivre les devoirs après une journée de travail fatigante, ils apprécient ce moment partagé avec leurs enfants parce que ceux-ci sont contents que leurs parents s’intéressent à eux. C’est valorisant !",
-            "document2": "Nous protestons depuis longtemps contre les devoirs à la maison pour plusieurs raisons. Personne n’a jamais prouvé leur utilité pour améliorer les résultats des élèves. Beaucoup de parents ont peu de temps pour encadrer les devoirs de leurs enfants et certains parents ne savent pas le faire. Quant aux élèves, ceux qui ont réussi les exercices en classe perdent leur temps à les faire à la maison. Ceux qui ne sont pas aidés à la maison ne réussissent toujours pas, ils sont défavorisés. C’est pourquoi nous pensons qu’il faut supprimer les devoirs à la maison.",
-            "title": "Les Devoirs à la Maison."
+            "document2": "Nous protestons depuis longtemps contre les devoirs à la maison pour plusieurs raisons. Personne n’a jamais prouvé leur utilité pour améliorer les résultats des élèves. Beaucoup de parents ont peu de temps pour encadrer les devoirs de leurs enfants et certains parents ne savent pas le faire. Quant aux élèves, ceux qui ont réussi les exercices en classe perdent leur temps à les faire à la maison. Ceux qui ne sont pas aidés à la maison ne réussissent toujours pas, ils sont défavorisés. C’est pourquoi nous pensons qu’il faut supprimer les devoirs à la maison."
           }
         }
       },
@@ -2715,11 +2715,11 @@
           },
           "task3": {
             "instruction": "Utilisation des nouvelles technologies dans les écoles : pour ou contre ?",
+            "title": "Utilisation des nouvelles technologies dans les écoles : pour ou contre ?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Jean : Je suis fermement convaincu que l’intégration des nouvelles technologies dans les écoles est cruciale pour préparer les élèves à un avenir numérique. Je pense que l’usage des tablettes et des ordinateurs stimule non seulement l’engagement des élèves mais enrichit également leur expérience éducative en leur offrant un accès facile à une variété de ressources, encourageant ainsi leur créativité et autonomie.",
-            "document2": "Sara : Je suis sceptique quant à l’usage intensif des technologies dans l’enseignement. Je crois que cela peut réduire les interactions humaines essentielles et favoriser une dépendance préoccupante aux écrans. À mon avis, les méthodes d’enseignement traditionnelles et le contact direct entre enseignants et élèves restent indispensables pour un développement équilibré et complet des compétences des jeunes.",
-            "title": "Utilisation des nouvelles technologies dans les écoles : pour ou contre ?"
+            "document2": "Sara : Je suis sceptique quant à l’usage intensif des technologies dans l’enseignement. Je crois que cela peut réduire les interactions humaines essentielles et favoriser une dépendance préoccupante aux écrans. À mon avis, les méthodes d’enseignement traditionnelles et le contact direct entre enseignants et élèves restent indispensables pour un développement équilibré et complet des compétences des jeunes."
           }
         }
       },
@@ -2739,11 +2739,11 @@
           },
           "task3": {
             "instruction": "Les publicités : Pour ou contre ?",
+            "title": "Les publicités : Pour ou contre ?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Certaines personnes trouvent la publicité ennuyeuse, mais, à mon avis, elle est indispensable pour le commerce et les entreprises. Grâce à la publicité, on fait connaître un produit ou un service. Et puis, parfois, elles sont drôles ! J’aime bien les écouter quand je suis en voiture. Cela me permet aussi d’être informé des nouveautés et des promotions. Personnellement, j’adore comparer les articles : je peux ainsi faire beaucoup d’économies sur mes achats. Enfin, beaucoup de personnes jouent à des jeux gratuits sur leur téléphone : sans publicité, ces jeux seraient tous payants. Quentin, 28 ans",
-            "document2": "La publicité est présente partout dans notre vie de tous les jours : journaux, radios, télévision, téléphone, Internet… Par exemple, sur certaines chaînes de télévision, les émissions sont coupées par la publicité et c’est agaçant. Puis, recevoir des dizaines de kilos de papier de publicité par an dans la boîte aux lettres, ce n’est pas très respectueux de l’environnement ! Je pense qu’il est nécessaire de faire voter une loi pour réduire les publicités par courrier et à la télévision. Si la publicité était plus discrète, elle serait plus appréciée. Estelle, 35 ans",
-            "title": "Les publicités : Pour ou contre ?"
+            "document2": "La publicité est présente partout dans notre vie de tous les jours : journaux, radios, télévision, téléphone, Internet… Par exemple, sur certaines chaînes de télévision, les émissions sont coupées par la publicité et c’est agaçant. Puis, recevoir des dizaines de kilos de papier de publicité par an dans la boîte aux lettres, ce n’est pas très respectueux de l’environnement ! Je pense qu’il est nécessaire de faire voter une loi pour réduire les publicités par courrier et à la télévision. Si la publicité était plus discrète, elle serait plus appréciée. Estelle, 35 ans"
           }
         }
       },
@@ -2763,11 +2763,11 @@
           },
           "task3": {
             "instruction": "Les Vols à Bas Prix",
+            "title": "Les Vols à Bas Prix",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Je fais souvent mes voyages avec des compagnies aériennes à bas prix. Les compagnies low-cost mettent à disposition des prix inférieurs à ceux proposés par les compagnies aériennes régulières. Cela me coûte des fois moins cher que de voyager en voiture ou en train. Avec ces tarifs-là, vous vous doutez qu’il y a un hic : en effet, vous n’aurez droit à aucun service à bord (ni aliments, ni boissons). Je dirais donc que le low-cost n’est surtout pas fait pour les vols long-courriers.",
-            "document2": "Récemment, j’ai pris la décision de ne plus voyager avec les compagnies aériennes à bas prix. En effet, j’ai longuement réfléchi afin de prendre ma décision, mais ce choix était évident : des sièges inconfortables, des conditions de travail pénibles et surtout des avions vétustes qui remettent en cause la sécurité ! Dès lors, pour certains voyages, je vais opter pour la voiture ou même le train, ce dernier permettant même de découvrir de jolis paysages. Quant aux longs trajets, mieux vaut prendre un vol en compagnie régulière.",
-            "title": "Les Vols à Bas Prix"
+            "document2": "Récemment, j’ai pris la décision de ne plus voyager avec les compagnies aériennes à bas prix. En effet, j’ai longuement réfléchi afin de prendre ma décision, mais ce choix était évident : des sièges inconfortables, des conditions de travail pénibles et surtout des avions vétustes qui remettent en cause la sécurité ! Dès lors, pour certains voyages, je vais opter pour la voiture ou même le train, ce dernier permettant même de découvrir de jolis paysages. Quant aux longs trajets, mieux vaut prendre un vol en compagnie régulière."
           }
         }
       },
@@ -2787,11 +2787,11 @@
           },
           "task3": {
             "instruction": "Les cours de langue en ligne.",
+            "title": "Les cours de langue en ligne.",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Apprendre une langue en ligne grâce à Internet, c’est possible et cela donne de bons résultats ! Contrairement aux cours classiques, on peut apprendre quand on veut : les cours sont disponibles tout le temps. Cela permet de mieux organiser sa journée. On n’a pas non plus besoin de faire des kilomètres pour aller dans une école de langues. On peut apprendre de son salon, de son bureau ou même d’un café près de chez soi ! Cela permet aussi de faire des économies.",
-            "document2": "Cela semble facile d’apprendre une langue en ligne mais ce n’est pas possible pour tout le monde. En effet, il faut avoir une bonne connexion à Internet et un outil numérique adapté (ordinateur, smartphone, tablette) pour apprendre en ligne. De plus, il faut être très autonome pour être capable d’apprendre seul : il est difficile de se mettre au travail chez soi et de rester motivé quand on n’a pas l’aide d’un professeur et de collègues. Dans ces conditions, on peut se décourager et abandonner très vite.",
-            "title": "Les cours de langue en ligne."
+            "document2": "Cela semble facile d’apprendre une langue en ligne mais ce n’est pas possible pour tout le monde. En effet, il faut avoir une bonne connexion à Internet et un outil numérique adapté (ordinateur, smartphone, tablette) pour apprendre en ligne. De plus, il faut être très autonome pour être capable d’apprendre seul : il est difficile de se mettre au travail chez soi et de rester motivé quand on n’a pas l’aide d’un professeur et de collègues. Dans ces conditions, on peut se décourager et abandonner très vite."
           }
         }
       },
@@ -2811,11 +2811,11 @@
           },
           "task3": {
             "instruction": "Que pensez-vous des maisons de retraite?",
+            "title": "Que pensez-vous des maisons de retraite?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "J’habite dans un pays où il y a très peu de maisons de retraite. Ici, quand une personne âgée ne peut plus être autonome, elle habite avec les générations plus jeunes, et dans l’ensemble, cela ne pose pas de problèmes majeurs. Il nous paraît étrange de confier nos parents ou grands-parents à des personnes qu’ils ne connaissent pas.",
-            "document2": "Beaucoup de gens critiquent les maisons de retraite, pourtant c’est une bonne solution d’accueil pour les personnes âgées ! D’abord, pour lutter contre l’isolement puisqu’elles sont entourées de personnes de leur âge à la maison de retraite. Ensuite, pour les soins et les services médicaux offerts dans ce type d’établissement. Enfin, parce que c’est pratique et rassurant pour leurs enfants et petits-enfants. Malheureusement, ce type de logement reste encore trop cher pour certains.",
-            "title": "Que pensez-vous des maisons de retraite?"
+            "document2": "Beaucoup de gens critiquent les maisons de retraite, pourtant c’est une bonne solution d’accueil pour les personnes âgées ! D’abord, pour lutter contre l’isolement puisqu’elles sont entourées de personnes de leur âge à la maison de retraite. Ensuite, pour les soins et les services médicaux offerts dans ce type d’établissement. Enfin, parce que c’est pratique et rassurant pour leurs enfants et petits-enfants. Malheureusement, ce type de logement reste encore trop cher pour certains."
           }
         }
       },
@@ -2829,17 +2829,17 @@
             "maxWords": 120
           },
           "task2": {
-            "instruction": "Vous avez participé à un concours pour gagner un séjour de deux semaines dans votre ville préférée. Le thème de ce concours est « Mon artiste préféré ».\n\nÉcrivez un article de blog pour parler de votre artiste préféré.",
+            "instruction": "Vous avez participé à un concours pour gagner un séjour de deux semaines dans votre ville préférée. Le thème de ce concours est « Mon artiste préféré ».\nÉcrivez un article de blog pour parler de votre artiste préféré.",
             "minWords": 120,
             "maxWords": 150
           },
           "task3": {
             "instruction": "La chasse aux animaux : pour ou contre ?",
+            "title": "La chasse aux animaux : pour ou contre ?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "« Je suis de ceux qui n’arrivent pas à comprendre comment l’on peut prendre du plaisir à tuer des animaux. Je suis de ceux qui n’arrivent pas à comprendre comment on peut prétendre aimer la nature alors qu’on la détruit. »",
-            "document2": "Les gens chassent pour différentes raisons : la subsistance, le commerce, la conservation et l’aménagement de la faune, la protection de la propriété, l’exercice, le loisir et le prestige.",
-            "title": "La chasse aux animaux : pour ou contre ?"
+            "document2": "Les gens chassent pour différentes raisons : la subsistance, le commerce, la conservation et l’aménagement de la faune, la protection de la propriété, l’exercice, le loisir et le prestige."
           }
         }
       },
@@ -2848,22 +2848,22 @@
         "combinationNumber": 10,
         "tasks": {
           "task1": {
-            "instruction": "« Salut, j’ai appris que tu vas à une salle de sport et qu’elle est magnifique. Peux-tu m’en dire plus ? »\n\nÉcrivez un message pour répondre à votre ami concernant ce sujet.",
+            "instruction": "« Salut, j’ai appris que tu vas à une salle de sport et qu’elle est magnifique. Peux-tu m’en dire plus ? »\nÉcrivez un message pour répondre à votre ami concernant ce sujet.",
             "minWords": 60,
             "maxWords": 120
           },
           "task2": {
-            "instruction": "Vous avez lu sur un forum un débat concernant les formations en ligne.\n\nÉcrivez un message en décrivant votre expérience (cours de langue, formation professionnelle, etc.). Donnez votre avis sur ce que vous avez aimé et ce que vous n’avez pas aimé.",
+            "instruction": "Vous avez lu sur un forum un débat concernant les formations en ligne.\nÉcrivez un message en décrivant votre expérience (cours de langue, formation professionnelle, etc.).\nDonnez votre avis sur ce que vous avez aimé et ce que vous n’avez pas aimé.",
             "minWords": 120,
             "maxWords": 150
           },
           "task3": {
             "instruction": "Les produits faits maison : pour ou contre ?",
+            "title": "Les produits faits maison : pour ou contre ?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Fabriquer vos propres produits biologiques à la maison offre un contrôle total sur les ingrédients, garantissant des options plus saines et personnalisées. Cela contribue également à réduire les déchets plastiques grâce à des emballages réutilisables. De plus, vous économiserez de l’argent à long terme et développerez des compétences créatives, favorisant ainsi un mode de vie plus durable.",
-            "document2": "Cependant, la fabrication de produits biologiques à domicile comporte des risques. Les erreurs de formulation peuvent entraîner des produits inefficaces ou irritants. De plus, le temps et les efforts nécessaires pour trouver et préparer les ingrédients peuvent être contraignants. Il y a également un manque de garantie de sécurité et de stabilité des produits faits maison, avec un risque accru de contamination bactérienne si les produits ne sont pas correctement conservés. Enfin, le coût initial élevé pour l’achat d’ingrédients de qualité peut être dissuasif pour certains.",
-            "title": "Les produits faits maison : pour ou contre ?"
+            "document2": "Cependant, la fabrication de produits biologiques à domicile comporte des risques. Les erreurs de formulation peuvent entraîner des produits inefficaces ou irritants. De plus, le temps et les efforts nécessaires pour trouver et préparer les ingrédients peuvent être contraignants. Il y a également un manque de garantie de sécurité et de stabilité des produits faits maison, avec un risque accru de contamination bactérienne si les produits ne sont pas correctement conservés. Enfin, le coût initial élevé pour l’achat d’ingrédients de qualité peut être dissuasif pour certains."
           }
         }
       },
@@ -2872,22 +2872,22 @@
         "combinationNumber": 11,
         "tasks": {
           "task1": {
-            "instruction": "Votre ami(e) veut découvrir la région dans laquelle vous habitez. Écrivez-lui un message pour lui proposer des sites à visiter.",
+            "instruction": "Votre ami(e) veut découvrir la région dans laquelle vous habitez.\nÉcrivez-lui un message pour lui proposer des sites à visiter.",
             "minWords": 60,
             "maxWords": 120
           },
           "task2": {
-            "instruction": "Vous avez participé à un cours de sport dans une salle.\n\nÉcrivez un article dans votre blog parlant de cette expérience et en exprimant également votre avis par rapport à cette salle.",
+            "instruction": "Vous avez participé à un cours de sport dans une salle.\nÉcrivez un article dans votre blog parlant de cette expérience et en exprimant également votre avis par rapport à cette salle.",
             "minWords": 120,
             "maxWords": 150
           },
           "task3": {
             "instruction": "Livraison des repas au bureau : pour ou contre ?",
+            "title": "Livraison des repas au bureau : pour ou contre ?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Grâce à la livraison en entreprise, les employés bénéficieront d’un gain de temps notable. Il n’est plus question d’aller sortir loin du lieu de travail pour trouver de quoi manger. En complément, l’argent et l’énergie économisés permettent d’être encore plus efficace au travail. Sans pour autant mettre fin à une session importante liée au travail, le repas sera déjà prêt et pourra attendre la fin d’une conférence, d’une réunion ou d’un rendez-vous. Il s’agit d’une véritable solution dédiée aux entreprises ayant une activité intense et qui requièrent la présence continue de leurs employés.",
-            "document2": "Cette pratique révèle souvent des inconvénients à cause de sa notoriété montante. Certains jours, il arrive que les responsables de livraisons soient envahis par un grand nombre de commandes à effectuer, et cela risque de générer des perturbations liées au stress de l’attente. De même pour les employés, une trop longue durée de travail peut causer un état de fatigue si ces derniers ne quittent pas leur bureau pour le repas. Dans tous les cas, il est recommandé de toujours marquer des temps de pause lors des durs labeurs.",
-            "title": "Livraison des repas au bureau : pour ou contre ?"
+            "document2": "Cette pratique révèle souvent des inconvénients à cause de sa notoriété montante. Certains jours, il arrive que les responsables de livraisons soient envahis par un grand nombre de commandes à effectuer, et cela risque de générer des perturbations liées au stress de l’attente. De même pour les employés, une trop longue durée de travail peut causer un état de fatigue si ces derniers ne quittent pas leur bureau pour le repas. Dans tous les cas, il est recommandé de toujours marquer des temps de pause lors des durs labeurs."
           }
         }
       },
@@ -2896,22 +2896,22 @@
         "combinationNumber": 12,
         "tasks": {
           "task1": {
-            "instruction": "Vous allez déménager à Nice, en France.\n\nVous écrivez un message sur le site d’une agence immobilière.\n\nVous donnez les informations nécessaires (superficie, budget, nombre de pièces, etc.).",
+            "instruction": "Vous allez déménager à Nice, en France.\nVous écrivez un message sur le site d’une agence immobilière.\nVous donnez les informations nécessaires (superficie, budget, nombre de pièces, etc.).",
             "minWords": 60,
             "maxWords": 120
           },
           "task2": {
-            "instruction": "Vous avez commencé à prendre des cours dans une école de langues.\n\nVous envoyez un message à vos amis pour leur raconter comment s’est passée votre première semaine. Parlez de votre impression sur l’école et sur vos cours.",
+            "instruction": "Vous avez commencé à prendre des cours dans une école de langues.\nVous envoyez un message à vos amis pour leur raconter comment s’est passée votre première semaine.\nParlez de votre impression sur l’école et sur vos cours.",
             "minWords": 120,
             "maxWords": 150
           },
           "task3": {
             "instruction": "Caméras de surveillance : pour ou contre ?",
+            "title": "Caméras de surveillance : pour ou contre ?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "De nos jours, il y a de plus en plus de caméras de surveillance dans les villes. La vidéosurveillance est appréciée par les Français car cela leur donne un sentiment de sécurité. D’après un sondage, 75 % d’entre eux sont pour le développement de la vidéosurveillance. Ils seraient d’accord pour être filmés, mais seulement dans l’espace public : la rue, les magasins ou encore les transports. Cependant, ils refusent d’être surveillés par leur employeur. En France, peu de caméras de vidéosurveillance sont installées sur le lieu de travail.",
-            "document2": "Certaines enquêtes montrent que la vidéosurveillance coûte cher et que ses résultats sont insuffisants. D’une part, la présence des caméras est facile à remarquer. Par conséquent, la vidéosurveillance est inutile pour éviter les vols, la consommation de drogue et la violence dans les villes. D’autre part, l’utilisation de la vidéosurveillance demande beaucoup de personnel. Une étude allemande montre que sept personnes par caméra sont nécessaires pour analyser les informations.",
-            "title": "Caméras de surveillance : pour ou contre ?"
+            "document2": "Certaines enquêtes montrent que la vidéosurveillance coûte cher et que ses résultats sont insuffisants. D’une part, la présence des caméras est facile à remarquer. Par conséquent, la vidéosurveillance est inutile pour éviter les vols, la consommation de drogue et la violence dans les villes. D’autre part, l’utilisation de la vidéosurveillance demande beaucoup de personnel. Une étude allemande montre que sept personnes par caméra sont nécessaires pour analyser les informations."
           }
         }
       },
@@ -2931,11 +2931,11 @@
           },
           "task3": {
             "instruction": "Jeux vidéo : pour ou contre ?",
+            "title": "Jeux vidéo : pour ou contre ?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Les jeux vidéo, sur console ou sur ordinateur, chez soi ou en salle, seul, avec des amis ou en ligne avec des inconnus, peuvent provoquer une dépendance chez certaines personnes. On parle d’addiction quand le jeu vidéo devient le principal (ou l’unique) centre d’intérêt, à la place d’autres activités (relationnelles, professionnelles, scolaires, loisirs, sport…). Cette dépendance est particulièrement préoccupante lors de l’adolescence, période importante où les jeux vidéo peuvent avoir un impact négatif sur les résultats scolaires.",
-            "document2": "Beaucoup de gens pensent encore que les jeux vidéo nous rendent bêtes. Pourtant, de nombreuses études prouvent le contraire. Ainsi, selon une de ces études, les utilisateurs de jeux de course développeraient leur sens de l’orientation, leur mémoire et la précision de leurs mouvements. D’autres études montrent clairement une amélioration de la rapidité et de la concentration de tous les joueurs. Et c’est sans parler des jeux d’entraînement destinés aux personnes âgées pour consolider la mémoire et la vivacité d’esprit… Bref, c’est scientifique, le jeu vidéo rend plus intelligent !",
-            "title": "Jeux vidéo : pour ou contre ?"
+            "document2": "Beaucoup de gens pensent encore que les jeux vidéo nous rendent bêtes. Pourtant, de nombreuses études prouvent le contraire.\nAinsi, selon une de ces études, les utilisateurs de jeux de course développeraient leur sens de l’orientation, leur mémoire et la précision de leurs mouvements. D’autres études montrent clairement une amélioration de la rapidité et de la concentration de tous les joueurs. Et c’est sans parler des jeux d’entraînement destinés aux personnes âgées pour consolider la mémoire et la vivacité d’esprit… Bref, c’est scientifique, le jeu vidéo rend plus intelligent !"
           }
         }
       },
@@ -2955,11 +2955,11 @@
           },
           "task3": {
             "instruction": "Les parcs zoologiques : Pour ou contre ?",
+            "title": "Les parcs zoologiques : Pour ou contre ?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Le texte a montré qu’il ne faut pas mettre les animaux sauvages dans les zoos parce que ce n’est pas leur environnement. C’est une prison pour eux. On trouve des ours polaires dans un zoo dont la température est de 15 degrés. Les animaux ont besoin de la nature et de la liberté.",
-            "document2": "Le texte affirme que les zoos ont beaucoup d’avantages, même pour les animaux en voie de disparition, les animaux sont bien soignés dans les zoos. Les études montrent que le nombre de reproductions a augmenté grâce aux zoos et ils peuvent sauver la vie des animaux.",
-            "title": "Les parcs zoologiques : Pour ou contre ?"
+            "document2": "Le texte affirme que les zoos ont beaucoup d’avantages, même pour les animaux en voie de disparition, les animaux sont bien soignés dans les zoos. Les études montrent que le nombre de reproductions a augmenté grâce aux zoos et ils peuvent sauver la vie des animaux."
           }
         }
       },
@@ -2979,11 +2979,11 @@
           },
           "task3": {
             "instruction": "La lecture pour les enfants.",
+            "title": "La lecture pour les enfants.",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Avec l’avancée technologique et les produits high-tech qui envahissent de plus en plus notre quotidien, nos enfants oublient la lecture et s’intéressent davantage aux jeux vidéo, aux sports, à la musique… Contrairement à nous, les adultes, dont beaucoup d’entre nous ont lu des milliers de pages, la génération actuelle est toujours occupée par les réseaux sociaux et le gaming ou prend du plaisir à pratiquer du sport, qui attirent davantage de jeunes grâce aux stars internationales du football, du tennis, de l’athlétisme… alors, avec tout ça, pourquoi devons-nous forcer les enfants à lire un bouquin ? Et comme le dit un proverbe, « le goût de la lecture ne peut pas s’imposer »… il faut laisser l’enfant choisir ce qu’il veut lire et surtout ne pas l’obliger à lire quand il n’a pas envie.",
-            "document2": "L’amour de la lecture se transmet de génération en génération bien que, ces dernières années, on ne trouve plus beaucoup de bouquins entre les mains des enfants, laissant la place aux smartphones et aux tablettes. En apprenant à lire régulièrement, l’enfant acquiert le langage plus aisément tout en développant sa capacité d’audition et de concentration. De plus, et pour prendre du plaisir ensemble, les parents peuvent consacrer quotidiennement 10 minutes à leurs enfants pour lire des bouquins ; une activité qui renforcera à coup sûr la complicité parent-enfant.",
-            "title": "La lecture pour les enfants."
+            "document2": "L’amour de la lecture se transmet de génération en génération bien que, ces dernières années, on ne trouve plus beaucoup de bouquins entre les mains des enfants, laissant la place aux smartphones et aux tablettes. En apprenant à lire régulièrement, l’enfant acquiert le langage plus aisément tout en développant sa capacité d’audition et de concentration. De plus, et pour prendre du plaisir ensemble, les parents peuvent consacrer quotidiennement 10 minutes à leurs enfants pour lire des bouquins ; une activité qui renforcera à coup sûr la complicité parent-enfant."
           }
         }
       },
@@ -2992,22 +2992,22 @@
         "combinationNumber": 16,
         "tasks": {
           "task1": {
-            "instruction": "Votre ami Mehdi vient d’emménager dans votre ville et cherche des renseignements sur les moyens de transport. Écrivez un message en lui donnant les informations nécessaires (types de transport, abonnement, tarif, etc.)",
+            "instruction": "Votre ami Mehdi vient d’emménager dans votre ville et cherche des\nrenseignements sur les moyens de transport. Écrivez un message en lui\ndonnant les informations nécessaires (types de transport, abonnement, tarif,\netc.)",
             "minWords": 60,
             "maxWords": 120
           },
           "task2": {
-            "instruction": "Exprimez votre admiration pour une personnalité, célèbre ou non, en vous appuyant sur ses actions spécifiques. Rédigez un article de blog en détaillant les actions remarquables de cette personne et expliquez pourquoi vous l’aimez.",
+            "instruction": "Exprimez votre admiration pour une personnalité, célèbre ou non, en vous\nappuyant sur ses actions spécifiques. Rédigez un article de blog en détaillant\nles actions remarquables de cette personne et expliquez pourquoi vous l’aimez.",
             "minWords": 120,
             "maxWords": 150
           },
           "task3": {
             "instruction": "Vivre En Colocation",
+            "title": "Vivre En Colocation",
             "minWords": 120,
             "maxWords": 180,
-            "document1": "La vie en colocation offre de nombreux avantages. Partager un logement avec d’autres personnes permet de réduire les dépenses, que ce soit le loyer, les factures ou les frais généraux. De plus, cela favorise les interactions sociales et les échanges culturels. Vivre avec des colocataires permet de rencontrer des individus de différents horizons, de nouer des amitiés et de partager des expériences enrichissantes.",
-            "document2": "La colocation peut cependant présenter des défis. Les différences de personnalité et de mode de vie entre les colocataires peuvent entraîner des tensions. La gestion des responsabilités et des tâches ménagères peut également être source de conflits. De plus, la colocation peut limiter l’intimité et l’espace personnel. Il est important d’établir une communication ouverte et respectueuse, ainsi que des règles de vie commune, pour favoriser une cohabitation harmonieuse.",
-            "title": "Vivre En Colocation"
+            "document1": "La vie en colocation offre de nombreux avantages. Partager un logement avec\nd’autres personnes permet de réduire les dépenses, que ce soit le loyer, les factures ou les frais généraux. De plus, cela favorise les interactions sociales et les échanges culturels. Vivre avec des colocataires permet de rencontrer des individus de différents horizons, de nouer des amitiés et de partager des expériences enrichissantes.",
+            "document2": "La colocation peut cependant présenter des défis. Les différences de personnalité et\nde mode de vie entre les colocataires peuvent entraîner des tensions. La gestion des\nresponsabilités et des tâches ménagères peut également être source de conflits. De\nplus, la colocation peut limiter l’intimité et l’espace personnel. Il est important d’établir une communication ouverte et respectueuse, ainsi que des règles de vie commune, pour favoriser une cohabitation harmonieuse."
           }
         }
       },
@@ -3027,11 +3027,11 @@
           },
           "task3": {
             "instruction": "Cuisinier amateur ou cuisinier professionnel ?",
+            "title": "Cuisinier amateur ou cuisinier professionnel ?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Les amateurs ont fait des recettes réussies, mais ils manquent toujours de compétences et de technique, c’est pourquoi la formation et l’expérience sont nécessaires pour être un vrai cuisinier.",
-            "document2": "Il parle des cuisiniers qui ont appris le métier de cuisinier sur Internet et qui font le buzz sur les réseaux sociaux. Il raconte aussi l’histoire d’une amatrice qui est devenue professionnelle et qui a rédigé plusieurs livres sur la cuisine pour les amateurs de cuisine à la maison.",
-            "title": "Cuisinier amateur ou cuisinier professionnel ?"
+            "document2": "Il parle des cuisiniers qui ont appris le métier de cuisinier sur Internet et qui font le buzz sur les réseaux sociaux. Il raconte aussi l’histoire d’une amatrice qui est devenue professionnelle et qui a rédigé plusieurs livres sur la cuisine pour les amateurs de cuisine à la maison."
           }
         }
       },
@@ -3040,22 +3040,22 @@
         "combinationNumber": 18,
         "tasks": {
           "task1": {
-            "instruction": "Analysez le sujet d'examen suivant :\n\nVous faites du sport dans un club. Vous venez de remporter une compétition, vous écrivez un courriel à vos amis pour leur raconter cet évènement sportif et annoncer votre réussite sportive.",
+            "instruction": "Analysez le sujet d'examen suivant :\n\nVous faites du sport dans un club. Vous venez de remporter une compétition, vous écrivez un\ncourriel à vos amis pour leur raconter cet évènement sportif et annoncer votre réussite\nsportive.",
             "minWords": 60,
             "maxWords": 120
           },
           "task2": {
-            "instruction": "Le site « colocation.com » recherche des témoignages sur vos expériences de colocation.\n\nVous avez déjà habité en colocation avec des amis. Vous racontez votre expérience aux membres du site internet. Vous donnez votre opinion sur ce mode de logement.",
+            "instruction": "Le site « colocation.com » recherche des témoignages sur vos expériences de colocation.\nVous avez déjà habité en colocation avec des amis. Vous racontez votre expérience aux\nmembres du site internet. Vous donnez votre opinion sur ce mode de logement.",
             "minWords": 120,
             "maxWords": 150
           },
           "task3": {
             "instruction": "Le grossissement des villes.",
+            "title": "Le grossissement des villes.",
             "minWords": 120,
             "maxWords": 180,
-            "document1": "De nos jours, les villes grossissent toujours plus. Malheureusement, ce phénomène a un impact fort sur l’environnement. Car plus une ville grossit, plus elle a des effets négatifs sur la nature et donc, ensuite, sur l’homme. L’effet négatif le plus visible est la déforestation, qui diminue les végétaux qui retiennent le carbone. Donc, quand on les supprime pour construire des bâtiments ou des rues, on supprime des espaces verts capables de retenir des millions de tonnes de carbone.",
-            "document2": "Plus de la moitié de l’humanité vit en ville (huit habitants sur dix dans les pays riches) : la vie urbaine est donc le principal enjeu écologique. On entend souvent dire que l’organisation actuelle des villes n’est pas écologique, et que le grossissement des villes ne fait qu’augmenter le problème. Pourtant, il faut se méfier des apparences : les villes ne sont pas toujours aussi antiécologiques qu’on l’imagine. Par exemple, la consommation d’énergie d’un citadin est moins importante que celle d’un habitant de la campagne.",
-            "title": "Le grossissement des villes."
+            "document1": "De nos jours, les villes grossissent toujours plus. Malheureusement, ce phénomène a un\nimpact fort sur l’environnement. Car plus une ville grossit, plus elle a des effets négatifs\nsur la nature et donc, ensuite, sur l’homme. L’effet négatif le plus visible est la déforestation,\nqui diminue les végétaux qui retiennent le carbone. Donc, quand on les supprime pour\nconstruire des bâtiments ou des rues, on supprime des espaces verts capables de retenir des\nmillions de tonnes de carbone.",
+            "document2": "Plus de la moitié de l’humanité vit en ville (huit habitants sur dix dans les pays riches) : la vie\nurbaine est donc le principal enjeu écologique. On entend souvent dire que l’organisation\nactuelle des villes n’est pas écologique, et que le grossissement des villes ne fait\nqu’augmenter le problème. Pourtant, il faut se méfier des apparences : les villes ne sont pas\ntoujours aussi antiécologiques qu’on l’imagine. Par exemple, la consommation d’énergie d’un\ncitadin est moins importante que celle d’un habitant de la campagne."
           }
         }
       },
@@ -3075,11 +3075,11 @@
           },
           "task3": {
             "instruction": "Vivre chez ses parents, pour ou contre ?",
+            "title": "Vivre chez ses parents, pour ou contre ?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Les avantages : penser à l’avenir, avoir les vêtements propres, être en confort surtout que l’argent n’est pas toujours suffisant. Vivre avec ses parents pendant la période des études permet aux jeunes d’économiser les frais de logement, d’avoir des plats faits maison et une certaine stabilité psychique, tels les adolescents qui vivent avec leurs parents leur permettent d’économiser leur argent pour des projets de vie (ils ne payent ni le loyer ni la nourriture) (pour ne pas payer le loyer qui coûte cher, le ménage est fait, les vêtements sont propres). Favorise que les jeunes vivent avec leurs parents avec le témoignage de deux jeunes, la jeune fille disait que le loyer est très cher et étudier loin de chez soi revient plus cher. Le deuxième jeune trouve que vivre avec ses parents est plus bénéfique pour lui par exemple : la bouffe est bonne, les vêtements toujours propres et il n’y a pas de place pour la solitude.",
-            "document2": "Les inconvénients : manque de liberté. Vivre seuls leur permet d’être indépendants, les adolescents qui vivent avec leurs parents s’ennuient car leurs parents décident à leur place et sont toujours dépendants de leurs parents [...] un avis d’un certain monsieur qui a 25 ans et il a perdu son job, donc il était dans l’obligation de rentrer vivre avec ses parents, et maintenant il a perdu son espace d’intimité... contre la vie des jeunes avec leurs parents, un témoignage d’un jeune qui considère revenir chez ses parents, c’est revenir en arrière.",
-            "title": "Vivre chez ses parents, pour ou contre ?"
+            "document2": "Les inconvénients : manque de liberté. Vivre seuls leur permet d’être indépendants, les adolescents qui vivent avec leurs parents s’ennuient car leurs parents décident à leur place et sont toujours dépendants de leurs parents [...] un avis d’un certain monsieur qui a 25 ans et il a perdu son job, donc il était dans l’obligation de rentrer vivre avec ses parents, et maintenant il a perdu son espace d’intimité... contre la vie des jeunes avec leurs parents, un témoignage d’un jeune qui considère revenir chez ses parents, c’est revenir en arrière."
           }
         }
       },
@@ -3099,11 +3099,11 @@
           },
           "task3": {
             "instruction": "Le vélo en ville, pour ou contre ?",
+            "title": "Le vélo en ville, pour ou contre ?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Quand on parle de vélo, on pense systématiquement à deux choses : sport et loisir. On oublie souvent que c’est avant tout un mode de déplacement personnel et professionnel. En ville, c’est un moyen de transport rapide et déstressant puisqu’il permet d’éviter les interminables embouteillages aux heures de pointe. Se rendre au travail tout en faisant du sport, histoire de joindre l’utile à l’agréable.",
-            "document2": "Avec tous les accidents de la route observés annuellement, sortir son vélo pour se déplacer en ville peut être très dangereux. En effet, avec la densité importante de véhicules, le non-respect du Code de la route et le manque de pistes cyclables, faire du vélo en zone urbaine présente de vrais risques d’accident. De plus, faire du vélo de nos jours, c’est s’exposer à des gaz d’échappement toxiques et nocifs pour la santé humaine (notamment le monoxyde de carbone…).",
-            "title": "Le vélo en ville, pour ou contre ?"
+            "document2": "Avec tous les accidents de la route observés annuellement, sortir son vélo pour se déplacer en ville peut être très dangereux. En effet, avec la densité importante de véhicules, le non-respect du Code de la route et le manque de pistes cyclables, faire du vélo en zone urbaine présente de vrais risques d’accident. De plus, faire du vélo de nos jours, c’est s’exposer à des gaz d’échappement toxiques et nocifs pour la santé humaine (notamment le monoxyde de carbone…)."
           }
         }
       },
@@ -3112,22 +3112,22 @@
         "combinationNumber": 21,
         "tasks": {
           "task1": {
-            "instruction": "Vous souhaitez proposer à un(e) ami(e) de faire du sport avec vous. Vous lui écrivez un message pour décrire votre projet (type d'activités, lieu, équipement, etc.)",
+            "instruction": "Vous souhaitez proposer à un(e) ami(e) de faire du sport avec vous. Vous lui écrivez un\nmessage pour décrire votre projet (type d'activités, lieu, équipement, etc.)",
             "minWords": 60,
             "maxWords": 120
           },
           "task2": {
-            "instruction": "Vous avez étudié dans une université à l'étranger pendant six mois. Vous écrivez un message à vos amis pour raconter votre expérience et vous expliquez ce que vous avez aimé (120 mots minimum/150 mots maximum).",
+            "instruction": "Vous avez étudié dans une université à l'étranger pendant six mois. Vous écrivez un\nmessage à vos amis pour raconter votre expérience et vous expliquez ce que vous\navez aimé (120 mots minimum/150 mots maximum).",
             "minWords": 120,
             "maxWords": 150
           },
           "task3": {
             "instruction": "L'uniforme à l'école : Pour ou contre ?",
+            "title": "L'uniforme à l'école : Pour ou contre ?",
             "minWords": 120,
             "maxWords": 180,
-            "document1": "Aujourd'hui, les goûts des enfants sont influencés par la mode et les parents doivent souvent leur acheter de nouveaux vêtements. L'uniforme est une solution à ce problème et permet aux parents d'économiser de l'argent. De plus, les jeunes qui portent un uniforme ont un sentiment fort d'appartenance à leur école et ressentent une certaine fierté. Par ailleurs, une tenue identique pour tous les élèves permet de masquer les différences de classe sociale et la discrimination basée sur le style. Le port de l'uniforme est donc positif pour tout le monde !",
-            "document2": "Au Québec, l'uniforme scolaire n'est plus réservé uniquement aux écoles privées: de plus en plus d'écoles publiques font ce choix pour leurs élèves. Mais il représente un problème pour les adolescents qui ne sont pas toujours d'accord avec ce choix. Ils disent souvent que ces uniformes ne sont pas confortables, qu'ils ne sont pas beaux car ils manquent de couleurs et qu'ils tiennent trop chaud en été. De plus, comme tous les élèves de l'école sont habillés de la même manière, les jeunes trouvent que cela ne leur permet pas d'exprimer leur personnalité.",
-            "title": "L'uniforme à l'école : Pour ou contre ?"
+            "document1": "Aujourd'hui, les goûts des enfants sont influencés par la mode et les parents doivent souvent\nleur acheter de nouveaux vêtements. L'uniforme est une solution à ce problème et permet\naux parents d'économiser de l'argent. De plus, les jeunes qui portent un uniforme ont un\nsentiment fort d'appartenance à leur école et ressentent une certaine fierté. Par ailleurs, une\ntenue identique pour tous les élèves permet de masquer les différences de classe sociale et\nla discrimination basée sur le style. Le port de l'uniforme est donc positif pour tout le monde !",
+            "document2": "Au Québec, l'uniforme scolaire n'est plus réservé uniquement aux écoles privées: de plus en\nplus d'écoles publiques font ce choix pour leurs élèves. Mais il représente un problème pour\nles adolescents qui ne sont pas toujours d'accord avec ce choix. Ils disent souvent que ces\nuniformes ne sont pas confortables, qu'ils ne sont pas beaux car ils manquent de couleurs et\nqu'ils tiennent trop chaud en été. De plus, comme tous les élèves de l'école sont habillés de\nla même manière, les jeunes trouvent que cela ne leur permet pas d'exprimer leur\npersonnalité."
           }
         }
       },
@@ -3147,11 +3147,11 @@
           },
           "task3": {
             "instruction": "La Restauration Rapide.",
+            "title": "La Restauration Rapide.",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Les restaurants rapides se distinguent par leur engagement à proposer une variété de plats équilibrés, respectant strictement les normes d’hygiène. En laissant aux clients la liberté de composer leur propre menu, ces établissements les responsabilisent dans leurs choix alimentaires, tout en satisfaisant leurs préférences gustatives.",
-            "document2": "Les spécialistes affirment que manger régulièrement dans des restaurants de fast-food, qui proposent de la restauration rapide, est dangereux pour la santé. La nourriture servie est souvent la même : frites, hamburgers et boissons sucrées. Ces aliments contiennent une grande quantité de calories, bien trop pour un seul repas. De plus, la plupart des produits dans ces restaurants sont emballés dans du plastique. Par conséquent, manger dans un fast-food augmente la production de déchets plastiques, ce qui est nuisible pour l’environnement.",
-            "title": "La Restauration Rapide."
+            "document2": "Les spécialistes affirment que manger régulièrement dans des restaurants de fast-food, qui proposent de la restauration rapide, est dangereux pour la santé. La nourriture servie est souvent la même : frites, hamburgers et boissons sucrées. Ces aliments contiennent une grande quantité de calories, bien trop pour un seul repas. De plus, la plupart des produits dans ces restaurants sont emballés dans du plastique. Par conséquent, manger dans un fast-food augmente la production de déchets plastiques, ce qui est nuisible pour l’environnement."
           }
         }
       },
@@ -3160,22 +3160,22 @@
         "combinationNumber": 23,
         "tasks": {
           "task1": {
-            "instruction": "Tu as pris des cours au centre de langues-cultures pour tous ? Comment est cette école ?\n\nBises,\n\nPaul\n\nVous répondez à votre ami Paul. Vous décrivez l'école de langues (salle de cours, matériel, professeur, etc.).",
+            "instruction": "Tu as pris des cours au centre de langues-cultures pour tous ? Comment est cette école ?\n\nBises,\nPaul\n\nVous répondez à votre ami Paul. Vous décrivez l'école de langues (salle de cours, matériel, professeur, etc.).",
             "minWords": 60,
             "maxWords": 120
           },
           "task2": {
-            "instruction": "Vous avez participé à un pique-nique avec vos collègues. Vous écrivez un article dans le journal de l'entreprise. Vous racontez comment s'est passé ce pique-nique (lieu, nourriture, météo, etc).",
+            "instruction": "Vous avez participé à un pique-nique avec vos collègues.  Vous écrivez un article dans le journal de l'entreprise.  Vous racontez comment s'est passé ce pique-nique (lieu, nourriture, météo, etc).",
             "minWords": 120,
             "maxWords": 150
           },
           "task3": {
             "instruction": "La consommation de viande : Pour ou contre ?",
+            "title": "La consommation de viande : Pour ou contre ?",
             "minWords": 120,
             "maxWords": 180,
-            "document1": "Quentin, 45 ans : Est-ce bien nécessaire de consommer de la viande tous les jours ? Je me suis longtemps posé la question et, finalement, j'ai décidé de limiter ma consommation de viande et de poisson. J'en mange donc occasionnellement, quand je suis invité chez des amis ou quand je vais au restaurant. Je n'en cuisine jamais à la maison. Je pense que c'est une bonne solution : j'ai une alimentation plus équilibrée qu'avant, c'est donc bon pour ma santé car je mange moins gras. J'imagine que c'est aussi mieux pour la planète.",
-            "document2": "Vanessa, 24 ans : Manger moins de viande, c'est un débat d'actualité ! En ce qui me concerne, je ne pourrais pas me passer de viande. J'ai des amis végétariens et quand je mange chez eux, j'apprécie beaucoup leur cuisine. Chez moi, je trouve quand même que c'est compliqué de préparer des menus sans viande... Et puis, peut-on vraiment arrêter de manger de la viande sans risques pour sa santé ? J'ai déjà essayé de moins en consommer et je me sentais fatiguée. Je pense que nous devons manger de tout pour être en bonne santé.",
-            "title": "La consommation de viande : Pour ou contre ?"
+            "document1": "Quentin, 45 ans :\nEst-ce bien nécessaire de consommer de la viande tous les jours ? Je me suis longtemps posé la question et, finalement, j'ai décidé de limiter ma consommation de viande et de poisson. J'en mange donc occasionnellement, quand je suis invité chez des amis ou quand je vais au restaurant. Je n'en cuisine jamais à la maison. Je pense que c'est une bonne solution : j'ai une alimentation plus équilibrée qu'avant, c'est donc bon pour ma santé car je mange moins gras. J'imagine que c'est aussi mieux pour la planète.",
+            "document2": "Vanessa, 24 ans :\nManger moins de viande, c'est un débat d'actualité ! En ce qui me concerne, je ne pourrais pas me passer de viande. J'ai des amis végétariens et quand je mange chez eux, j'apprécie beaucoup leur cuisine. Chez moi, je trouve quand même que c'est compliqué de préparer des menus sans viande... Et puis, peut-on vraiment arrêter de manger de la viande sans risques pour sa santé ? J'ai déjà essayé de moins en consommer et je me sentais fatiguée. Je pense que nous devons manger de tout pour être en bonne santé."
           }
         }
       },
@@ -3195,11 +3195,11 @@
           },
           "task3": {
             "instruction": "Voyage seul ou voyage accompagné ?",
+            "title": "Voyage seul ou voyage accompagné ?",
             "minWords": 120,
             "maxWords": 180,
             "document1": "Voyager seul est une expérience riche et singulière qui présente de nombreux attraits. Tout d'abord, cela offre une liberté totale d'organiser son parcours et ses activités selon ses envies sans avoir à se plier aux contraintes d'un groupe. On découvre ainsi les lieux visités à son propre rythme, en prenant tout le temps nécessaire pour s'imprégner pleinement de leur atmosphère unique. Surtout, voyager en solo permet de sortir de sa zone de confort et de faire d'inestimables rencontres avec les populations locales ou d'autres voyageurs, favorisant ainsi l'ouverture d'esprit et l'enrichissement personnel.",
-            "document2": "S'il comporte des avantages certains, le voyage en solo n'est pas exempt d'inconvénients que l'on ne saurait négliger. Outre le sentiment de solitude qui peut parfois s'installer, l'absence d'un compagnon de route prive le voyageur d'un soutien précieux en cas d'imprévu ou de situation délicate. De plus, certaines activités comme l'exploration de sites reculés ou de régions au climat rude gagnent à être réalisées en groupe pour des raisons évidentes de sécurité. Enfin, partager ses découvertes et ses émotions avec un proche ou des amis demeure l'un des plaisirs uniques du voyage accompagné.",
-            "title": "Voyage seul ou voyage accompagné ?"
+            "document2": "S'il comporte des avantages certains, le voyage en solo n'est pas exempt d'inconvénients que l'on ne saurait négliger. Outre le sentiment de solitude qui peut parfois s'installer, l'absence d'un compagnon de route prive le voyageur d'un soutien précieux en cas d'imprévu ou de situation délicate. De plus, certaines activités comme l'exploration de sites reculés ou de régions au climat rude gagnent à être réalisées en groupe pour des raisons évidentes de sécurité. Enfin, partager ses découvertes et ses émotions avec un proche ou des amis demeure l'un des plaisirs uniques du voyage accompagné."
           }
         }
       },
@@ -3219,11 +3219,11 @@
           },
           "task3": {
             "instruction": "Le Travail : Favorable Ou Défavorable ?",
+            "title": "Le Travail : Favorable Ou Défavorable ?",
             "minWords": 120,
             "maxWords": 180,
-            "document1": "Opinion 1 : Stéphane, entrepreneur « Je suis convaincu que le travail est absolument favorable pour l’individu et la société. Le travail permet non seulement d’assurer son propre moyen de subsistance, mais également de contribuer au développement économique de la société. De plus, il favorise l’autonomie et la confiance en soi, encourage le sens des responsabilités et offre une opportunité d’épanouissement personnel et professionnel. Il peut même aider à forger notre identité et notre place dans la société. »",
-            "document2": "Opinion 2 : Laura, sociologue « Le travail, dans sa forme actuelle, peut avoir des aspects défavorables. Dans de nombreux cas, le travail est associé à un stress intense, à des horaires rigides et à un déséquilibre entre la vie professionnelle et la vie privée. Il peut être une source d’épuisement professionnel, surtout lorsque la charge de travail est excessive et que la reconnaissance est faible. De plus, certaines formes de travail peuvent être aliénantes, lorsque les travailleurs ne se sentent pas impliqués ou valorisés dans ce qu’ils font. Il est donc essentiel de repenser nos rapports au travail pour en faire une expérience plus équilibrée et enrichissante. »",
-            "title": "Le Travail : Favorable Ou Défavorable ?"
+            "document1": "Opinion 1 : Stéphane, entrepreneur\n« Je suis convaincu que le travail est absolument favorable pour l’individu et la société. Le travail permet non seulement d’assurer son propre moyen de subsistance, mais également de contribuer au développement économique de la société. De plus, il favorise l’autonomie et la confiance en soi, encourage le sens des responsabilités et offre une opportunité d’épanouissement personnel et professionnel. Il peut même aider à forger notre identité et notre place dans la société. »",
+            "document2": "Opinion 2 : Laura, sociologue\n« Le travail, dans sa forme actuelle, peut avoir des aspects défavorables. Dans de nombreux cas, le travail est associé à un stress intense, à des horaires rigides et à un déséquilibre entre la vie professionnelle et la vie privée. Il peut être une source d’épuisement professionnel, surtout lorsque la charge de travail est excessive et que la reconnaissance est faible. De plus, certaines formes de travail peuvent être aliénantes, lorsque les travailleurs ne se sentent pas impliqués ou valorisés dans ce qu’ils font. Il est donc essentiel de repenser nos rapports au travail pour en faire une expérience plus équilibrée et enrichissante. »"
           }
         }
       },
@@ -3243,11 +3243,35 @@
           },
           "task3": {
             "instruction": "interdiction des voitures en ville",
+            "title": "interdiction des voitures en ville",
             "minWords": 120,
             "maxWords": 180,
             "document1": "De nombreuses villes lancent des projets visant à interdire les voitures en milieu urbain sans disposer des moyens et des infrastructures indispensables pour assurer la réussite de ce changement. Certes, la réduction du nombre de voitures permet de diminuer la pollution, mais en contrepartie, il est nécessaire de prévoir de grands parkings, de développer davantage les transports en commun (métros et bus) et d’accorder des autorisations spéciales à certains professionnels (police, services d’urgence, livreurs, etc.).",
-            "document2": "Face à des niveaux de pollution très élevés observés dans plusieurs régions du monde, certaines villes ont décidé d’interdire la circulation des voitures dans les centres urbains. La capitale norvégienne, Oslo, a récemment choisi cette mesure et en tire un bilan positif, estimant qu’elle profite à tous. Avec le temps, les accidents diminueront, la consommation de pétrole reculera et la qualité de l’air s’améliorera.",
-            "title": "interdiction des voitures en ville"
+            "document2": "Face à des niveaux de pollution très élevés observés dans plusieurs régions du monde, certaines villes ont décidé d’interdire la circulation des voitures dans les centres urbains. La capitale norvégienne, Oslo, a récemment choisi cette mesure et en tire un bilan positif, estimant qu’elle profite à tous. Avec le temps, les accidents diminueront, la consommation de pétrole reculera et la qualité de l’air s’améliorera."
+          }
+        }
+      },
+      {
+        "combination": 789,
+        "combinationNumber": 27,
+        "tasks": {
+          "task1": {
+            "instruction": "« Salut, j’ai appris que tu vas à une salle de sport et qu’elle est magnifique. Peux-tu m’en dire plus ? »\nÉcrivez un message pour répondre à votre ami concernant ce sujet.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez lu sur un forum un débat concernant les formations en ligne.\nÉcrivez un message en décrivant votre expérience (cours de langue, formation professionnelle, etc.).\nDonnez votre avis sur ce que vous avez aimé et ce que vous n’avez pas aimé.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les produits faits maison : pour ou contre ?",
+            "title": "Les produits faits maison : pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Fabriquer vos propres produits biologiques à la maison offre un contrôle total sur les ingrédients, garantissant des options plus saines et personnalisées. Cela contribue également à réduire les déchets plastiques grâce à des emballages réutilisables. De plus, vous économiserez de l’argent à long terme et développerez des compétences créatives, favorisant ainsi un mode de vie plus durable.",
+            "document2": "Cependant, la fabrication de produits biologiques à domicile comporte des risques. Les erreurs de formulation peuvent entraîner des produits inefficaces ou irritants. De plus, le temps et les efforts nécessaires pour trouver et préparer les ingrédients peuvent être contraignants. Il y a également un manque de garantie de sécurité et de stabilité des produits faits maison, avec un risque accru de contamination bactérienne si les produits ne sont pas correctement conservés. Enfin, le coût initial élevé pour l’achat d’ingrédients de qualité peut être dissuasif pour certains."
           }
         }
       }
@@ -5750,6 +5774,392 @@
             "document1": "Opinion 1 : Stéphane, entrepreneur « Je suis convaincu que le travail est absolument favorable pour l’individu et la société. Le travail permet non seulement d’assurer son propre moyen de subsistance, mais également de contribuer au développement économique de la société. De plus, il favorise l’autonomie et la confiance en soi, encourage le sens des responsabilités et offre une opportunité d’épanouissement personnel et professionnel. Il peut même aider à forger notre identité et notre place dans la société. »",
             "document2": "Opinion 2 : Laura, sociologue « Le travail, dans sa forme actuelle, peut avoir des aspects défavorables. Dans de nombreux cas, le travail est associé à un stress intense, à des horaires rigides et à un déséquilibre entre la vie professionnelle et la vie privée. Il peut être une source d’épuisement professionnel, surtout lorsque la charge de travail est excessive et que la reconnaissance est faible. De plus, certaines formes de travail peuvent être aliénantes, lorsque les travailleurs ne se sentent pas impliqués ou valorisés dans ce qu’ils font. Il est donc essentiel de repenser nos rapports au travail pour en faire une expérience plus équilibrée et enrichissante. »",
             "title": "Le Travail : Favorable Ou Défavorable ?"
+          }
+        }
+      }
+    ],
+    "Octobre": [
+      {
+        "combination": 779,
+        "combinationNumber": 1,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous avez invité votre ami Cédric à votre mariage au Château de Chombony et il vous a répondu qu’il ne connaît pas ce château. Décrivez-le à votre ami (lieu, localisation, transports, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Dans votre blog, racontez votre expérience de l’apprentissage d’une langue étrangère (vous écrivez sur un forum internet en racontant votre expérience en apprenant une langue étrangère).",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Cuisinier amateur ou cuisinier professionnel ?",
+            "title": "Cuisinier amateur ou cuisinier professionnel ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Les amateurs ont fait des recettes réussies, mais ils manquent toujours de compétences et de technique, c’est pourquoi la formation et l’expérience sont nécessaires pour être un vrai cuisinier.",
+            "document2": "Il parle des cuisiniers qui ont appris le métier de cuisinier sur internet et qui ont le buzz sur les réseaux sociaux. Il raconte aussi l’histoire d’une amatrice qui est devenue professionnelle et qui a rédigé plusieurs livres sur la cuisine pour les amateurs de cuisine à la maison."
+          }
+        }
+      },
+      {
+        "combination": 780,
+        "combinationNumber": 2,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous avez envie de passer une journée avec votre ami(e). Vous écrivez à votre ami(e). Vous l'invitez et vous décrivez le programme de la journée (heure, lieu du rendez-vous, activités, etc.)",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Dans le cadre de votre travail, vous avez participé à une journée de formation professionnelle. Votre entreprise vous demande d'écrire un article pour partager cette expérience avec vos collègues. Vous présentez cette journée et vous expliquez ce que vous en avez pensé.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "La colocation : Pour ou contre ?",
+            "title": "La colocation : Pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Il y a ceux qui aiment les plateaux télé et ceux qui ne supportent pas de manger tout seuls. Pour ces derniers, le mieux est la colocation. En effet, vivre en colocation permet d'avoir de réels moments d'échange, que ce soit pendant les repas ou à d'autres moments, par exemple en jouant à des jeux de société. Autre élément important, la vaisselle et toutes les autres tâches ménagères se font aussi à plusieurs. Vivre avec d'autres personnes permet d'ouvrir son esprit, de découvrir d'autres façons de vivre, de créer des liens uniques, de partager des expériences et de se rendre des services l'un l'autre.\n\nD'après etudiant.aujourdhui.fr",
+            "document2": "Il peut être difficile de vivre en colocation quand, certains soirs, vous aimeriez bien vous retrouver au calme et seul. Vous devrez également accepter le fait de recevoir des amis qui ne sont pas forcément les vôtres, et veiller à ce que les tours du ménage soient bien respectés, au lieu de devoir tout faire vous-même (ou de laisser l'autre tout faire à votre place). Autrement dit, vous allez devoir vous montrer diplomate sur bien des points. À moins, bien entendu, de tomber sur le colocataire parfait.\n\nD'après nrj.fr"
+          }
+        }
+      },
+      {
+        "combination": 781,
+        "combinationNumber": 3,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous partez en voyage et vous laissez votre appartement à un ami qui veut venir rester chez-vous pendant vos vacances. Vous lui envoyez un message pour décrire votre appartement (immeuble, logement, accès...).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Écrivez un article de blog sur le souvenir de voyage que vous avez le plus aimé.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Vivre chez ses parents, pour ou contre ?",
+            "title": "Vivre chez ses parents, pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Les avantages : penser à l’avenir, avoir les vêtements propres, être en confort surtout que l’argent n’est pas tjrs suffisant. Vivre avec ses parents pendant la période des études permet aux jeunes d’économiser les frais de logement, des plats faits maison et une certaine stabilité psychique, tels les adolescents qui vivent avec leurs parents leur permettent d’économiser leur argent pour des projets de vie (ils payent pas ni le loyer ni la nourriture) (pour ne pas payer le loyer qui coûte cher, le ménage est fait, les vêtements sont propres). Favorise que les jeunes vivent avec leurs parents avec le témoignage de deux jeunes, la jeune fille disait que le loyer est très cher et étudier loin de chez soi revient plus cher. Le deuxième jeune trouve que vivre avec ses parents est plus bénéfique pour lui par exemple : la bouffe est bonne, les vêtements toujours propres et y a pas de place pour la solitude.",
+            "document2": "Les inconvénients : manque de liberté. Vivre seuls leur permet d’être indépendants, les adolescents qui vivent avec leurs parents s’ennuient car leurs parents décident à leur place et sont toujours dépendants des parents [...] un avis d’un certain monsieur qui a 25 ans et il a perdu son job, donc il était dans l’obligation de rentrer vivre avec ses parents, et maintenant il a perdu son espace d’intimité... contre la vie des jeunes avec leurs parents, un témoignage d’un jeune qui considère revenir chez ses parents, c’est revenir en arrière."
+          }
+        }
+      },
+      {
+        "combination": 782,
+        "combinationNumber": 4,
+        "tasks": {
+          "task1": {
+            "instruction": "Écrivez un message à vos amis pour les inviter à votre anniversaire et leur raconter comment va se dérouler votre fête.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Répondez en commentaire à une publication sur Facebook au sujet des études à l’étranger en citant les avantages et les inconvénients de cette expérience.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les nouvelles technologies pour les enfants",
+            "title": "Les nouvelles technologies pour les enfants",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Les enfants de l’école primaire peuvent utiliser la technologie pour trouver des vidéos sur les sujets qu’ils ont étudiés à l’école ou pour jouer à des jeux qui amélioreront leur aisance en mathématiques, leur compréhension de la lecture ou leurs compétences en dactylographie.",
+            "document2": "Les nouvelles technologies encouragent les enfants à être sédentaires. C’est une préoccupation majeure pour les parents. Cela ne mène à aucun jeu libre créatif, à aucune interaction sociale face à face, ni à aucun effort physique ! Pourquoi ne pas essayer certaines de ces activités amusantes pour encourager vos enfants à ranger leurs appareils ?"
+          }
+        }
+      },
+      {
+        "combination": 783,
+        "combinationNumber": 5,
+        "tasks": {
+          "task1": {
+            "instruction": "le journal ” Bienvenue” compte publier un article qui parle des habitants de notre ville. Écrivez nous un message qui sera diffusé dans ce numéro. Vous êtes récemment installé dans cette ville, et il vous est demandé de vous présenter et décrire ensuite tous vos lieux préférés au sein de cette ville.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous venez d’assister au concert de votre artiste favori. Vous écrivez un article sur votre blog personnel, pour partager cette expérience et inciter vos amis et les autres à assister à son prochain concert.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les Jeux Vidéo : Pour ou contre ?",
+            "title": "Les Jeux Vidéo : Pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "les enfants, jusqu’à l’âge de l’adolescence, jouent d’une manière régulière aux jeux vidéo et à force, ils peuvent développer des pensée négatives et des comportements agressifs. En effet, une étude récente, menée sur des enfants âgés de 9 à 18 ans jouant fréquemment aux jeux vidéo, a révélé que le fait de jouer à des jeux de violence augmente considérablement un comportement agressif. Et selon Diego Gentil, ce phénomène est inévitable quelque soit le degré de vigilance des parents!",
+            "document2": "On parle tout le temps des effets négatifs des jeux vidéo, mais ces derniers peuvent également avoir quelques avantages pour le fonctionnement du cerveau et pour la santé d’une manière générale. si on prend, par exemple, leur rapport pour le cerveau, les jeux vidéo permettent d’améliorer plusieurs fonctions cognitives telles que l’amélioration de la concentration, de la création et de la capacité d’analyse. Ceci peut paraitre évident, dans la mesure où lorsqu’on y joue, on doit toujours trouver."
+          }
+        }
+      },
+      {
+        "combination": 784,
+        "combinationNumber": 6,
+        "tasks": {
+          "task1": {
+            "instruction": "Votre amie Jeanne envisage de visiter votre pays. Rédigez un message personnalisé lui proposant un itinéraire de visite. Incluez une variété de lieux tels que des villes, sites touristiques et monuments célèbres, en expliquant brièvement l’intérêt de chaque recommandation.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Racontez votre expérience personnelle de participation à une émission de télévision. Détaillez le contexte de votre participation, votre rôle dans l’émission, et les impressions que vous en avez retirées.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Égalité Homme/Femme en Milieu de Travail.",
+            "title": "Égalité Homme/Femme en Milieu de Travail.",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Certains postes sont majoritairement occupés par des hommes. Au Québec, l’égalité entre les femmes et les hommes est respectée, les femmes peuvent les métiers réservés aux hommes tel que les postes de direction.",
+            "document2": "Malgré les efforts pour imposer la parité à tous les postes dans les entreprises et les collectivités, il y a, dans les faits, des métiers où les femmes sont largement majoritaires tels que : les sage-femmes. De plus, les femmes ne doivent pas faire les métiers d’homme, car ils doivent prendre soin de ses enfants."
+          }
+        }
+      },
+      {
+        "combination": 785,
+        "combinationNumber": 7,
+        "tasks": {
+          "task1": {
+            "instruction": "Je cherche un vélo en bon état et bon marché. Contactez-moi par courriel : mathieu@gmail.com\nVous avez un vélo à vendre. Vous écrivez un courriel pour décrire votre vélo et proposer un prix. Vous lui donnez un rendez-vous pour essayer le vélo.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Écrivez un message à vos amis pour leur partager votre expérience de travail temporaire effectué durant les vacances d’été.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "La gratuité des transports en commun : pour ou contre ?",
+            "title": "La gratuité des transports en commun : pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Les transports en commun gratuits, c’est une très bonne idée. Cela permet de diminuer le nombre de voitures en ville et d’éviter les bouchons. C’est aussi une bonne mesure pour réduire la pollution et donc les risques de maladies respiratoires. Dans ma ville, il y a des transports en commun gratuits. On observe que les gens utilisent plus souvent les transports publics depuis que la gratuité est en place. Cette mesure a aussi profité aux commerçants : les gens reviennent faire leurs achats dans le centre-ville et vont moins dans les hypermarchés.",
+            "document2": "L’idée n’est pas bonne. D’une part, cela coûterait cher aux villes. Or, il me semble que la ville de Toulouse a d’autres problèmes à régler en priorité. Par exemple, il faudrait d’abord réaménager les espaces verts, cela profiterait à tout le monde. D’autre part, il vaudrait mieux réorganiser les transports publics au lieu de les rendre gratuits. Aujourd’hui, les gens préfèrent prendre leur voiture parce que la ville manque de transports publics dans certains quartiers éloignés. Enfin, selon moi, il faut garder les transports publics payants. Les gens respecteront davantage les équipements s’ils participent à leur financement en payant un titre de transport."
+          }
+        }
+      },
+      {
+        "combination": 786,
+        "combinationNumber": 8,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous terminez un séjour professionnel dans un pays étranger et vous souhaitez fêter votre départ.\nVous écrivez un courriel à vos collègues pour les inviter au restaurant. Vous décrivez votre projet et vous leur donnez les informations nécessaires (adresse, date, heure, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez commencé une nouvelle activité sportive. Sur votre blog, vous racontez votre expérience. Vous expliquez pourquoi cette activité peut être intéressante pour tout le monde.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les animaux de compagnie au travail : Pour ou contre ?",
+            "title": "Les animaux de compagnie au travail : Pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "L’intérêt de cette présence ? C’est simple : diminuer le stress des employés.\nLa présence d’un chien ou d’un chat change l’ambiance générale d’une entreprise : elle réduit les tensions entre collègues, ce qui n’est pas négligeable car chaque année, l’État français dépense entre 2 et 3 milliards d’euros pour soigner les salariés malades du stress.\nSelon une enquête, un quart des employés pensent aussi que la présence des animaux permet d’être plus motivé au travail.\n(D’après challenges.fr)",
+            "document2": "« Dans l’entreprise où je travaille, les employés sont autorisés à venir avec leur animal de compagnie, chat ou chien.\nPersonnellement, cela me dérange. Je ne suis pas très à l’aise avec les animaux, qui peuvent avoir des comportements imprévisibles. D’autre part, je trouve que cela peut poser des problèmes de santé.\nQue faire si un employé est allergique aux chats ? Sera-t-il obligé de rester enfermé dans son bureau ? Et puis c’est aussi une source de distraction. Mes collègues et moi ne serons pas plus productifs grâce à un chien ou un chat ! »\n— Iris, 34 ans"
+          }
+        }
+      },
+      {
+        "combination": 787,
+        "combinationNumber": 9,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous avez reçu ce message de votre ami Thomas : « Salut ! Je ne connais pas bien la culture et les traditions de ton pays. Peux-tu me parler d’une grande fête célébrée chez toi ? À bientôt ! » Consigne : Répondez-lui en décrivant une fête importante de votre pays.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez assisté à un festival de cinéma. Vous avez vu plusieurs films. Sur votre site personnel, vous racontez le film que vous avez préféré. Vous expliquez votre choix. Vous avez assisté à un festival de cinéma. Vous avez vu plusieurs films. Sur votre site personnel, vous racontez le film que vous avez préféré. Vous expliquez votre choix.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Que pensez-vous des maisons de retraite?",
+            "title": "Que pensez-vous des maisons de retraite?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "J’habite dans un pays où il y a très peu de maisons de retraite. Ici, quand une personne âgée ne peut plus être autonome, elle habite avec les générations plus jeunes, et dans l’ensemble, cela ne pose pas de problèmes majeurs. Il nous paraît étrange de confier nos parents ou grands-parents à des personnes qu’ils ne connaissent pas.",
+            "document2": "Beaucoup de gens critiquent les maisons de retraite, pourtant c’est une bonne solution d’accueil pour les personnes âgées ! D’abord, pour lutter contre l’isolement puisqu’elles sont entourées de personnes de leur âge à la maison de retraite. Ensuite, pour les soins et les services médicaux offerts dans ce type d’établissement. Enfin, parce que c’est pratique et rassurant pour leurs enfants et petits-enfants. Malheureusement, ce type de logement reste encore trop cher pour certains."
+          }
+        }
+      },
+      {
+        "combination": 788,
+        "combinationNumber": 10,
+        "tasks": {
+          "task1": {
+            "instruction": "Salut, Tu as commencé ton nouveau travail ! C’est comment ? Tu es content(e) ? Ali Vous répondez à votre ami Ali. Dans votre message, vous décrivez votre nouveau travail (lieu, collègues, etc.) et vous donnez vos impressions.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "INFOS FAMILLES Vivre avec une personne âgée : comment faire ? Notre site cherche des témoignages. Vous avez vécu avec une personne âgée. Vous racontez votre expérience.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les cours de langue en ligne.",
+            "title": "Les cours de langue en ligne.",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Apprendre une langue en ligne grâce à Internet, c’est possible et cela donne de bons résultats ! Contrairement aux cours classiques, on peut apprendre quand on veut : les cours sont disponibles tout le temps. Cela permet de mieux organiser sa journée. On n’a pas non plus besoin de faire des kilomètres pour aller dans une école de langues. On peut apprendre de son salon, de son bureau ou même d’un café près de chez soi ! Cela permet aussi de faire des économies.",
+            "document2": "Cela semble facile d’apprendre une langue en ligne mais ce n’est pas possible pour tout le monde. En effet, il faut avoir une bonne connexion à Internet et un outil numérique adapté (ordinateur, smartphone, tablette) pour apprendre en ligne. De plus, il faut être très autonome pour être capable d’apprendre seul : il est difficile de se mettre au travail chez soi et de rester motivé quand on n’a pas l’aide d’un professeur et de collègues. Dans ces conditions, on peut se décourager et abandonner très vite."
+          }
+        }
+      },
+      {
+        "combination": 790,
+        "combinationNumber": 11,
+        "tasks": {
+          "task1": {
+            "instruction": "« Salut, j’ai appris que tu vas à une salle de sport et qu’elle est magnifique. Peux-tu m’en dire plus ? »\nÉcrivez un message pour répondre à votre ami concernant ce sujet.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez lu sur un forum un débat concernant les formations en ligne.\nÉcrivez un message en décrivant votre expérience (cours de langue, formation professionnelle, etc.).\nDonnez votre avis sur ce que vous avez aimé et ce que vous n’avez pas aimé.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les produits faits maison : pour ou contre ?",
+            "title": "Les produits faits maison : pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Fabriquer vos propres produits biologiques à la maison offre un contrôle total sur les ingrédients, garantissant des options plus saines et personnalisées. Cela contribue également à réduire les déchets plastiques grâce à des emballages réutilisables. De plus, vous économiserez de l’argent à long terme et développerez des compétences créatives, favorisant ainsi un mode de vie plus durable.",
+            "document2": "Cependant, la fabrication de produits biologiques à domicile comporte des risques. Les erreurs de formulation peuvent entraîner des produits inefficaces ou irritants. De plus, le temps et les efforts nécessaires pour trouver et préparer les ingrédients peuvent être contraignants. Il y a également un manque de garantie de sécurité et de stabilité des produits faits maison, avec un risque accru de contamination bactérienne si les produits ne sont pas correctement conservés. Enfin, le coût initial élevé pour l’achat d’ingrédients de qualité peut être dissuasif pour certains."
+          }
+        }
+      },
+      {
+        "combination": 791,
+        "combinationNumber": 12,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous avez emménagé dans une nouvelle ville il y a un mois. Écrivez un courriel à votre ami Léo pour lui donner de vos nouvelles. Parlez-lui de votre appartement, du quartier, de la ville en général, et des activités que vous faites.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez assisté à une fête traditionnelle dans votre pays ou à l’étranger. Racontez-la dans votre blog et dites pourquoi vous l’avez aimée.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les parcs zoologiques : Pour ou contre ?",
+            "title": "Les parcs zoologiques : Pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Le texte a montré qu’il ne faut pas mettre les animaux sauvages dans les zoos parce que ce n’est pas leur environnement. C’est une prison pour eux. On trouve des ours polaires dans un zoo dont la température est de 15 degrés. Les animaux ont besoin de la nature et de la liberté.",
+            "document2": "Le texte affirme que les zoos ont beaucoup d’avantages, même pour les animaux en voie de disparition, les animaux sont bien soignés dans les zoos. Les études montrent que le nombre de reproductions a augmenté grâce aux zoos et ils peuvent sauver la vie des animaux."
+          }
+        }
+      },
+      {
+        "combination": 792,
+        "combinationNumber": 13,
+        "tasks": {
+          "task1": {
+            "instruction": "Écrivez un message à votre ami pour lui décrire le programme de vos prochaines vacances.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Écrivez un article de blog sur un événement auquel vous avez assisté dernièrement (fête, festival, …).",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Le vélo en ville, pour ou contre ?",
+            "title": "Le vélo en ville, pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Quand on parle de vélo, on pense systématiquement à deux choses : sport et loisir. On oublie souvent que c’est avant tout un mode de déplacement personnel et professionnel. En ville, c’est un moyen de transport rapide et déstressant puisqu’il permet d’éviter les interminables embouteillages aux heures de pointe. Se rendre au travail tout en faisant du sport, histoire de joindre l’utile à l’agréable.",
+            "document2": "Avec tous les accidents de la route observés annuellement, sortir son vélo pour se déplacer en ville peut être très dangereux. En effet, avec la densité importante de véhicules, le non-respect du Code de la route et le manque de pistes cyclables, faire du vélo en zone urbaine présente de vrais risques d’accident. De plus, faire du vélo de nos jours, c’est s’exposer à des gaz d’échappement toxiques et nocifs pour la santé humaine (notamment le monoxyde de carbone…)."
+          }
+        }
+      },
+      {
+        "combination": 793,
+        "combinationNumber": 14,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous souhaitez proposer à un(e) ami(e) de faire du sport avec vous. Vous lui écrivez un\nmessage pour décrire votre projet (type d'activités, lieu, équipement, etc.)",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez étudié dans une université à l'étranger pendant six mois. Vous écrivez un\nmessage à vos amis pour raconter votre expérience et vous expliquez ce que vous\navez aimé (120 mots minimum/150 mots maximum).",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "L'uniforme à l'école : Pour ou contre ?",
+            "title": "L'uniforme à l'école : Pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Aujourd'hui, les goûts des enfants sont influencés par la mode et les parents doivent souvent\nleur acheter de nouveaux vêtements. L'uniforme est une solution à ce problème et permet\naux parents d'économiser de l'argent. De plus, les jeunes qui portent un uniforme ont un\nsentiment fort d'appartenance à leur école et ressentent une certaine fierté. Par ailleurs, une\ntenue identique pour tous les élèves permet de masquer les différences de classe sociale et\nla discrimination basée sur le style. Le port de l'uniforme est donc positif pour tout le monde !",
+            "document2": "Au Québec, l'uniforme scolaire n'est plus réservé uniquement aux écoles privées: de plus en\nplus d'écoles publiques font ce choix pour leurs élèves. Mais il représente un problème pour\nles adolescents qui ne sont pas toujours d'accord avec ce choix. Ils disent souvent que ces\nuniformes ne sont pas confortables, qu'ils ne sont pas beaux car ils manquent de couleurs et\nqu'ils tiennent trop chaud en été. De plus, comme tous les élèves de l'école sont habillés de\nla même manière, les jeunes trouvent que cela ne leur permet pas d'exprimer leur\npersonnalité."
+          }
+        }
+      },
+      {
+        "combination": 794,
+        "combinationNumber": 15,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous écrivez une lettre à votre ami pour l’inviter à un festival de musique dans votre ville. Vous mentionnez les détails importants tels que le lieu, la date, les artistes invités et toutes les informations pratiques nécessaires.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Sur votre blog, parlez de votre dernière visite à un restaurant (l'endroit, la nourriture, le service, etc.). Racontez ce que vous avez vécu et dites ce qui vous a vraiment plu.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Voyage seul ou voyage accompagné ?",
+            "title": "Voyage seul ou voyage accompagné ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Voyager seul est une expérience riche et singulière qui présente de nombreux attraits. Tout d'abord, cela offre une liberté totale d'organiser son parcours et ses activités selon ses envies sans avoir à se plier aux contraintes d'un groupe. On découvre ainsi les lieux visités à son propre rythme, en prenant tout le temps nécessaire pour s'imprégner pleinement de leur atmosphère unique. Surtout, voyager en solo permet de sortir de sa zone de confort et de faire d'inestimables rencontres avec les populations locales ou d'autres voyageurs, favorisant ainsi l'ouverture d'esprit et l'enrichissement personnel.",
+            "document2": "S'il comporte des avantages certains, le voyage en solo n'est pas exempt d'inconvénients que l'on ne saurait négliger. Outre le sentiment de solitude qui peut parfois s'installer, l'absence d'un compagnon de route prive le voyageur d'un soutien précieux en cas d'imprévu ou de situation délicate. De plus, certaines activités comme l'exploration de sites reculés ou de régions au climat rude gagnent à être réalisées en groupe pour des raisons évidentes de sécurité. Enfin, partager ses découvertes et ses émotions avec un proche ou des amis demeure l'un des plaisirs uniques du voyage accompagné."
+          }
+        }
+      },
+      {
+        "combination": 795,
+        "combinationNumber": 16,
+        "tasks": {
+          "task1": {
+            "instruction": "Tu as pris des cours au centre de langues-cultures pour tous ? Comment est cette école ?\n\nBises,\nPaul\n\nVous répondez à votre ami Paul. Vous décrivez l'école de langues (salle de cours, matériel, professeur, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez participé à un pique-nique avec vos collègues.  Vous écrivez un article dans le journal de l'entreprise.  Vous racontez comment s'est passé ce pique-nique (lieu, nourriture, météo, etc).",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "La consommation de viande : Pour ou contre ?",
+            "title": "La consommation de viande : Pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Quentin, 45 ans :\nEst-ce bien nécessaire de consommer de la viande tous les jours ? Je me suis longtemps posé la question et, finalement, j'ai décidé de limiter ma consommation de viande et de poisson. J'en mange donc occasionnellement, quand je suis invité chez des amis ou quand je vais au restaurant. Je n'en cuisine jamais à la maison. Je pense que c'est une bonne solution : j'ai une alimentation plus équilibrée qu'avant, c'est donc bon pour ma santé car je mange moins gras. J'imagine que c'est aussi mieux pour la planète.",
+            "document2": "Vanessa, 24 ans :\nManger moins de viande, c'est un débat d'actualité ! En ce qui me concerne, je ne pourrais pas me passer de viande. J'ai des amis végétariens et quand je mange chez eux, j'apprécie beaucoup leur cuisine. Chez moi, je trouve quand même que c'est compliqué de préparer des menus sans viande... Et puis, peut-on vraiment arrêter de manger de la viande sans risques pour sa santé ? J'ai déjà essayé de moins en consommer et je me sentais fatiguée. Je pense que nous devons manger de tout pour être en bonne santé."
           }
         }
       }
