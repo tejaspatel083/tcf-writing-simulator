@@ -1,9 +1,9 @@
-name: Weekly TCF Topics Auto-Sync
+name: Daily TCF Topics Auto-Sync
 
 on:
   schedule:
-    # Runs every Friday at 12:00 UTC (8:00 AM EDT)
-    - cron: '0 12 * * 5'
+    # Runs everyday at 12:00 UTC (8:00 AM EDT)
+    - cron: '0 12 * * *'
   workflow_dispatch: # Allows manual trigger anytime from GitHub Actions tab
 
 permissions:
@@ -34,5 +34,5 @@ jobs:
             git commit -m "Auto-sync: update latest TCF writing topics from source"
             git push origin main
           else
-            echo "No new topics found this week. Everything is up to date."
+            echo "No new topics found today. Everything is up to date."
           fi

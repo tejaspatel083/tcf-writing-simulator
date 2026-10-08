@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   workflow_run:
-    workflows: ["Weekly TCF Topics Auto-Sync"]
+    workflows: ["Daily TCF Topics Auto-Sync"]
     types:
       - completed
   workflow_dispatch:
