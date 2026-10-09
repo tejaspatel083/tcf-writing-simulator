@@ -6162,6 +6162,30 @@
             "document2": "Vanessa, 24 ans :\nManger moins de viande, c'est un débat d'actualité ! En ce qui me concerne, je ne pourrais pas me passer de viande. J'ai des amis végétariens et quand je mange chez eux, j'apprécie beaucoup leur cuisine. Chez moi, je trouve quand même que c'est compliqué de préparer des menus sans viande... Et puis, peut-on vraiment arrêter de manger de la viande sans risques pour sa santé ? J'ai déjà essayé de moins en consommer et je me sentais fatiguée. Je pense que nous devons manger de tout pour être en bonne santé."
           }
         }
+      },
+      {
+        "combination": 796,
+        "combinationNumber": 17,
+        "tasks": {
+          "task1": {
+            "instruction": "Rédigez un message pour inviter votre ami(e) à passer ses vacances dans votre ville en précisant les lieux et les endroits à visiter.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez participé à un concours pour gagner un séjour de deux semaines dans votre ville préférée. Le thème de ce concours est “Mon artiste préféré“. Écrivez un article de blog pour parler de votre artiste préféré.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "La chasse aux animaux : pour ou contre ?",
+            "title": "La chasse aux animaux : pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Je suis de ceux qui n’arrivent pas à comprendre comment l’on peut prendre du plaisir à tuer des animaux. Je suis de ceux qui n’arrivent pas à comprendre comment on peut prétendre aimer la nature alors qu’on la détruit.\nGala, 29 ans",
+            "document2": "« Les gens chassent pour différentes raisons : la subsistance, le commerce, la conservation et l’aménagement de la faune, la protection de la propriété, l’exercice, le loisir et le prestige. »\nDavid, journaliste de la FRM"
+          }
+        }
       }
     ]
   },
