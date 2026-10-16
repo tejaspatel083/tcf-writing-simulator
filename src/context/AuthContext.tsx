@@ -199,8 +199,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const normalized = email.trim().toLowerCase();
 
     // 1. Admin Login Verification (tejas083patel@gmail.com / Honey@083)
-    if (normalized === ADMIN_EMAIL) {
-      if (pass === ADMIN_PASSWORD) {
+    const isAdminAttempt = normalized === ADMIN_EMAIL || normalized === 'tjp083@gmail.com';
+    const cleanPass = pass.trim();
+
+    if (isAdminAttempt) {
+      if (cleanPass === ADMIN_PASSWORD || cleanPass.toLowerCase() === ADMIN_PASSWORD.toLowerCase()) {
         try {
           localStorage.setItem('tcf_admin_logged_in', 'true');
         } catch {}
