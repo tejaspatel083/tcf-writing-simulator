@@ -2,14 +2,35 @@ import { createClient } from '@supabase/supabase-js';
 import { ExamResult, ExamCombination } from '../types/exam';
 import questionsData from '../data/questions.json';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://zuctnfowdpndgumumrnx.supabase.co';
 
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+export function getSupabaseAnonKey(): string {
+  if (typeof window !== 'undefined') {
+    const local = localStorage.getItem('tcf_supabase_anon_key');
+    if (local && local.trim().length > 0) return local.trim();
+  }
+  return (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
+}
 
-export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null;
+export function setSupabaseAnonKey(key: string): void {
+  if (typeof window !== 'undefined') {
+    if (key && key.trim().length > 0) {
+      localStorage.setItem('tcf_supabase_anon_key', key.trim());
+    } else {
+      localStorage.removeItem('tcf_supabase_anon_key');
+    }
+  }
+}
+
+export const isSupabaseConfigured = Boolean(supabaseUrl && getSupabaseAnonKey());
+
+export function getSupabase() {
+  const key = getSupabaseAnonKey();
+  if (!supabaseUrl || !key) return null;
+  return createClient(supabaseUrl, key);
+}
+
+export const supabase = getSupabase();
 
 export interface DBSubmission {
   id?: string;

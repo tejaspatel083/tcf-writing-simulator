@@ -36,6 +36,11 @@ alter table public.submissions enable row level security;
 create policy "Users can read own profile" on public.profiles
   for select using (auth.uid() = id);
 
+create policy "Admin can read all profiles" on public.profiles
+  for select using (
+    (select email from auth.users where id = auth.uid()) = 'tejas083patel@gmail.com'
+  );
+
 create policy "Users can insert own profile" on public.profiles
   for insert with check (auth.uid() = id);
 
@@ -46,6 +51,11 @@ create policy "Users can update own profile" on public.profiles
 -- Users can ONLY access, create, or delete their OWN submissions.
 create policy "Users can read own submissions" on public.submissions
   for select using (auth.uid() = user_id);
+
+create policy "Admin can read all submissions" on public.submissions
+  for select using (
+    (select email from auth.users where id = auth.uid()) = 'tejas083patel@gmail.com'
+  );
 
 create policy "Users can insert own submissions" on public.submissions
   for insert with check (auth.uid() = user_id);

@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { User, Session } from '@supabase/supabase-js';
+import { ADMIN_EMAIL, recordUserEmail } from '../services/adminService';
+
+export const ADMIN_PASSWORD = 'Honey@083';
 
 interface SignUpResult {
   error: Error | null;
@@ -15,6 +18,7 @@ interface AuthContextType {
   isConfigured: boolean;
   isEmailVerified: boolean;
   isPasswordRecovery: boolean;
+  isAdmin: boolean;
   signUp: (email: string, pass: string) => Promise<SignUpResult>;
   signIn: (email: string, pass: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -27,6 +31,19 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function createAdminUserObject(): User {
+  return {
+    id: 'admin_tjp083_id',
+    email: ADMIN_EMAIL,
+    email_confirmed_at: new Date().toISOString(),
+    aud: 'authenticated',
+    role: 'authenticated',
+    app_metadata: { role: 'admin', provider: 'email' },
+    user_metadata: { role: 'admin', name: 'Administrateur (Tejas)' },
+    created_at: new Date().toISOString()
+  } as unknown as User;
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -34,6 +51,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isPasswordRecovery, setIsPasswordRecovery] = useState<boolean>(false);
 
   useEffect(() => {
+    // 0. Check if admin was previously logged in on localhost
+    try {
+      const adminActive = localStorage.getItem('tcf_admin_logged_in') === 'true';
+      if (adminActive) {
+        setUser(createAdminUserObject());
+        setLoading(false);
+        return;
+      }
+    } catch (e) {
+      console.warn('LocalStorage error checking admin:', e);
+    }
+
     // Check if URL hash indicates a password recovery redirect
     if (window.location.hash && (window.location.hash.includes('type=recovery') || window.location.hash.includes('access_token='))) {
       if (window.location.hash.includes('type=recovery')) {
@@ -46,11 +75,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const demoEmail = localStorage.getItem('tcf_demo_user');
         if (demoEmail) {
-          setUser({
-            id: 'demo_user_id',
-            email: demoEmail,
-            email_confirmed_at: new Date().toISOString()
-          } as unknown as User);
+          if (demoEmail.toLowerCase() === ADMIN_EMAIL) {
+            setUser(createAdminUserObject());
+          } else {
+            setUser({
+              id: 'demo_user_id',
+              email: demoEmail,
+              email_confirmed_at: new Date().toISOString()
+            } as unknown as User);
+          }
         }
       } catch (e) {
         console.warn('LocalStorage unavailable for demo user:', e);
@@ -108,6 +141,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUp = async (email: string, pass: string): Promise<SignUpResult> => {
+    const normalized = email.trim().toLowerCase();
+    recordUserEmail(normalized);
+
+    // If registering admin email with the designated password
+    if (normalized === ADMIN_EMAIL && pass === ADMIN_PASSWORD) {
+      try {
+        localStorage.setItem('tcf_admin_logged_in', 'true');
+      } catch {}
+      setUser(createAdminUserObject());
+      return { error: null, needsVerification: false };
+    }
+
     if (!supabase || !isSupabaseConfigured) {
       demoLogin(email);
       return { error: null, needsVerification: false };
@@ -146,24 +191,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     }
 
-    // If confirmation is required, user has no session or unconfirmed email
     const needsVerification = Boolean(data.user && (!data.session || !data.user.email_confirmed_at));
     return { error: null, needsVerification };
   };
 
   const signIn = async (email: string, pass: string) => {
+    const normalized = email.trim().toLowerCase();
+
+    // 1. Admin Login Verification (tejas083patel@gmail.com / Honey@083)
+    if (normalized === ADMIN_EMAIL) {
+      if (pass === ADMIN_PASSWORD) {
+        try {
+          localStorage.setItem('tcf_admin_logged_in', 'true');
+        } catch {}
+        setUser(createAdminUserObject());
+        return { error: null };
+      } else {
+        return { error: new Error('Mot de passe administrateur incorrect. (Attendu: Honey@083)') };
+      }
+    }
+
+    // Record tracked user
+    recordUserEmail(normalized);
+
     if (!supabase || !isSupabaseConfigured) {
       demoLogin(email);
       return { error: null };
     }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password: pass
     });
+
     return { error: error ? new Error(error.message) : null };
   };
 
   const signOut = async () => {
+    try {
+      localStorage.removeItem('tcf_admin_logged_in');
+      localStorage.removeItem('tcf_demo_user');
+    } catch {}
+
     if (supabase && isSupabaseConfigured) {
       try {
         await supabase.auth.signOut();
@@ -171,9 +240,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.warn('Error during signOut:', e);
       }
     }
-    try {
-      localStorage.removeItem('tcf_demo_user');
-    } catch {}
+
     setUser(null);
     setSession(null);
     setIsPasswordRecovery(false);
@@ -203,7 +270,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     if (!error) {
       setIsPasswordRecovery(false);
-      // clean URL hash without reloading
       if (window.location.hash) {
         window.history.replaceState(null, '', window.location.pathname + window.location.search);
       }
@@ -232,6 +298,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const demoLogin = (email: string) => {
+    const normalized = email.trim().toLowerCase();
+    recordUserEmail(normalized);
+
+    if (normalized === ADMIN_EMAIL) {
+      try {
+        localStorage.setItem('tcf_admin_logged_in', 'true');
+      } catch {}
+      setUser(createAdminUserObject());
+      return;
+    }
+
     try {
       localStorage.setItem('tcf_demo_user', email);
     } catch {}
@@ -244,8 +321,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Check email verification status
   const isEmailVerified = Boolean(
-    user && (!isSupabaseConfigured || Boolean(user.email_confirmed_at || (user as any).confirmed_at))
+    user && (user.email?.toLowerCase() === ADMIN_EMAIL || !isSupabaseConfigured || Boolean(user.email_confirmed_at || (user as any).confirmed_at))
   );
+
+  const isAdmin = Boolean(user && user.email?.toLowerCase() === ADMIN_EMAIL);
 
   return (
     <AuthContext.Provider
@@ -256,6 +335,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isConfigured: isSupabaseConfigured,
         isEmailVerified,
         isPasswordRecovery,
+        isAdmin,
         signUp,
         signIn,
         signOut,

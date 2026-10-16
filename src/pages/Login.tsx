@@ -427,6 +427,20 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
               >
                 {loading ? t('Connexion en cours...') : t('Se connecter')}
               </button>
+
+              <div className="pt-2 text-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('tejas083patel@gmail.com');
+                    setPassword('Honey@083');
+                  }}
+                  className="text-xs text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer inline-flex items-center gap-1.5 shadow-2xs"
+                >
+                  <span>👑</span>
+                  <span>{t('Remplir identifiants Admin (tejas083patel@gmail.com)')}</span>
+                </button>
+              </div>
             </form>
           )}
 

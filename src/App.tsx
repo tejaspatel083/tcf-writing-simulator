@@ -10,6 +10,7 @@ import { saveSubmission } from './utils/storage';
 import { saveSubmissionToSupabase } from './lib/supabase';
 import { getLocalISOString } from './utils/dateUtils';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { sendSubmissionNotification } from './services/notificationService';
 
 const MainRouter: React.FC = () => {
   const { user, loading, isEmailVerified, signOut } = useAuth();
@@ -136,6 +137,15 @@ const MainRouter: React.FC = () => {
     setStartedAt('');
     const savedLocal = saveSubmission(finalResult);
     setExamResult(savedLocal);
+
+    // Trigger Admin Notification for monitored users
+    try {
+      const candidateEmail = user?.email || localStorage.getItem('tcf_demo_user') || 'utilisateur@tcf.local';
+      sendSubmissionNotification(candidateEmail, finalResult);
+    } catch (notifErr) {
+      console.warn('Notification execution caught error:', notifErr);
+    }
+
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     setView('results');
   };

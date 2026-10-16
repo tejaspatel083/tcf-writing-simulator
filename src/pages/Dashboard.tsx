@@ -6,6 +6,7 @@ import { ExamResult, TaskKey } from '../types/exam';
 import { formatTime } from '../utils/wordCount';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
+import { AdminPanel } from '../components/AdminPanel';
 import { useLanguage } from '../context/LanguageContext';
 
 interface DashboardProps {
@@ -23,10 +24,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onHomeClick,
   onFeedbackClick
 }) => {
-  const { user, signOut, isConfigured } = useAuth();
+  const { user, signOut, isConfigured, isAdmin } = useAuth();
   const { t } = useLanguage();
   const [submissions, setSubmissions] = useState<ExamResult[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [activeTab, setActiveTab] = useState<'submissions' | 'admin'>(isAdmin ? 'admin' : 'submissions');
+
+  useEffect(() => {
+    if (isAdmin) {
+      setActiveTab('admin');
+    }
+  }, [isAdmin]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -88,18 +96,26 @@ export const Dashboard: React.FC<DashboardProps> = ({
         onHomeClick={onHomeClick}
         onFeedbackClick={onFeedbackClick}
         userEmail={user?.email}
-        subtitle={t('Tableau de bord utilisateur')}
+        subtitle={isAdmin ? t('👑 Espace Administrateur') : t('Tableau de bord utilisateur')}
       />
 
       <div className="w-full px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex-1">
         {/* User Greeting & Primary CTA */}
-        <div className="bg-white border border-slate-300 rounded-lg p-5 sm:p-6 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+        <div className="bg-white border border-slate-300 rounded-lg p-5 sm:p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
-              {t('Bonjour,')} <span className="text-blue-700">{displayName}</span>
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
+                {t('Bonjour,')} <span className="text-blue-700">{displayName}</span>
+              </h1>
+              {isAdmin && (
+                <span className="bg-amber-100 text-amber-800 border border-amber-300 text-[11px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
+                  <span>👑</span>
+                  <span>{t('Admin')}</span>
+                </span>
+              )}
+            </div>
             <p className="text-xs text-slate-500 mt-1">
-              {user?.email} • {t('Bienvenue sur votre tableau de bord personnel.')}
+              {user?.email} • {isAdmin ? t('Compte administrateur avec gestion des alertes e-mail.') : t('Bienvenue sur votre tableau de bord personnel.')}
             </p>
           </div>
 
@@ -123,18 +139,52 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
         </div>
 
-        {/* Previous Exam Submissions Table / List */}
-        <div className="bg-white border border-slate-300 rounded-lg p-5 sm:p-6 shadow-xs">
-          <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-6">
-            <div>
-              <h2 className="text-base sm:text-lg font-bold text-slate-800">
-                {t('Mes examens précédents')}
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {t('Consultez le détail de vos rédactions passées et leur nombre de mots.')}
-              </p>
-            </div>
+        {/* Admin Navigation Tabs */}
+        {isAdmin && (
+          <div className="flex items-center gap-2 mb-6 border-b border-slate-200 pb-2">
+            <button
+              type="button"
+              onClick={() => setActiveTab('admin')}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                activeTab === 'admin'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
+              }`}
+            >
+              <span>👑</span>
+              <span>{t('Gestion des Notifications')}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('submissions')}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                activeTab === 'submissions'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
+              }`}
+            >
+              <span>📊</span>
+              <span>{t('Mes Examens')} ({submissions.length})</span>
+            </button>
           </div>
+        )}
+
+        {/* View Content */}
+        {isAdmin && activeTab === 'admin' ? (
+          <AdminPanel />
+        ) : (
+          <div className="bg-white border border-slate-300 rounded-lg p-5 sm:p-6 shadow-xs">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-6">
+              <div>
+                <h2 className="text-base sm:text-lg font-bold text-slate-800">
+                  {t('Mes examens précédents')}
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {t('Consultez le détail de vos rédactions passées et leur nombre de mots.')}
+                </p>
+              </div>
+            </div>
 
           {loading ? (
             <div className="text-center py-8 text-slate-500 text-sm font-medium">
@@ -288,6 +338,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
           )}
         </div>
+        )}
 
         {/* Confidentiality / Privacy Notice */}
         <div className="mt-8 bg-slate-100 border border-slate-200 rounded p-4 text-xs text-slate-600 leading-relaxed">
