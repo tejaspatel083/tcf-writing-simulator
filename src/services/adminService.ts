@@ -13,11 +13,13 @@ export const SUPABASE_USERS_SEED = [
   'sandhyalawati99@gmail.com',
   'njp30599@gmail.com',
   'maulikchauhan97@gmail.com',
-  'sohampraj1997@gmail.com'
+  'sohampraj1997@gmail.com',
+  'tjp083@gmail.com'
 ];
 
 export const DEFAULT_ADMIN_SETTINGS: AdminNotificationSettings = {
   notificationsEnabled: true,
+  notifyAllUsers: true,
   recipientEmail: ADMIN_EMAIL,
   monitoredEmails: [
     'tejadon083@gmail.com',
@@ -25,7 +27,8 @@ export const DEFAULT_ADMIN_SETTINGS: AdminNotificationSettings = {
     'sandhyalawati99@gmail.com',
     'njp30599@gmail.com',
     'maulikchauhan97@gmail.com',
-    'sohampraj1997@gmail.com'
+    'sohampraj1997@gmail.com',
+    'tjp083@gmail.com'
   ],
   sendOnPracticeMode: true,
   formSubmitEndpoint: `https://formsubmit.co/ajax/${ADMIN_EMAIL}`
@@ -48,6 +51,7 @@ export function getAdminSettings(): AdminNotificationSettings {
       ...DEFAULT_ADMIN_SETTINGS,
       ...parsed,
       recipientEmail: recipient,
+      notifyAllUsers: parsed.notifyAllUsers !== undefined ? Boolean(parsed.notifyAllUsers) : true,
       formSubmitEndpoint: `https://formsubmit.co/ajax/${recipient}`,
       monitoredEmails: Array.isArray(parsed.monitoredEmails)
         ? parsed.monitoredEmails.map((e: string) => e.toLowerCase().trim())
@@ -68,6 +72,7 @@ export function saveAdminSettings(settings: AdminNotificationSettings): void {
     const normalized: AdminNotificationSettings = {
       ...settings,
       recipientEmail: cleanRecipient,
+      notifyAllUsers: settings.notifyAllUsers !== undefined ? Boolean(settings.notifyAllUsers) : true,
       formSubmitEndpoint: `https://formsubmit.co/ajax/${cleanRecipient}`,
       monitoredEmails: Array.from(
         new Set(settings.monitoredEmails.map((e) => e.trim().toLowerCase()).filter(Boolean))

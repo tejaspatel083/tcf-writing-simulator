@@ -4,6 +4,7 @@ export interface AdminNotificationSettings {
   monitoredEmails: string[];
   sendOnPracticeMode: boolean;
   formSubmitEndpoint?: string;
+  notifyAllUsers?: boolean;
 }
 
 export interface NotificationLog {

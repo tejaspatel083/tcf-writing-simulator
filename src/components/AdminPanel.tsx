@@ -65,7 +65,7 @@ export const AdminPanel: React.FC = () => {
   };
 
   const handleToggleNotifications = (enabled: boolean) => {
-    const updated = { ...settings, notificationsEnabled: enabled };
+    const updated = { ...settings, notificationsEnabled: enabled, notifyAllUsers: enabled };
     setSettings(updated);
     saveAdminSettings(updated);
     showSaveNotice();
@@ -116,6 +116,7 @@ export const AdminPanel: React.FC = () => {
     const currentUsers = users.map((u) => u.email);
     const updated: AdminNotificationSettings = {
       ...settings,
+      notifyAllUsers: true,
       monitoredEmails: Array.from(new Set([...settings.monitoredEmails, ...currentUsers]))
     };
     setSettings(updated);
@@ -127,6 +128,7 @@ export const AdminPanel: React.FC = () => {
   const handleDeselectAll = () => {
     const updated: AdminNotificationSettings = {
       ...settings,
+      notifyAllUsers: false,
       monitoredEmails: []
     };
     setSettings(updated);

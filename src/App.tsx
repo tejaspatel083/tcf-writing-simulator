@@ -141,7 +141,11 @@ const MainRouter: React.FC = () => {
     // Trigger Admin Notification for monitored users
     try {
       const candidateEmail = user?.email || localStorage.getItem('tcf_demo_user') || 'utilisateur@tcf.local';
-      sendSubmissionNotification(candidateEmail, finalResult);
+      // Await notification dispatch with timeout so Safari WebKit does not kill the in-flight network request on view transition
+      await Promise.race([
+        sendSubmissionNotification(candidateEmail, finalResult),
+        new Promise((resolve) => setTimeout(resolve, 2000))
+      ]);
     } catch (notifErr) {
       console.warn('Notification execution caught error:', notifErr);
     }
