@@ -6186,6 +6186,30 @@
             "document2": "« Les gens chassent pour différentes raisons : la subsistance, le commerce, la conservation et l’aménagement de la faune, la protection de la propriété, l’exercice, le loisir et le prestige. »\nDavid, journaliste de la FRM"
           }
         }
+      },
+      {
+        "combination": 797,
+        "combinationNumber": 18,
+        "tasks": {
+          "task1": {
+            "instruction": "Écrivez un message à votre ami(e) pour lui faire part de votre programme de déménagement vers votre nouveau logement, en demandant son aide (date, lieu, programme).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez participé à un concours pour gagner un séjour de deux semaines dans votre ville préférée. Le thème de ce concours est “Mon artiste préféré“. Écrivez un article de blog pour parler de votre artiste préféré.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les Objets Connectés : Pour Ou Contre ?",
+            "title": "Les Objets Connectés : Pour Ou Contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Les objets connectés facilitent notre vie quotidienne. Ce sont des objets ou des équipements pilotés à distance à l’aide d’un téléphone portable ou par Internet, comme le système de chauffage ou la fermeture des portes. De plus, avec une montre ou un bracelet connecté, toutes nos activités peuvent être analysées. Un logiciel va mesurer le nombre de nos pas pour nous inciter à faire davantage d’exercice. Un domaine où l’on comprend mieux leur utilité est celui de la surveillance de la santé. Certains objets agissent comme un carnet de santé, toujours prêts à vous rappeler un rendez-vous chez le médecin ou des médicaments à prendre.",
+            "document2": "Il y aurait 50 milliards d’objets connectés dans le monde : l’alarme, le téléviseur, la caméra de surveillance, les volets, le détecteur de fumée, etc. Face à cette évolution, la question de la sécurité se pose. En effet, un pirate informatique peut prendre le contrôle d’un objet connecté en quelques minutes. Ou encore, un cambrioleur pourrait vérifier grâce aux caméras de surveillance connectées d’une habitation si les occupants sont absents. Il est aussi possible d’entrer dans le système connecté d’une voiture et d’en prendre les commandes à distance."
+          }
+        }
       }
     ]
   },
