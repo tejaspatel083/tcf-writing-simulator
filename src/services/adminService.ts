@@ -7,15 +7,51 @@ export const SETTINGS_STORAGE_KEY = 'tcf_admin_notification_settings';
 export const LOGS_STORAGE_KEY = 'tcf_admin_notification_logs';
 export const KNOWN_USERS_STORAGE_KEY = 'tcf_known_users_list';
 
+export const OWNER_EMAILS = [
+  'tejas083patel@gmail.com',
+  'tejadon083@gmail.com',
+  'tejadon@gmail.com',
+  'tjp083@gmail.com',
+  'tejaspatel083@gmail.com'
+];
+
+/**
+ * Checks whether the given email belongs to the site owner/admin.
+ */
+export function isOwnerEmail(email?: string | null): boolean {
+  if (!email) return false;
+  const n = email.trim().toLowerCase();
+  return (
+    n === ADMIN_EMAIL.toLowerCase() ||
+    n === 'tejadon083@gmail.com' ||
+    n === 'tejadon@gmail.com' ||
+    n === 'tjp083@gmail.com' ||
+    n === 'tejaspatel083@gmail.com'
+  );
+}
+
+/**
+ * Normalizes email input, auto-expanding shorthand handles like "tejadon" or "tejadon083" to full Gmail addresses.
+ */
+export function normalizeUserEmail(rawEmail: string): string {
+  if (!rawEmail) return '';
+  let clean = rawEmail.trim().toLowerCase();
+  if (!clean.includes('@')) {
+    if (clean === 'tejadon' || clean === 'tejadon083') return 'tejadon083@gmail.com';
+    if (clean === 'tjp' || clean === 'tjp083') return 'tjp083@gmail.com';
+    if (clean === 'tejas' || clean === 'tejas083' || clean === 'tejas083patel') return 'tejas083patel@gmail.com';
+    return `${clean}@gmail.com`;
+  }
+  return clean;
+}
+
 // Seeded users from Supabase database (public.profiles)
 export const SUPABASE_USERS_SEED = [
-  'tejadon083@gmail.com',
   'siyam.sajnan.chowdhury@gmail.com',
   'sandhyalawati99@gmail.com',
   'njp30599@gmail.com',
   'maulikchauhan97@gmail.com',
-  'sohampraj1997@gmail.com',
-  'tjp083@gmail.com'
+  'sohampraj1997@gmail.com'
 ];
 
 export const DEFAULT_ADMIN_SETTINGS: AdminNotificationSettings = {
@@ -23,13 +59,11 @@ export const DEFAULT_ADMIN_SETTINGS: AdminNotificationSettings = {
   notifyAllUsers: true,
   recipientEmail: ADMIN_EMAIL,
   monitoredEmails: [
-    'tejadon083@gmail.com',
     'siyam.sajnan.chowdhury@gmail.com',
     'sandhyalawati99@gmail.com',
     'njp30599@gmail.com',
     'maulikchauhan97@gmail.com',
-    'sohampraj1997@gmail.com',
-    'tjp083@gmail.com'
+    'sohampraj1997@gmail.com'
   ],
   sendOnPracticeMode: true,
   formSubmitEndpoint: `https://formsubmit.co/ajax/${ADMIN_EMAIL}`
@@ -207,7 +241,7 @@ export async function getTrackedUsers(): Promise<TrackedUser[]> {
 
   // Convert to TrackedUser list
   const users: TrackedUser[] = Array.from(allEmails)
-    .filter((e) => e && e.includes('@') && e !== ADMIN_EMAIL)
+    .filter((e) => e && e.includes('@') && !isOwnerEmail(e))
     .sort()
     .map((email) => ({
       email,

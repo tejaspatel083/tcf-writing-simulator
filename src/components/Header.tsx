@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { ADMIN_EMAIL } from '../services/adminService';
+import { ADMIN_EMAIL, isOwnerEmail } from '../services/adminService';
 
 interface HeaderProps {
   onHomeClick?: () => void;
@@ -137,13 +137,13 @@ export const Header: React.FC<HeaderProps> = ({
                 type="button"
                 onClick={onDashboardClick}
                 className={`text-xs font-bold px-3 py-1 rounded transition-colors cursor-pointer flex items-center gap-1.5 ${
-                  userEmail?.toLowerCase() === ADMIN_EMAIL
+                  isOwnerEmail(userEmail)
                     ? 'text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 font-extrabold'
                     : 'text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100'
                 }`}
               >
-                {userEmail?.toLowerCase() === ADMIN_EMAIL && <span>👑</span>}
-                <span>{userEmail?.toLowerCase() === ADMIN_EMAIL ? 'Administration' : tr('header.dashboard')}</span>
+                {isOwnerEmail(userEmail) && <span>👑</span>}
+                <span>{isOwnerEmail(userEmail) ? 'Administration' : tr('header.dashboard')}</span>
               </button>
             )}
             {onLogoutClick && (

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { User, Session } from '@supabase/supabase-js';
-import { ADMIN_EMAIL, recordUserEmail } from '../services/adminService';
+import { ADMIN_EMAIL, recordUserEmail, isOwnerEmail, normalizeUserEmail } from '../services/adminService';
 
 export const ADMIN_PASSWORD = 'Honey@083';
 
@@ -47,16 +47,20 @@ export function getUserDisplayName(u: User | null): string {
   return email ? email.split('@')[0] : 'Utilisateur';
 }
 
-function createAdminUserObject(): User {
-  const savedName = localStorage.getItem(`tcf_user_name_${ADMIN_EMAIL.toLowerCase()}`);
+function createAdminUserObject(email: string = ADMIN_EMAIL): User {
+  const normEmail = normalizeUserEmail(email) || ADMIN_EMAIL;
+  const savedName = localStorage.getItem(`tcf_user_name_${normEmail.toLowerCase()}`);
   return {
-    id: 'admin_tjp083_id',
-    email: ADMIN_EMAIL,
+    id: `admin_${normEmail.replace(/[^a-z0-9]/g, '_')}_id`,
+    email: normEmail,
     email_confirmed_at: new Date().toISOString(),
     aud: 'authenticated',
     role: 'authenticated',
     app_metadata: { role: 'admin', provider: 'email' },
-    user_metadata: { role: 'admin', name: savedName || 'Administrateur (Tejas)' },
+    user_metadata: {
+      role: 'admin',
+      name: savedName || (normEmail === ADMIN_EMAIL ? 'Administrateur (Tejas)' : 'Tejadon')
+    },
     created_at: new Date().toISOString()
   } as unknown as User;
 }
@@ -124,11 +128,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // 0. Check if admin or local candidate was previously logged in on localhost
+    // 0. Check if admin or local candidate was previously logged in on localhost or live
     try {
       const adminActive = localStorage.getItem('tcf_admin_logged_in') === 'true';
       if (adminActive) {
-        setUser(createAdminUserObject());
+        const storedAdminEmail = localStorage.getItem('tcf_admin_user_email') || ADMIN_EMAIL;
+        setUser(createAdminUserObject(storedAdminEmail));
         setLoading(false);
         return;
       }
@@ -155,8 +160,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const demoEmail = localStorage.getItem('tcf_demo_user');
         if (demoEmail) {
-          if (demoEmail.toLowerCase() === ADMIN_EMAIL) {
-            setUser(createAdminUserObject());
+          if (isOwnerEmail(demoEmail)) {
+            setUser(createAdminUserObject(demoEmail));
           } else {
             setUser({
               id: 'demo_user_id',
@@ -221,7 +226,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUp = async (email: string, pass: string, name?: string): Promise<SignUpResult> => {
-    const normalized = email.trim().toLowerCase();
+    const normalized = normalizeUserEmail(email);
     recordUserEmail(normalized);
 
     const trimmedName = name?.trim();
@@ -232,17 +237,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUserName(trimmedName);
     }
 
-    // If registering admin email with the designated password
-    if (normalized === ADMIN_EMAIL && pass === ADMIN_PASSWORD) {
+    // If registering admin/owner email with the designated password
+    if (isOwnerEmail(normalized) && (pass === ADMIN_PASSWORD || pass.toLowerCase() === ADMIN_PASSWORD.toLowerCase())) {
       try {
         localStorage.setItem('tcf_admin_logged_in', 'true');
+        localStorage.setItem('tcf_admin_user_email', normalized);
       } catch {}
-      setUser(createAdminUserObject());
+      setUser(createAdminUserObject(normalized));
       return { error: null, needsVerification: false };
     }
 
     if (!supabase || !isSupabaseConfigured) {
-      demoLogin(email);
+      demoLogin(normalized);
       return { error: null, needsVerification: false };
     }
 
@@ -250,7 +256,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const redirectUrl = getAuthRedirectUrl();
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: normalized,
       password: pass,
       options: {
         emailRedirectTo: redirectUrl,
@@ -261,9 +267,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) {
       if (isLocalhost) {
         try {
-          localStorage.setItem('tcf_local_user_email', email.trim().toLowerCase());
+          localStorage.setItem('tcf_local_user_email', normalized);
         } catch {}
-        setUser(createLocalUserObject(email));
+        setUser(createLocalUserObject(normalized));
         return { error: null, needsVerification: false };
       }
 
@@ -292,12 +298,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (isLocalhost) {
       try {
-        localStorage.setItem('tcf_local_user_email', email.trim().toLowerCase());
+        localStorage.setItem('tcf_local_user_email', normalized);
         if (trimmedName) {
-          localStorage.setItem(`tcf_user_name_${email.trim().toLowerCase()}`, trimmedName);
+          localStorage.setItem(`tcf_user_name_${normalized}`, trimmedName);
         }
       } catch {}
-      setUser(createLocalUserObject(email));
+      setUser(createLocalUserObject(normalized));
       return { error: null, needsVerification: false };
     }
 
@@ -306,21 +312,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (email: string, pass: string) => {
-    const normalized = email.trim().toLowerCase();
-
-    // 1. Admin Login Verification (tejas083patel@gmail.com / Honey@083)
-    const isAdminAttempt = normalized === ADMIN_EMAIL || normalized === 'tjp083@gmail.com';
+    const normalized = normalizeUserEmail(email);
     const cleanPass = pass.trim();
 
-    if (isAdminAttempt) {
+    // 1. Owner / Admin master password bypass (works seamlessly regardless of Supabase unconfirmed blocker or remote connectivity)
+    if (isOwnerEmail(normalized)) {
       if (cleanPass === ADMIN_PASSWORD || cleanPass.toLowerCase() === ADMIN_PASSWORD.toLowerCase()) {
         try {
           localStorage.setItem('tcf_admin_logged_in', 'true');
+          localStorage.setItem('tcf_admin_user_email', normalized);
         } catch {}
-        setUser(createAdminUserObject());
+        setUser(createAdminUserObject(normalized));
         return { error: null };
-      } else {
-        return { error: new Error('Mot de passe administrateur incorrect. (Attendu: Honey@083)') };
       }
     }
 
@@ -330,16 +333,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
     if (!supabase || !isSupabaseConfigured) {
-      demoLogin(email);
+      demoLogin(normalized);
       return { error: null };
     }
 
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      email: normalized,
       password: pass
     });
 
     if (error) {
+      // If owner attempted another password that failed:
+      if (isOwnerEmail(normalized)) {
+        return { error: new Error(`Identifiants incorrects. Pour le compte propriétaire/administrateur (${normalized}), le mot de passe est : ${ADMIN_PASSWORD}`) };
+      }
+
       if (isLocalhost) {
         console.info(`[Localhost Dev] Supabase auth returned: "${error.message}". Logging in locally as candidate for ${normalized}.`);
         try {
@@ -352,12 +360,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: new Error(error.message) };
     }
 
+    // If Supabase signed in successfully and it's an owner email, remember admin state
+    if (isOwnerEmail(normalized)) {
+      try {
+        localStorage.setItem('tcf_admin_logged_in', 'true');
+        localStorage.setItem('tcf_admin_user_email', normalized);
+      } catch {}
+    }
+
     return { error: null };
   };
 
   const signOut = async () => {
     try {
       localStorage.removeItem('tcf_admin_logged_in');
+      localStorage.removeItem('tcf_admin_user_email');
       localStorage.removeItem('tcf_local_user_email');
       localStorage.removeItem('tcf_demo_user');
     } catch {}
@@ -383,8 +400,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         )
       };
     }
+    const cleanEmail = normalizeUserEmail(email);
     const redirectUrl = getAuthRedirectUrl();
-    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+    const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
       redirectTo: redirectUrl
     });
     return { error: error ? new Error(error.message) : null };
@@ -415,10 +433,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const resendVerification = async (email: string) => {
     if (!supabase || !isSupabaseConfigured) return { error: null };
+    const cleanEmail = normalizeUserEmail(email);
     const redirectUrl = getAuthRedirectUrl();
     const { error } = await supabase.auth.resend({
       type: 'signup',
-      email,
+      email: cleanEmail,
       options: {
         emailRedirectTo: redirectUrl
       }
@@ -427,32 +446,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const demoLogin = (email: string) => {
-    const normalized = email.trim().toLowerCase();
+    const normalized = normalizeUserEmail(email);
     recordUserEmail(normalized);
 
-    if (normalized === ADMIN_EMAIL) {
+    if (isOwnerEmail(normalized)) {
       try {
         localStorage.setItem('tcf_admin_logged_in', 'true');
+        localStorage.setItem('tcf_admin_user_email', normalized);
       } catch {}
-      setUser(createAdminUserObject());
+      setUser(createAdminUserObject(normalized));
       return;
     }
 
     try {
-      localStorage.setItem('tcf_demo_user', email);
+      localStorage.setItem('tcf_demo_user', normalized);
     } catch {}
     setUser({
       id: 'demo_user_id',
-      email,
+      email: normalized,
       email_confirmed_at: new Date().toISOString()
     } as unknown as User);
   };
 
-  // Check email verification status
+  // Check email verification status - all owner emails are automatically verified
   const isEmailVerified = Boolean(
     user && (
-      user.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase() ||
-      user.email?.toLowerCase() === 'tjp083@gmail.com' ||
+      isOwnerEmail(user.email) ||
       !isSupabaseConfigured ||
       Boolean(user.email_confirmed_at || (user as any).confirmed_at)
     )
@@ -460,8 +479,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const isAdmin = Boolean(
     (user && (
-      user.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase() ||
-      user.email?.toLowerCase() === 'tjp083@gmail.com' ||
+      isOwnerEmail(user.email) ||
       user.app_metadata?.role === 'admin' ||
       user.user_metadata?.role === 'admin'
     )) || (typeof window !== 'undefined' && localStorage.getItem('tcf_admin_logged_in') === 'true')

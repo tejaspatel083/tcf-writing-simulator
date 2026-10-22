@@ -4,6 +4,7 @@ import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { Eye, EyeOff } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { normalizeUserEmail } from '../services/adminService';
 
 interface LoginProps {
   onSuccess: () => void;
@@ -92,7 +93,8 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
     setLoading(true);
 
     try {
-      const res = await signIn(email.trim(), password);
+      const cleanEmail = normalizeUserEmail(email);
+      const res = await signIn(cleanEmail, password);
 
       if (res.error) {
         const msg = res.error.message.toLowerCase();
@@ -110,7 +112,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
         // Handle "Remember Me"
         try {
           if (rememberMe) {
-            localStorage.setItem('tcf_remembered_email', email.trim());
+            localStorage.setItem('tcf_remembered_email', cleanEmail);
           } else {
             localStorage.removeItem('tcf_remembered_email');
           }
@@ -149,7 +151,8 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
     setLoading(true);
 
     try {
-      const res = await signUp(email.trim(), password, fullName.trim());
+      const cleanEmail = normalizeUserEmail(email);
+      const res = await signUp(cleanEmail, password, fullName.trim());
 
       if (res.error) {
         if (res.alreadyExists) {
@@ -160,7 +163,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
         }
       } else if (res.needsVerification) {
         setInfoMsg(
-          `Un lien de confirmation a été envoyé à ${email}. Veuillez ouvrir votre boîte de réception (et vérifier vos spams), cliquer sur le lien pour valider votre compte, puis vous connecter.`
+          `Un lien de confirmation a été envoyé à ${cleanEmail}. Veuillez ouvrir votre boîte de réception (et vérifier vos spams), cliquer sur le lien pour valider votre compte, puis vous connecter.`
         );
         setShowResend(true);
         setMode('login');
@@ -169,7 +172,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
       } else {
         try {
           if (rememberMe) {
-            localStorage.setItem('tcf_remembered_email', email.trim());
+            localStorage.setItem('tcf_remembered_email', cleanEmail);
           }
         } catch {}
         onSuccess();
@@ -194,12 +197,13 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
     setLoading(true);
 
     try {
-      const res = await resetPassword(email.trim());
+      const cleanEmail = normalizeUserEmail(email);
+      const res = await resetPassword(cleanEmail);
       if (res.error) {
         setErrorMsg(res.error.message);
       } else {
         setInfoMsg(
-          `Si un compte est associé à l'adresse ${email}, vous allez recevoir un e-mail avec un lien pour réinitialiser votre mot de passe.`
+          `Si un compte est associé à l'adresse ${cleanEmail}, vous allez recevoir un e-mail avec un lien pour réinitialiser votre mot de passe.`
         );
       }
     } catch (err: any) {
@@ -254,11 +258,12 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
     setResending(true);
     setErrorMsg(null);
     try {
-      const res = await resendVerification(email.trim());
+      const cleanEmail = normalizeUserEmail(email);
+      const res = await resendVerification(cleanEmail);
       if (res.error) {
         setErrorMsg(res.error.message);
       } else {
-        setInfoMsg(`Un nouveau lien de validation a été envoyé à ${email}.`);
+        setInfoMsg(`Un nouveau lien de validation a été envoyé à ${cleanEmail}.`);
       }
     } catch (err: any) {
       setErrorMsg(err.message || "Erreur lors de l'envoi.");
@@ -366,11 +371,15 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
                   {t('Adresse e-mail')}
                 </label>
                 <input
-                  type="email"
+                  type="text"
+                  inputMode="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="candidat.tcf@exemple.com"
+                  placeholder="candidat.tcf@exemple.com ou tejadon"
                   className="w-full px-3 py-2 border border-slate-300 rounded text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 />
               </div>
@@ -455,7 +464,11 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
                   {t('Adresse e-mail')}
                 </label>
                 <input
-                  type="email"
+                  type="text"
+                  inputMode="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -546,7 +559,11 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
                   {t('Adresse e-mail')}
                 </label>
                 <input
-                  type="email"
+                  type="text"
+                  inputMode="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}

@@ -4,7 +4,8 @@ import {
   addNotificationLog,
   recordUserEmail,
   ADMIN_EMAIL,
-  FORMSUBMIT_TOKEN
+  FORMSUBMIT_TOKEN,
+  isOwnerEmail
 } from './adminService';
 
 /**
@@ -87,7 +88,7 @@ function submitViaHiddenIframe(targetEmail: string, payload: Record<string, stri
 
     const form = document.createElement('form');
     form.method = 'POST';
-    const formTarget = (targetEmail && targetEmail !== ADMIN_EMAIL)
+    const formTarget = (targetEmail && !isOwnerEmail(targetEmail))
       ? `https://formsubmit.co/${encodeURIComponent(targetEmail)}`
       : `https://formsubmit.co/${FORMSUBMIT_TOKEN}`;
     form.action = formTarget;
@@ -150,7 +151,7 @@ async function dispatchNotification(
   payload: Record<string, string>
 ): Promise<boolean> {
   const cleanTarget = (targetEmail || '').trim().toLowerCase();
-  const isAdmin = !cleanTarget || cleanTarget === ADMIN_EMAIL.toLowerCase() || cleanTarget === 'tjp083@gmail.com';
+  const isAdmin = !cleanTarget || isOwnerEmail(cleanTarget);
 
   const primaryEndpoint = isAdmin
     ? `https://formsubmit.co/ajax/${FORMSUBMIT_TOKEN}`
