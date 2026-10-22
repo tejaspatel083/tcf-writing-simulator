@@ -8,6 +8,7 @@ import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { AdminPanel } from '../components/AdminPanel';
 import { useLanguage } from '../context/LanguageContext';
+import { UserProfileModal } from '../components/UserProfileModal';
 
 interface DashboardProps {
   onStartNewExam: () => void;
@@ -24,11 +25,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onHomeClick,
   onFeedbackClick
 }) => {
-  const { user, signOut, isConfigured, isAdmin } = useAuth();
+  const { user, userName, signOut, isConfigured, isAdmin } = useAuth();
   const { t } = useLanguage();
   const [submissions, setSubmissions] = useState<ExamResult[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'submissions' | 'admin'>(isAdmin ? 'admin' : 'submissions');
+  const [showProfileModal, setShowProfileModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (isAdmin) {
@@ -95,6 +97,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <Header
         onHomeClick={onHomeClick}
         onFeedbackClick={onFeedbackClick}
+        onProfileClick={() => setShowProfileModal(true)}
         userEmail={user?.email}
         subtitle={isAdmin ? t('👑 Espace Administrateur') : t('Tableau de bord utilisateur')}
       />
@@ -104,8 +107,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className="bg-white border border-slate-300 rounded-lg p-5 sm:p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
-                {t('Bonjour,')} <span className="text-blue-700">{displayName}</span>
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-1.5 flex-wrap">
+                <span>{t('Bonjour,')}</span>
+                <span className="text-blue-700">{userName || displayName}</span>
+                <button
+                  type="button"
+                  onClick={() => setShowProfileModal(true)}
+                  className="text-xs text-slate-400 hover:text-blue-700 p-1 rounded-md hover:bg-slate-100 transition-colors cursor-pointer ml-1 inline-flex items-center"
+                  title={t('Modifier mon profil')}
+                >
+                  ✏️
+                </button>
               </h1>
               {isAdmin && (
                 <span className="bg-amber-100 text-amber-800 border border-amber-300 text-[11px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
@@ -119,11 +131,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto flex-wrap">
             <button
               type="button"
               onClick={onStartNewExam}
-              className="flex-1 sm:flex-initial px-5 py-2.5 rounded bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+              className="flex-1 sm:flex-initial px-4 py-2.5 rounded bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
             >
               <span>+</span>
               <span>{t('Commencer un nouvel examen')}</span>
@@ -131,8 +143,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
             <button
               type="button"
+              onClick={() => setShowProfileModal(true)}
+              className="px-3 py-2.5 rounded border border-slate-300 bg-white text-slate-700 font-semibold text-xs hover:bg-slate-100 transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <span>👤</span>
+              <span>{t('Mon Profil')}</span>
+            </button>
+
+            <button
+              type="button"
               onClick={signOut}
-              className="px-3.5 py-2.5 rounded border border-slate-300 bg-white text-slate-700 font-semibold text-xs hover:bg-slate-100 transition-colors cursor-pointer"
+              className="px-3 py-2.5 rounded border border-slate-300 bg-white text-slate-700 font-semibold text-xs hover:bg-slate-100 transition-colors cursor-pointer"
             >
               {t('Déconnexion')}
             </button>
@@ -382,6 +403,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
           🔒 <strong>{t('Respect de la vie privée :')}</strong> {t("Vos réponses rédigées sont enregistrées de façon confidentielle dans votre compte personnel uniquement. Vos soumissions ne sont jamais publiques, aucun profil public n'est généré, et aucun classement n'est partagé.")}
         </div>
       </div>
+
+      {/* User Profile Modal */}
+      <UserProfileModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+      />
 
       <Footer onFeedbackClick={onFeedbackClick} />
     </div>

@@ -19,7 +19,7 @@ interface AuthContextType {
   isEmailVerified: boolean;
   isPasswordRecovery: boolean;
   isAdmin: boolean;
-  signUp: (email: string, pass: string) => Promise<SignUpResult>;
+  signUp: (email: string, pass: string, name?: string) => Promise<SignUpResult>;
   signIn: (email: string, pass: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
@@ -27,11 +27,28 @@ interface AuthContextType {
   clearPasswordRecovery: () => void;
   resendVerification: (email: string) => Promise<{ error: Error | null }>;
   demoLogin: (email: string) => void;
+  userName: string;
+  updateUserName: (name: string) => Promise<{ error: Error | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+export function getUserDisplayName(u: User | null): string {
+  if (!u) return 'Utilisateur';
+  const email = u.email?.trim().toLowerCase();
+  if (email) {
+    const local = localStorage.getItem(`tcf_user_name_${email}`);
+    if (local && local.trim().length > 0) return local.trim();
+  }
+  const metaName = (u.user_metadata as any)?.name || (u.user_metadata as any)?.full_name;
+  if (metaName && typeof metaName === 'string' && metaName.trim().length > 0) {
+    return metaName.trim();
+  }
+  return email ? email.split('@')[0] : 'Utilisateur';
+}
+
 function createAdminUserObject(): User {
+  const savedName = localStorage.getItem(`tcf_user_name_${ADMIN_EMAIL.toLowerCase()}`);
   return {
     id: 'admin_tjp083_id',
     email: ADMIN_EMAIL,
@@ -39,13 +56,14 @@ function createAdminUserObject(): User {
     aud: 'authenticated',
     role: 'authenticated',
     app_metadata: { role: 'admin', provider: 'email' },
-    user_metadata: { role: 'admin', name: 'Administrateur (Tejas)' },
+    user_metadata: { role: 'admin', name: savedName || 'Administrateur (Tejas)' },
     created_at: new Date().toISOString()
   } as unknown as User;
 }
 
 function createLocalUserObject(email: string): User {
   const norm = email.trim().toLowerCase();
+  const savedName = localStorage.getItem(`tcf_user_name_${norm}`);
   return {
     id: `local_user_${norm.replace(/[^a-z0-9]/g, '_')}`,
     email: norm,
@@ -53,7 +71,7 @@ function createLocalUserObject(email: string): User {
     aud: 'authenticated',
     role: 'authenticated',
     app_metadata: { provider: 'email' },
-    user_metadata: { name: norm.split('@')[0] },
+    user_metadata: { name: savedName || norm.split('@')[0] },
     created_at: new Date().toISOString()
   } as unknown as User;
 }
@@ -63,6 +81,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isPasswordRecovery, setIsPasswordRecovery] = useState<boolean>(false);
+  const [userName, setUserName] = useState<string>(() => getUserDisplayName(null));
+
+  useEffect(() => {
+    setUserName(getUserDisplayName(user));
+  }, [user]);
+
+  const updateUserName = async (newName: string): Promise<{ error: Error | null }> => {
+    const trimmed = newName.trim();
+    if (!trimmed) {
+      return { error: new Error('Le nom ne peut pas être vide.') };
+    }
+
+    if (user?.email) {
+      localStorage.setItem(`tcf_user_name_${user.email.trim().toLowerCase()}`, trimmed);
+    }
+    setUserName(trimmed);
+
+    setUser((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        user_metadata: {
+          ...(prev.user_metadata || {}),
+          name: trimmed,
+          full_name: trimmed
+        }
+      };
+    });
+
+    if (supabase && isSupabaseConfigured && user && !user.id.startsWith('local_user_') && user.id !== 'admin_tjp083_id') {
+      try {
+        await supabase.auth.updateUser({
+          data: { name: trimmed, full_name: trimmed }
+        });
+      } catch (e) {
+        console.warn('Could not update user metadata on Supabase:', e);
+      }
+    }
+
+    return { error: null };
+  };
 
   useEffect(() => {
     // 0. Check if admin or local candidate was previously logged in on localhost
@@ -161,9 +220,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return 'https://tejaspatel083.github.io/tcf-writing-simulator/';
   };
 
-  const signUp = async (email: string, pass: string): Promise<SignUpResult> => {
+  const signUp = async (email: string, pass: string, name?: string): Promise<SignUpResult> => {
     const normalized = email.trim().toLowerCase();
     recordUserEmail(normalized);
+
+    const trimmedName = name?.trim();
+    if (trimmedName) {
+      try {
+        localStorage.setItem(`tcf_user_name_${normalized}`, trimmedName);
+      } catch {}
+      setUserName(trimmedName);
+    }
 
     // If registering admin email with the designated password
     if (normalized === ADMIN_EMAIL && pass === ADMIN_PASSWORD) {
@@ -186,7 +253,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email,
       password: pass,
       options: {
-        emailRedirectTo: redirectUrl
+        emailRedirectTo: redirectUrl,
+        data: trimmedName ? { name: trimmedName, full_name: trimmedName } : undefined
       }
     });
 
@@ -225,6 +293,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (isLocalhost) {
       try {
         localStorage.setItem('tcf_local_user_email', email.trim().toLowerCase());
+        if (trimmedName) {
+          localStorage.setItem(`tcf_user_name_${email.trim().toLowerCase()}`, trimmedName);
+        }
       } catch {}
       setUser(createLocalUserObject(email));
       return { error: null, needsVerification: false };
@@ -413,7 +484,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updatePassword,
         clearPasswordRecovery,
         resendVerification,
-        demoLogin
+        demoLogin,
+        userName,
+        updateUserName
       }}
     >
       {children}

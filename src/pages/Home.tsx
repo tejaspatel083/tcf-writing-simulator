@@ -4,6 +4,7 @@ import questionsData from '../data/questions.json';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
+import { UserProfileModal } from '../components/UserProfileModal';
 import { useAuth } from '../context/AuthContext';
 import { fetchSubmissionsFromSupabase } from '../lib/supabase';
 import {
@@ -92,8 +93,9 @@ export const Home: React.FC<HomeProps> = ({
   onLogoutClick,
   userEmail
 }) => {
-  const { user, isConfigured } = useAuth();
+  const { user, userName, isConfigured } = useAuth();
   const { t } = useLanguage();
+  const [showProfileModal, setShowProfileModal] = useState<boolean>(false);
   const db = questionsData as unknown as QuestionsDB;
   const years = Object.keys(db).sort((a, b) => Number(b) - Number(a));
 
@@ -266,6 +268,7 @@ export const Home: React.FC<HomeProps> = ({
       <Header
         onDashboardClick={onDashboardClick}
         onFeedbackClick={onFeedbackClick}
+        onProfileClick={() => setShowProfileModal(true)}
         onLoginClick={onLoginClick}
         onLogoutClick={onLogoutClick}
         userEmail={userEmail}
@@ -277,9 +280,18 @@ export const Home: React.FC<HomeProps> = ({
         {userEmail ? (
           <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
             <div className="text-xs text-blue-900 font-medium">
-              {t('Connecté en tant que')} <strong>{userEmail}</strong>
+              {t('Connecté en tant que')} <strong>{userName || userEmail}</strong> {userName && <span className="text-slate-500 font-normal">({userEmail})</span>}
             </div>
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowProfileModal(true)}
+                className="text-xs font-semibold text-slate-700 bg-white border border-slate-300 px-3 py-1.5 rounded hover:bg-slate-50 cursor-pointer transition-colors shadow-2xs flex items-center gap-1.5"
+                title={t('Mon Profil')}
+              >
+                <span>👤</span>
+                <span>{t('Mon Profil')}</span>
+              </button>
               <button
                 type="button"
                 onClick={onDashboardClick}
@@ -961,6 +973,12 @@ export const Home: React.FC<HomeProps> = ({
           }
         }}
         onCancel={() => setIsConfirmOpen(false)}
+      />
+
+      {/* User Profile Modal */}
+      <UserProfileModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
       />
 
       {/* Footer with Terms and Conditions */}

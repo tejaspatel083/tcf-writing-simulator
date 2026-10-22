@@ -6,6 +6,7 @@ interface HeaderProps {
   onHomeClick?: () => void;
   onDashboardClick?: () => void;
   onFeedbackClick?: () => void;
+  onProfileClick?: () => void;
   onLoginClick?: () => void;
   onLogoutClick?: () => void;
   userEmail?: string | null;
@@ -19,6 +20,7 @@ export const Header: React.FC<HeaderProps> = ({
   onHomeClick,
   onDashboardClick,
   onFeedbackClick,
+  onProfileClick,
   onLoginClick,
   onLogoutClick,
   userEmail,
@@ -34,6 +36,7 @@ export const Header: React.FC<HeaderProps> = ({
       if (keyOrText === 'header.home') return 'Accueil';
       if (keyOrText === 'header.title') return 'TCF Canada Expression Écrite';
       if (keyOrText === 'header.dashboard') return 'Tableau de bord';
+      if (keyOrText === 'header.profile') return 'Profil';
       if (keyOrText === 'header.logout') return 'Déconnexion';
       if (keyOrText === 'header.login') return 'Se connecter';
       return keyOrText;
@@ -118,6 +121,17 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Auth status buttons */}
         {userEmail ? (
           <div className="flex items-center gap-2">
+            {onProfileClick && (
+              <button
+                type="button"
+                onClick={onProfileClick}
+                className="text-xs font-semibold text-slate-700 hover:text-blue-700 bg-white border border-slate-300 hover:bg-slate-50 px-2.5 py-1 rounded transition-colors cursor-pointer flex items-center gap-1 shadow-2xs"
+                title={t('Mon Profil')}
+              >
+                <span>👤</span>
+                <span className="hidden sm:inline">{tr('header.profile')}</span>
+              </button>
+            )}
             {onDashboardClick && (
               <button
                 type="button"

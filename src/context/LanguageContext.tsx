@@ -13,6 +13,7 @@ const keyMap: Record<string, { fr: string; en: string }> = {
   'header.home': { fr: 'Accueil', en: 'Home' },
   'header.title': { fr: 'TCF Canada Expression Écrite', en: 'TCF Canada Written Expression' },
   'header.dashboard': { fr: 'Tableau de bord', en: 'Dashboard' },
+  'header.profile': { fr: 'Profil', en: 'Profile' },
   'header.logout': { fr: 'Déconnexion', en: 'Log out' },
   'header.login': { fr: 'Se connecter', en: 'Log in' }
 };
@@ -442,6 +443,22 @@ const directFrenchToEnglish: Record<string, string> = {
   "✓ Enregistré !": "✓ Saved!",
   "Entrez une clé API Google Gemini (ou laissez vide pour réinitialiser) :": "Enter a Google Gemini API key (or leave empty to reset):",
   "Clé API": "API Key",
+
+  // User Profile
+  "Mon Profil": "My Profile",
+  "Profil": "Profile",
+  "Profil utilisateur": "User Profile",
+  "Gérez vos informations personnelles": "Manage your personal information",
+  "Nom complet / Prénom": "Full Name / First Name",
+  "Entrez votre nom": "Enter your name",
+  "ex. Jean Dupont": "e.g. John Doe",
+  "Adresse e-mail liée à votre compte.": "Email address linked to your account.",
+  "non modifiable": "read-only",
+  "Ce nom sera affiché pour vous accueillir sur votre tableau de bord (ex. \"Bonjour [Nom]\").": "This name will be displayed to greet you on your dashboard (e.g. \"Bonjour [Name]\").",
+  "Profil enregistré avec succès !": "Profile saved successfully!",
+  "Veuillez entrer votre nom.": "Please enter your name.",
+  "Enregistrement...": "Saving...",
+  "Modifier mon profil": "Edit my profile",
 
   // Admin & Notifications
   "Administration": "Administration",

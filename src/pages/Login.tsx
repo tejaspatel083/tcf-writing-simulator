@@ -29,6 +29,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
   const [mode, setMode] = useState<AuthMode>('login');
 
   // Form states
+  const [fullName, setFullName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -72,6 +73,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
     setInfoMsg(null);
     setShowResend(false);
     setEmailAlreadyExists(false);
+    setFullName('');
     setPassword('');
     setConfirmPassword('');
   };
@@ -129,25 +131,25 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
     setShowResend(false);
     setEmailAlreadyExists(false);
 
-    if (!email || !password || !confirmPassword) {
-      setErrorMsg('Veuillez renseigner tous les champs obligatoires.');
+    if (!fullName.trim() || !email || !password || !confirmPassword) {
+      setErrorMsg(t('Veuillez renseigner tous les champs obligatoires.'));
       return;
     }
 
     if (password.length < 6) {
-      setErrorMsg('Le mot de passe doit comporter au moins 6 caractères.');
+      setErrorMsg(t('Le mot de passe doit comporter au moins 6 caractères.'));
       return;
     }
 
     if (password !== confirmPassword) {
-      setErrorMsg('Les mots de passe ne correspondent pas.');
+      setErrorMsg(t('Les mots de passe ne correspondent pas.'));
       return;
     }
 
     setLoading(true);
 
     try {
-      const res = await signUp(email.trim(), password);
+      const res = await signUp(email.trim(), password, fullName.trim());
 
       if (res.error) {
         if (res.alreadyExists) {
@@ -433,6 +435,21 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
           {/* 2. REGISTER FORM */}
           {mode === 'register' && (
             <form onSubmit={handleRegisterSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">
+                  {t('Nom complet / Prénom')} <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder={t('ex. Jean Dupont')}
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                  autoFocus
+                />
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">
                   {t('Adresse e-mail')}
