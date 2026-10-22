@@ -141,10 +141,10 @@ const MainRouter: React.FC = () => {
     // Trigger Admin Notification for monitored users
     try {
       const candidateEmail = user?.email || localStorage.getItem('tcf_demo_user') || 'utilisateur@tcf.local';
-      // Await notification dispatch with timeout so Safari WebKit does not kill the in-flight network request on view transition
+      // Await notification dispatch with timeout so mobile/Safari connections have sufficient time to complete
       await Promise.race([
         sendSubmissionNotification(candidateEmail, finalResult),
-        new Promise((resolve) => setTimeout(resolve, 2000))
+        new Promise((resolve) => setTimeout(resolve, 5000))
       ]);
     } catch (notifErr) {
       console.warn('Notification execution caught error:', notifErr);
@@ -220,6 +220,7 @@ const MainRouter: React.FC = () => {
         <Results
           result={examResult}
           onHomeClick={handleGoHome}
+          onDashboardClick={() => setView('dashboard')}
           onFeedbackClick={() => setView('feedback')}
         />
       )}

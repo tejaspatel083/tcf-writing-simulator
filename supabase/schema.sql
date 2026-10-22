@@ -76,3 +76,12 @@ $$ language plpgsql security definer;
 create or replace trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+-- 7. Explicit Table Grants (Required by Supabase for all new tables / migrations from Oct 30)
+grant select on public.profiles to anon;
+grant select, insert, update, delete on public.profiles to authenticated;
+grant all on public.profiles to service_role;
+
+grant select, insert, update, delete on public.submissions to authenticated;
+grant all on public.submissions to service_role;
+

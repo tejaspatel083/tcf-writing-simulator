@@ -3,7 +3,8 @@ import {
   getAdminSettings,
   addNotificationLog,
   recordUserEmail,
-  ADMIN_EMAIL
+  ADMIN_EMAIL,
+  FORMSUBMIT_TOKEN
 } from './adminService';
 
 /**
@@ -65,7 +66,7 @@ export function formatSubmittedTasks(tasks: string[]): string {
 }
 
 /**
- * Hidden iframe form submission fallback for Safari and strict ad-blockers.
+ * Hidden iframe form submission fallback for strict ad-blockers and privacy shields.
  * Standard HTML form submission to FormSubmit is treated as a native browser navigation
  * by the iframe, completely bypassing CORS preflight restrictions and tracking protection.
  */
@@ -86,11 +87,20 @@ function submitViaHiddenIframe(targetEmail: string, payload: Record<string, stri
 
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = `https://formsubmit.co/${encodeURIComponent(targetEmail)}`;
+    const formTarget = (targetEmail && targetEmail !== ADMIN_EMAIL)
+      ? `https://formsubmit.co/${encodeURIComponent(targetEmail)}`
+      : `https://formsubmit.co/${FORMSUBMIT_TOKEN}`;
+    form.action = formTarget;
     form.target = iframeName;
     form.style.display = 'none';
 
-    Object.entries(payload).forEach(([key, value]) => {
+    // Add _next to prevent FormSubmit from showing external thanks page in iframe
+    const fullFormPayload: Record<string, string> = {
+      ...payload,
+      _next: typeof window !== 'undefined' ? window.location.href : ''
+    };
+
+    Object.entries(fullFormPayload).forEach(([key, value]) => {
       const input = document.createElement('input');
       input.type = 'hidden';
       input.name = key;
@@ -113,17 +123,42 @@ function submitViaHiddenIframe(targetEmail: string, payload: Record<string, stri
 }
 
 /**
- * Robust multi-tier dispatch designed to work seamlessly on Safari, iOS WebKit, Chrome, Firefox:
- * Tier 1: JSON fetch with keepalive: true (keeps connection alive during Safari view transitions)
- * Tier 2: URL-encoded fetch (CORS simple request - avoids OPTIONS preflight check which Safari often blocks)
- * Tier 3: navigator.sendBeacon (Safari native API specifically designed for background delivery)
- * Tier 4: Hidden iframe form post (failsafe HTML form delivery)
+ * Robust multi-tier dispatch designed to work reliably on Safari (macOS & iOS WebKit), Chrome, Firefox:
+ *
+ * Why Safari previously failed:
+ * 1. WebKit Bug (252471 / 261644): Safari fails cross-origin fetch with 'TypeError: Load failed'
+ *    when 'keepalive: true' is combined with headers requiring CORS preflight (Content-Type: application/json).
+ * 2. Safari ITP (Intelligent Tracking Prevention): strips the Referer header on cross-origin requests.
+ *    FormSubmit strictly requires the Referer header, rejecting requests without it with:
+ *    {"success":"false","message":"Make sure you open this page through a web server..."}.
+ * 3. Silent false-positive in previous URL-encoded fallback: response.ok was true (HTTP 200) even when
+ *    FormSubmit returned success: "false", falsely marking it as sent without trying fallbacks.
+ *
+ * Solution:
+ * - Omits 'keepalive: true' (this is an SPA; state updates do not unload the window).
+ * - Enforces referrerPolicy: 'origin-when-cross-origin' so Safari forwards the origin in the Referer header.
+ * - Targets verified FormSubmit token (9caf0ef01786ca258d770761212ab9e0) with captcha permanently disabled.
+ * - Tier 1: JSON fetch (clean CORS request).
+ * - Tier 2: Simple CORS Request with Content-Type: text/plain (completely avoids OPTIONS preflight in Safari).
+ * - Tier 3: URL-encoded fetch with strict data.success validation.
+ * - Tier 4: Fallback to alternate endpoint (token vs email).
+ * - Tier 5: navigator.sendBeacon fallback.
+ * - Tier 6: Hidden HTML form post fallback.
  */
 async function dispatchNotification(
   targetEmail: string,
   payload: Record<string, string>
 ): Promise<boolean> {
-  const endpoint = `https://formsubmit.co/ajax/${encodeURIComponent(targetEmail)}`;
+  const cleanTarget = (targetEmail || '').trim().toLowerCase();
+  const isAdmin = !cleanTarget || cleanTarget === ADMIN_EMAIL.toLowerCase() || cleanTarget === 'tjp083@gmail.com';
+
+  const primaryEndpoint = isAdmin
+    ? `https://formsubmit.co/ajax/${FORMSUBMIT_TOKEN}`
+    : `https://formsubmit.co/ajax/${encodeURIComponent(cleanTarget)}`;
+
+  const fallbackEndpoint = isAdmin
+    ? `https://formsubmit.co/ajax/${encodeURIComponent(ADMIN_EMAIL)}`
+    : `https://formsubmit.co/ajax/${FORMSUBMIT_TOKEN}`;
 
   // Ensure captcha is disabled
   const fullPayload = {
@@ -131,60 +166,115 @@ async function dispatchNotification(
     ...payload
   };
 
-  // Tier 1: Standard JSON fetch with keepalive: true
+  const stringified = JSON.stringify(fullPayload);
+
+  // Tier 1: Standard JSON fetch with explicit referrerPolicy and NO keepalive (Safari-compatible)
   try {
-    const response = await fetch(endpoint, {
+    const response = await fetch(primaryEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json'
       },
-      body: JSON.stringify(fullPayload),
-      keepalive: true
+      body: stringified,
+      referrerPolicy: 'origin-when-cross-origin',
+      mode: 'cors'
     });
 
     if (response.ok) {
       const data = await response.json().catch(() => null);
-      if (!data || data.success !== 'false') {
+      if (!data || data.success === 'true' || data.success === true) {
         return true;
       }
-      console.warn('FormSubmit JSON returned success: false', data?.message);
+      console.warn('FormSubmit Tier 1 returned success false:', data?.message);
     }
   } catch (err) {
-    console.warn('FormSubmit JSON fetch failed (likely Safari CORS/ITP), trying URL-encoded:', err);
+    console.warn('FormSubmit Tier 1 JSON fetch failed, trying Tier 2 (simple text/plain):', err);
   }
 
-  // Tier 2: URL-encoded simple request (No CORS preflight OPTIONS request required by Safari)
+  // Tier 2: text/plain Simple CORS Request (bypasses OPTIONS preflight check in Safari WebKit)
+  try {
+    const response = await fetch(primaryEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain',
+        Accept: 'application/json'
+      },
+      body: stringified,
+      referrerPolicy: 'origin-when-cross-origin',
+      mode: 'cors'
+    });
+
+    if (response.ok) {
+      const data = await response.json().catch(() => null);
+      if (!data || data.success === 'true' || data.success === true) {
+        return true;
+      }
+      console.warn('FormSubmit Tier 2 text/plain returned success false:', data?.message);
+    }
+  } catch (err) {
+    console.warn('FormSubmit Tier 2 text/plain fetch failed, trying Tier 3 (URL-encoded):', err);
+  }
+
+  // Tier 3: URL-encoded request with verified data.success validation
   try {
     const params = new URLSearchParams();
-    Object.entries(fullPayload).forEach(([k, v]) => params.append(k, v));
+    Object.entries(fullPayload).forEach(([k, v]) => params.append(k, String(v)));
 
-    const response = await fetch(endpoint, {
+    const response = await fetch(primaryEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         Accept: 'application/json'
       },
       body: params.toString(),
-      keepalive: true
+      referrerPolicy: 'origin-when-cross-origin',
+      mode: 'cors'
     });
 
     if (response.ok) {
-      return true;
+      const data = await response.json().catch(() => null);
+      if (!data || data.success === 'true' || data.success === true) {
+        return true;
+      }
+      console.warn('FormSubmit Tier 3 URL-encoded returned success false:', data?.message);
     }
   } catch (err) {
-    console.warn('FormSubmit URL-encoded fetch failed, trying sendBeacon:', err);
+    console.warn('FormSubmit Tier 3 URL-encoded fetch failed, trying Tier 4 (fallback endpoint):', err);
   }
 
-  // Tier 3: navigator.sendBeacon (Supported in Safari, guaranteed survival during navigation/unmount)
+  // Tier 4: Fallback endpoint with text/plain (Zero preflight)
+  try {
+    const response = await fetch(fallbackEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain',
+        Accept: 'application/json'
+      },
+      body: stringified,
+      referrerPolicy: 'origin-when-cross-origin',
+      mode: 'cors'
+    });
+
+    if (response.ok) {
+      const data = await response.json().catch(() => null);
+      if (!data || data.success === 'true' || data.success === true) {
+        return true;
+      }
+    }
+  } catch (err) {
+    console.warn('FormSubmit Tier 4 fallback endpoint failed:', err);
+  }
+
+  // Tier 5: navigator.sendBeacon (Guaranteed survival if browser is backgrounded or tab closed)
   if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
     try {
       const formData = new FormData();
-      Object.entries(fullPayload).forEach(([k, v]) => formData.append(k, v));
-      const beaconOk = navigator.sendBeacon(
-        `https://formsubmit.co/${encodeURIComponent(targetEmail)}`,
-        formData
-      );
+      Object.entries(fullPayload).forEach(([k, v]) => formData.append(k, String(v)));
+      const beaconTarget = isAdmin
+        ? `https://formsubmit.co/${FORMSUBMIT_TOKEN}`
+        : `https://formsubmit.co/${encodeURIComponent(cleanTarget)}`;
+      const beaconOk = navigator.sendBeacon(beaconTarget, formData);
       if (beaconOk) {
         return true;
       }
@@ -193,7 +283,7 @@ async function dispatchNotification(
     }
   }
 
-  // Tier 4: Hidden iframe form post (works on all versions of Safari and cannot be blocked by CORS)
+  // Tier 6: Hidden iframe form post (works on all versions of Safari and cannot be blocked by CORS)
   try {
     submitViaHiddenIframe(targetEmail, fullPayload);
     return true;

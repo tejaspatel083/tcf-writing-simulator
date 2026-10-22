@@ -5,20 +5,64 @@ import { cleanDocumentText, fixMojibake, normalizeParagraphText } from '../utils
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { AIEvaluation } from '../types/aiEvaluation';
+import { AIEvaluationView } from '../components/AIEvaluationView';
+import { evaluateTcfSubmissionWithGemini } from '../services/geminiEvaluator';
+import { updateStoredSubmission } from '../utils/storage';
+import { updateSubmissionAiFeedback } from '../lib/supabase';
 
 interface ResultsProps {
   result: ExamResult;
   onHomeClick: () => void;
+  onDashboardClick?: () => void;
   onFeedbackClick?: () => void;
 }
 
-export const Results: React.FC<ResultsProps> = ({ result, onHomeClick, onFeedbackClick }) => {
+export const Results: React.FC<ResultsProps> = ({ result, onHomeClick, onDashboardClick, onFeedbackClick }) => {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [copiedTask, setCopiedTask] = useState<string | null>(null);
+
+  // AI Evaluation states
+  const [evaluation, setEvaluation] = useState<AIEvaluation | null>(result.aiEvaluation || null);
+  const [evaluating, setEvaluating] = useState<boolean>(false);
+  const [evalError, setEvalError] = useState<string | null>(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, []);
+
+  const handleStartEvaluation = async () => {
+    setEvaluating(true);
+    setEvalError(null);
+
+    try {
+      const evalData = await evaluateTcfSubmissionWithGemini(result);
+      setEvaluation(evalData);
+
+      // Persist in LocalStorage
+      const updatedResult: ExamResult = {
+        ...result,
+        aiEvaluation: evalData
+      };
+      updateStoredSubmission(updatedResult);
+
+      // Persist in Supabase if logged in
+      if (user && result.id) {
+        try {
+          await updateSubmissionAiFeedback(result.id, user.id, evalData);
+        } catch (dbErr) {
+          console.warn('Could not sync AI evaluation to Supabase:', dbErr);
+        }
+      }
+    } catch (err: any) {
+      console.error('Error during AI evaluation:', err);
+      setEvalError(err?.message || "Une erreur est survenue lors de l'évaluation avec l'IA.");
+    } finally {
+      setEvaluating(false);
+    }
+  };
 
   const handleCopyAll = () => {
     const fullText = `TCF CANADA - EXPRESSION ÉCRITE
@@ -109,6 +153,9 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Header
         onHomeClick={onHomeClick}
+        onDashboardClick={onDashboardClick}
+        onFeedbackClick={onFeedbackClick}
+        userEmail={user?.email}
         subtitle={isPractice ? t("Compte-rendu d'entraînement") : t("Compte-rendu de votre session")}
         combinationTitle={`${t('Combinaison')} ${result.combination.combinationNumber} — ${t(result.month)} ${result.year}`}
       />
@@ -153,7 +200,19 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
             </div>
 
             {/* Action Buttons */}
-            <div className="shrink-0 self-start sm:self-center">
+            <div className="flex flex-wrap items-center gap-2 shrink-0 self-start sm:self-center">
+              {!evaluation && (
+                <button
+                  type="button"
+                  onClick={() => handleStartEvaluation()}
+                  disabled={evaluating}
+                  className="px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50"
+                >
+                  <span>🤖</span>
+                  <span>{evaluating ? t('Évaluation en cours...') : t('Évaluer avec l’IA (Coach TCF)')}</span>
+                </button>
+              )}
+
               <button
                 type="button"
                 onClick={isPractice ? handleCopyPracticed : handleCopyAll}
@@ -165,11 +224,39 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
                     ? t('Copié !')
                     : isPractice
                     ? t('Copier mes rédactions')
-                    : t('Copier tout pour mon tuteur')}
+                    : t('Copier tout')}
                 </span>
               </button>
             </div>
           </div>
+
+          {/* Evaluating Loading State Indicator */}
+          {evaluating && (
+            <div className="mb-6 p-4 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center gap-3 animate-pulse">
+              <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin shrink-0"></div>
+              <div className="text-xs text-indigo-900">
+                <p className="font-bold">{t("Analyse en cours par l'expert TCF Canada...")}</p>
+                <p className="text-indigo-700 mt-0.5">{t("Identification des fautes par catégorie, vérification du respect des consignes et estimation du niveau CECRL/NCLC (environ 3 secondes).")}</p>
+              </div>
+            </div>
+          )}
+
+          {/* AI Evaluation Error Alert */}
+          {evalError && (
+            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 flex items-start justify-between gap-3">
+              <div>
+                <p className="font-bold">⚠️ {t("Erreur lors de l'évaluation :")}</p>
+                <p className="mt-0.5">{evalError}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleStartEvaluation()}
+                className="px-2.5 py-1 bg-white border border-red-300 rounded font-semibold text-red-700 hover:bg-red-50 cursor-pointer"
+              >
+                {t('Réessayer')}
+              </button>
+            </div>
+          )}
 
           {/* Unified Clean Stats Grid */}
           <div className="mb-6 p-3 sm:p-4 rounded-xl bg-slate-50 border border-slate-200">
@@ -289,73 +376,87 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
             </div>
           </div>
 
-          {/* Individual Tasks Display */}
-          <div className="space-y-6">
-            {tasksList.map((tItem) => {
-              const text = result.answers[tItem.key];
-              const count = result.wordCounts[tItem.key];
-              const min = tItem.req.minWords;
-              const max = tItem.req.maxWords;
-              const isWithin = count >= min && count <= max;
+          {/* AI Evaluation View Component */}
+          {evaluation && (
+            <div className="mb-8">
+              <AIEvaluationView
+                evaluation={evaluation}
+                combination={result.combination}
+                userAnswers={result.answers}
+                wordCounts={result.wordCounts}
+              />
+            </div>
+          )}
 
-              return (
-                <div key={tItem.key} className="border border-slate-300 rounded p-4 bg-white">
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-2 mb-3">
-                    <h3 className="font-bold text-slate-800 text-base">
-                      {t(tItem.name)}
-                    </h3>
-                    <div className="flex items-center gap-3">
-                      <span className={`text-xs font-mono px-2 py-0.5 rounded font-bold border ${
-                        isWithin
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
-                          : 'bg-red-50 text-red-600 border-red-300'
-                      }`}>
-                        {count} / {min}-{max} {t('mots')}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(tItem.key, `Sujet: ${tItem.req.instruction || tItem.req.title}\n\nRéponse:\n${text}`)}
-                        className="text-xs font-semibold text-blue-700 hover:text-blue-900 border border-blue-200 bg-blue-50 px-2.5 py-1 rounded"
-                      >
-                        {copiedTask === tItem.key ? t('Copié !') : t('Copier cette tâche')}
-                      </button>
+          {/* Individual Tasks Display (shown before AI evaluation is triggered) */}
+          {!evaluation && (
+            <div className="space-y-6">
+              {tasksList.map((tItem) => {
+                const text = result.answers[tItem.key];
+                const count = result.wordCounts[tItem.key];
+                const min = tItem.req.minWords;
+                const max = tItem.req.maxWords;
+                const isWithin = count >= min && count <= max;
+
+                return (
+                  <div key={tItem.key} className="border border-slate-300 rounded p-4 bg-white">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-2 mb-3">
+                      <h3 className="font-bold text-slate-800 text-base">
+                        {t(tItem.name)}
+                      </h3>
+                      <div className="flex items-center gap-3">
+                        <span className={`text-xs font-mono px-2 py-0.5 rounded font-bold border ${
+                          isWithin
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                            : 'bg-red-50 text-red-600 border-red-300'
+                        }`}>
+                          {count} / {min}-{max} {t('mots')}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(tItem.key, `Sujet: ${tItem.req.instruction || tItem.req.title}\n\nRéponse:\n${text}`)}
+                          className="text-xs font-semibold text-blue-700 hover:text-blue-900 border border-blue-200 bg-blue-50 px-2.5 py-1 rounded"
+                        >
+                          {copiedTask === tItem.key ? t('Copié !') : t('Copier cette tâche')}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Task Instruction / Documents */}
+                    <div className="text-xs text-slate-700 bg-slate-50 p-3.5 rounded-lg border border-slate-200 mb-3 leading-relaxed">
+                      {tItem.req.title && (
+                        <div className="font-bold text-sm text-blue-700 mb-2">
+                          {normalizeParagraphText(tItem.req.title)}
+                        </div>
+                      )}
+                      {tItem.key !== 'task3' && (
+                        <div>
+                          <strong>{t('Consigne :')}</strong> {normalizeParagraphText(tItem.req.instruction)}
+                        </div>
+                      )}
+                      {tItem.req.document1 && (
+                        <div className="mt-2.5 pt-2.5 border-t border-slate-200">
+                          <strong className="text-slate-900 block mb-1">{t('Document 1 :')}</strong>
+                          <p className="whitespace-pre-line text-slate-700">{cleanDocumentText(tItem.req.document1)}</p>
+                        </div>
+                      )}
+                      {tItem.req.document2 && (
+                        <div className="mt-2.5 pt-2.5 border-t border-slate-200">
+                          <strong className="text-slate-900 block mb-1">{t('Document 2 :')}</strong>
+                          <p className="whitespace-pre-line text-slate-700">{cleanDocumentText(tItem.req.document2)}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* User Response Text */}
+                    <div className="bg-slate-50 border border-slate-200 rounded p-4 font-sans text-sm leading-relaxed text-slate-900 whitespace-pre-wrap min-h-[100px]">
+                      {text ? text : <span className="italic text-slate-400">{t('Aucune réponse rédigée.')}</span>}
                     </div>
                   </div>
-
-                  {/* Task Instruction / Documents */}
-                  <div className="text-xs text-slate-700 bg-slate-50 p-3.5 rounded-lg border border-slate-200 mb-3 leading-relaxed">
-                    {tItem.req.title && (
-                      <div className="font-bold text-sm text-blue-700 mb-2">
-                        {normalizeParagraphText(tItem.req.title)}
-                      </div>
-                    )}
-                    {tItem.key !== 'task3' && (
-                      <div>
-                        <strong>{t('Consigne :')}</strong> {normalizeParagraphText(tItem.req.instruction)}
-                      </div>
-                    )}
-                    {tItem.req.document1 && (
-                      <div className="mt-2.5 pt-2.5 border-t border-slate-200">
-                        <strong className="text-slate-900 block mb-1">{t('Document 1 :')}</strong>
-                        <p className="whitespace-pre-line text-slate-700">{cleanDocumentText(tItem.req.document1)}</p>
-                      </div>
-                    )}
-                    {tItem.req.document2 && (
-                      <div className="mt-2.5 pt-2.5 border-t border-slate-200">
-                        <strong className="text-slate-900 block mb-1">{t('Document 2 :')}</strong>
-                        <p className="whitespace-pre-line text-slate-700">{cleanDocumentText(tItem.req.document2)}</p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* User Response Text */}
-                  <div className="bg-slate-50 border border-slate-200 rounded p-4 font-sans text-sm leading-relaxed text-slate-900 whitespace-pre-wrap min-h-[100px]">
-                    {text ? text : <span className="italic text-slate-400">{t('Aucune réponse rédigée.')}</span>}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
 
           <div className="mt-8 pt-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
             <button

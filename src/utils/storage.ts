@@ -42,6 +42,21 @@ export function saveSubmission(result: ExamResult): ExamResult {
   return newSubmission;
 }
 
+export function updateStoredSubmission(updatedResult: ExamResult): void {
+  try {
+    const submissions = getStoredSubmissions();
+    const index = submissions.findIndex((s) => s.id === updatedResult.id);
+    if (index !== -1) {
+      submissions[index] = { ...submissions[index], ...updatedResult };
+    } else {
+      submissions.unshift(updatedResult);
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
+  } catch (e) {
+    console.error('Error updating submission in localStorage:', e);
+  }
+}
+
 export function deleteStoredSubmission(id: string): void {
   try {
     const submissions = getStoredSubmissions();

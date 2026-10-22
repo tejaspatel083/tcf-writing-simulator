@@ -31,6 +31,8 @@ export interface ExamAnswers {
   task3: string;
 }
 
+import { AIEvaluation } from './aiEvaluation';
+
 export interface ExamResult {
   id?: string;
   date?: string;
@@ -48,5 +50,6 @@ export interface ExamResult {
   practiceTask?: TaskKey | string;
   practiceTasks?: TaskKey[];
   allocatedMinutes?: number;
+  aiEvaluation?: AIEvaluation;
 }
 

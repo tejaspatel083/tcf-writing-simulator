@@ -2,6 +2,7 @@ import { AdminNotificationSettings, NotificationLog, TrackedUser } from '../type
 import { getSupabase, getSupabaseAnonKey } from '../lib/supabase';
 
 export const ADMIN_EMAIL = 'tejas083patel@gmail.com';
+export const FORMSUBMIT_TOKEN = '9caf0ef01786ca258d770761212ab9e0';
 export const SETTINGS_STORAGE_KEY = 'tcf_admin_notification_settings';
 export const LOGS_STORAGE_KEY = 'tcf_admin_notification_logs';
 export const KNOWN_USERS_STORAGE_KEY = 'tcf_known_users_list';

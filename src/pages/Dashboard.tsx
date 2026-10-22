@@ -213,6 +213,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     <th className="py-3 px-3.5">{t('Tâche 1')}</th>
                     <th className="py-3 px-3.5">{t('Tâche 2')}</th>
                     <th className="py-3 px-3.5">{t('Tâche 3')}</th>
+                    <th className="py-3 px-3.5 whitespace-nowrap">{t('Score IA')}</th>
                     <th className="py-3 px-3.5 text-left whitespace-nowrap">{t('Actions')}</th>
                   </tr>
                 </thead>
@@ -306,6 +307,42 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             }`}>
                               {sub.wordCounts.task3} {t('mots')}
                             </span>
+                          )}
+                        </td>
+                        <td className="py-3 px-3.5 whitespace-nowrap">
+                          {sub.aiEvaluation ? (
+                            (() => {
+                              const evaluatedCount = sub.aiEvaluation.evaluated_tasks?.length || (isPract ? activeTasksList.length : 3);
+                              const isSingle = evaluatedCount === 1;
+                              const lvl = sub.aiEvaluation.estimated_cefr_level;
+                              const clb = sub.aiEvaluation.clb_level;
+                              const displayLevel = clb && lvl ? `${clb} (${lvl})` : (clb || lvl);
+
+                              if (isSingle) {
+                                return lvl ? (
+                                  <span className="px-2 py-0.5 rounded text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                    {displayLevel}
+                                  </span>
+                                ) : (
+                                  <span className="text-slate-400 text-xs italic font-mono">—</span>
+                                );
+                              }
+
+                              return (
+                                <div className="flex items-center gap-1.5">
+                                  <span className="px-2 py-0.5 rounded font-mono text-xs font-black bg-blue-50 text-blue-800 border border-blue-200">
+                                    {sub.aiEvaluation.overall_score} <span className="text-[10px] font-normal text-slate-400">/ 20</span>
+                                  </span>
+                                  {lvl && (
+                                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                      {displayLevel}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })()
+                          ) : (
+                            <span className="text-slate-400 text-xs italic font-mono">—</span>
                           )}
                         </td>
                         <td className="py-3 px-3.5 text-left whitespace-nowrap">

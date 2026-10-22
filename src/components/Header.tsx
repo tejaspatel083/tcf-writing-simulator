@@ -42,19 +42,20 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="bg-white border-b border-slate-300 px-6 py-3 flex items-center justify-between shadow-none shrink-0 select-none">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-300 px-4 sm:px-6 py-3 flex items-center justify-between shadow-xs shrink-0 select-none">
       <div className="flex items-center gap-3">
         {onHomeClick && (
           <button
             type="button"
             onClick={onHomeClick}
-            className="text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded hover:bg-blue-100 transition-colors cursor-pointer"
+            className="text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0"
           >
-            {tr('header.home')}
+            <span>←</span>
+            <span>{tr('header.home')}</span>
           </button>
         )}
         <div>
-          <h1 className="text-base font-bold text-slate-800 tracking-tight flex items-center gap-2">
+          <h1 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span>
             {tr('header.title')}
           </h1>

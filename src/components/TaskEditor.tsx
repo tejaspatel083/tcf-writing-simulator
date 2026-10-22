@@ -3,6 +3,7 @@ import { TaskKey, TaskRequirement } from '../types/exam';
 import { countFrenchWords } from '../utils/wordCount';
 import { cleanDocumentText, fixMojibake, normalizeParagraphText } from '../utils/cleanText';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 interface TaskEditorProps {
   taskKey: TaskKey;
@@ -32,8 +33,14 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
   isPracticeMode = false
 }) => {
   const { t } = useLanguage();
+  const { isAdmin } = useAuth();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const wordCount = countFrenchWords(value);
+
+  // Allow copy/cut/paste and keyboard shortcuts exclusively for Admin
+  const allowCopyPaste = Boolean(
+    isAdmin || (typeof window !== 'undefined' && localStorage.getItem('tcf_admin_logged_in') === 'true')
+  );
 
   // Keep focus on textarea when task changes
   useEffect(() => {
@@ -73,7 +80,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
       )}
 
       {/* Task Prompt Area */}
-      <div className="p-4 sm:p-5 border-b border-slate-300 bg-slate-50 max-h-[46vh] overflow-y-auto">
+      <div className={`p-4 sm:p-5 border-b border-slate-300 bg-slate-50 max-h-[46vh] overflow-y-auto ${allowCopyPaste ? 'select-text' : ''}`}>
         {/* Header Bar matching Reference Website */}
         <div className="flex items-center justify-between border-b border-slate-200 pb-2.5 mb-3">
           <div className="flex items-center gap-2">
@@ -150,12 +157,13 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
           autoCorrect="off"
           autoCapitalize="off"
           autoComplete="off"
-          onCopy={(e) => e.preventDefault()}
-          onCut={(e) => e.preventDefault()}
-          onPaste={(e) => e.preventDefault()}
-          onDrop={(e) => e.preventDefault()}
-          onContextMenu={(e) => e.preventDefault()}
+          onCopy={allowCopyPaste ? undefined : (e) => e.preventDefault()}
+          onCut={allowCopyPaste ? undefined : (e) => e.preventDefault()}
+          onPaste={allowCopyPaste ? undefined : (e) => e.preventDefault()}
+          onDrop={allowCopyPaste ? undefined : (e) => e.preventDefault()}
+          onContextMenu={allowCopyPaste ? undefined : (e) => e.preventDefault()}
           onKeyDown={(e) => {
+            if (allowCopyPaste) return;
             const isCtrlOrCmd = e.ctrlKey || e.metaKey;
             if (isCtrlOrCmd) {
               const key = e.key.toLowerCase();
@@ -169,7 +177,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
             disabled
               ? 'bg-slate-100 text-slate-500 border-slate-300 cursor-not-allowed'
               : 'bg-white text-slate-900 border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600'
-          }`}
+          } ${allowCopyPaste ? 'select-text' : ''}`}
         />
       </div>
 
@@ -203,6 +211,15 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
           {isTooHigh && (
             <span className="bg-red-100 border border-red-300 text-red-800 text-xs px-2 py-0.5 rounded font-bold ml-2">
               {t('⚠️ Limite dépassée')} ({wordCount}/{taskRequirement.maxWords})
+            </span>
+          )}
+
+          {allowCopyPaste && (
+            <span
+              title={t('Le copier-coller et les raccourcis clavier sont débloqués pour le compte administrateur.')}
+              className="hidden sm:inline-flex items-center gap-1 bg-amber-50 border border-amber-300 text-amber-800 text-xs px-2.5 py-0.5 rounded font-bold ml-2 shadow-2xs"
+            >
+              👑 {t('Admin : Copier-coller autorisé')}
             </span>
           )}
         </div>

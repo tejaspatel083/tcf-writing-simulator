@@ -74,6 +74,7 @@ export const Feedback: React.FC<FeedbackProps> = ({ onHomeClick, userEmail }) =>
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
+        referrerPolicy: 'origin-when-cross-origin',
         body: JSON.stringify({
           _subject: `[TCF Simulator Feedback] ${typeLabels[type]} - ${subject || 'Nouveau retour'}`,
           expéditeur_nom: name.trim() || 'Candidat TCF',

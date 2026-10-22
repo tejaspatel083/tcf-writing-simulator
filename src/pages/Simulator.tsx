@@ -5,9 +5,10 @@ import { TaskSidebar } from '../components/TaskSidebar';
 import { TaskEditor } from '../components/TaskEditor';
 import { SubmissionPanel } from '../components/SubmissionPanel';
 import { ConfirmationModal } from '../components/ConfirmationModal';
-import { countFrenchWords, formatTime } from '../utils/wordCount';
+import { countFrenchWords } from '../utils/wordCount';
 import { Header } from '../components/Header';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 interface SimulatorProps {
   combination: ExamCombination;
@@ -33,6 +34,16 @@ export const Simulator: React.FC<SimulatorProps> = ({
   durationMinutes = 60
 }) => {
   const { t } = useLanguage();
+  const { isAdmin } = useAuth();
+  const allowCopyPaste = Boolean(
+    isAdmin || (typeof window !== 'undefined' && localStorage.getItem('tcf_admin_logged_in') === 'true')
+  );
+
+  useEffect(() => {
+    if (allowCopyPaste) {
+      document.body.classList.remove('select-none');
+    }
+  }, [allowCopyPaste]);
 
   const activeTaskKeys: TaskKey[] = isPracticeMode && practiceTasks && practiceTasks.length > 0
     ? practiceTasks
@@ -160,7 +171,7 @@ export const Simulator: React.FC<SimulatorProps> = ({
   const practiceTitleLabel = activeTaskKeys.map((k) => t(`Tâche ${k.slice(-1)}`)).join(' + ');
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-white overflow-hidden select-none">
+    <div className={`h-screen w-screen flex flex-col bg-white overflow-hidden ${allowCopyPaste ? 'select-text' : 'select-none'}`}>
       {/* Header */}
       <Header
         onHomeClick={onCancelExam}

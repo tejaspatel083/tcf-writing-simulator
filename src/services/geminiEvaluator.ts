@@ -1,0 +1,388 @@
+import { ExamResult, TaskKey } from '../types/exam';
+import { AIEvaluation, TaskEvaluation, CefrLevel } from '../types/aiEvaluation';
+
+const GEMINI_API_KEY_STORAGE = 'tcf_gemini_api_key';
+
+export function getGeminiApiKey(): string {
+  // 1. Check Vite env variable
+  const envKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
+  if (envKey && typeof envKey === 'string' && envKey.trim().length > 0) {
+    return envKey.trim();
+  }
+  // 2. Check LocalStorage
+  const localKey = localStorage.getItem(GEMINI_API_KEY_STORAGE);
+  if (localKey && localKey.trim().length > 0) {
+    return localKey.trim();
+  }
+  return '';
+}
+
+export function setGeminiApiKey(key: string): void {
+  localStorage.setItem(GEMINI_API_KEY_STORAGE, key.trim());
+}
+
+export function clearGeminiApiKey(): void {
+  localStorage.removeItem(GEMINI_API_KEY_STORAGE);
+}
+
+/**
+ * Determine which tasks were actively practiced / attempted
+ */
+export function getActiveEvaluatedTasks(result: ExamResult): TaskKey[] {
+  if (result.isPracticeMode) {
+    if (result.practiceTasks && result.practiceTasks.length > 0) {
+      return result.practiceTasks as TaskKey[];
+    }
+    if (result.practiceTask) {
+      const keys = typeof result.practiceTask === 'string'
+        ? (result.practiceTask.split(',').map((s) => s.trim()) as TaskKey[])
+        : [result.practiceTask as TaskKey];
+      if (keys.length > 0) return keys;
+    }
+    // Fallback: check which tasks have non-empty text
+    const filled = (['task1', 'task2', 'task3'] as TaskKey[]).filter(
+      (k) => Boolean(result.answers[k]?.trim())
+    );
+    return filled.length > 0 ? filled : ['task1'];
+  }
+
+  // Full Exam: evaluate all tasks
+  return ['task1', 'task2', 'task3'];
+}
+
+/**
+ * Calls Google Gemini to evaluate the student's TCF writing submission
+ */
+/**
+ * Official TCF Canada EE (Expression Écrite / Writing) Score Conversion
+ * Source: France Éducation international & IRCC
+ */
+export function mapScoreToTcfCanadaLevels(score: number): { cefr: CefrLevel; clb: string } {
+  const rounded = Math.round(Math.max(0, Math.min(20, score)));
+  if (rounded >= 18) return { cefr: 'C2', clb: 'CLB 10' };
+  if (rounded >= 16) return { cefr: 'C1', clb: 'CLB 10' };
+  if (rounded >= 14) return { cefr: 'C1', clb: 'CLB 9' };
+  if (rounded >= 12) return { cefr: 'B2', clb: 'CLB 8' };
+  if (rounded >= 10) return { cefr: 'B2', clb: 'CLB 7' }; // Benchmark for Express Entry bonus points
+  if (rounded >= 7)  return { cefr: 'B1', clb: 'CLB 6' };
+  if (rounded === 6) return { cefr: 'B1', clb: 'CLB 5' };
+  if (rounded >= 4)  return { cefr: 'A2', clb: 'CLB 4' };
+  return { cefr: 'A1', clb: '< CLB 4' };
+}
+
+export async function evaluateTcfSubmissionWithGemini(
+  result: ExamResult,
+  customApiKey?: string
+): Promise<AIEvaluation> {
+  const apiKey = (customApiKey || getGeminiApiKey()).trim();
+
+  if (!apiKey) {
+    throw new Error("Clé API Gemini introuvable. Veuillez renseigner votre clé API Google Gemini gratuite pour lancer l'évaluation.");
+  }
+
+  const activeTaskKeys = getActiveEvaluatedTasks(result);
+
+  const systemInstructions = `You are an expert TCF Canada French writing examiner and corrector.
+Your goal is to evaluate ONLY the submitted tasks fairly according to the official TCF Canada / IRCC scoring standards, identify specific linguistic mistakes, calculate an overall score out of 20, and generate high-quality model answers at C1-C2 level.
+
+IMPORTANT RULES:
+1. ONLY evaluate the task(s) requested below. If a task was NOT part of this practice session, DO NOT evaluate it, DO NOT invent mistakes for it, and DO NOT penalize the student.
+2. Identify REAL mistakes in the student's text:
+   - Category MUST be one of: "Grammaire", "Orthographe / Accents", "Conjugaison / Temps", "Structure de phrase", "Vocabulaire".
+   - original_text: exact excerpt from student's text containing the error.
+   - corrected_text: the corrected French text.
+   - explanation: STRICTLY ENGLISH ONLY. Explain why it is an error and the underlying French grammar/spelling/conjugation rule clearly in English so the student learns. NEVER write explanations in French.
+3. Official TCF Canada EE (Writing) Scoring & Level Chart (0 to 20):
+   Evaluate strictly using the official France Éducation international / IRCC equivalence:
+   - 18–20 / 20: C2  | CLB 10 (Mastery, flawless sentence flow, highly sophisticated syntax)
+   - 16–17 / 20: C1  | CLB 10 (Outstanding fluency, rich vocabulary, rare minor slips)
+   - 14–15 / 20: C1  | CLB 9  (Effective operational proficiency, complex structures, logical cohesion)
+   - 12–13 / 20: B2  | CLB 8  (High intermediate, clear argumentation, good grammatical control)
+   - 10–11 / 20: B2  | CLB 7  (Threshold for Express Entry bonus points, intelligible, standard slips)
+   - 7–9 / 20:   B1  | CLB 6  (Intermediate, simple sentences, errors in complex clauses)
+   - 6 / 20:     B1  | CLB 5  (Modest intermediate, repetitive vocabulary, frequent errors)
+   - 4–5 / 20:   A2  | CLB 4  (Elementary, basic survival sentences, major grammar/spelling errors)
+   - 1–3 / 20:   A1  | < CLB 4 (Beginner, isolated words, incomplete sentences)
+4. AI Model Response (CRITICAL - C1-C2 LEVEL ONLY):
+   For each evaluated task, generate ONE reference response at C1-C2 level:
+   - "c1_c2_model_answer": An exemplary, advanced, and elegant C1-C2 French response using nuanced vocabulary, sophisticated sentence structures, and idiomatic expressions.
+   Formatting Constraints:
+   - Task 1: Message / Courriel (60 to 120 words).
+   - Task 2: EXACTLY THREE BODY PARAGRAPHS (Greeting -> Paragraph 1 context -> Paragraph 2 narrative/details -> Paragraph 3 conclusion/feelings -> Sign-off). 120 to 150 words. No labels like 'P1:'.
+   - Task 3: Title on Line 1, then an empty line, then EXACTLY TWO PARAGRAPHS ONLY (Paragraph 1 = objective synthesis of Document 1 & 2; Paragraph 2 = personal argumentative stance with clear connectors). 120 to 180 words. No labels.
+
+OUTPUT JSON SCHEMA:
+Return ONLY valid JSON matching this schema:
+{
+  "estimated_cefr_level": "A1" | "A2" | "B1" | "B2" | "C1" | "C2",
+  "clb_level": "CLB 4" | "CLB 5" | "CLB 6" | "CLB 7" | "CLB 8" | "CLB 9" | "CLB 10" | "< CLB 4",
+  "overall_score": number (0 to 20),
+  "overall_feedback": "string (1-3 sentences summary feedback)",
+  "tasks": {
+    "task1"?: {
+      "task_key": "task1",
+      "task_name": "Tâche 1 : Description / Message",
+      "score": number (0 to 20),
+      "estimated_level": "A1" | "A2" | "B1" | "B2" | "C1" | "C2",
+      "clb_level": "string",
+      "general_feedback": "string",
+      "mistakes": [
+        {
+          "category": "Grammaire" | "Orthographe / Accents" | "Conjugaison / Temps" | "Structure de phrase" | "Vocabulaire",
+          "original_text": "string",
+          "corrected_text": "string",
+          "explanation": "string (strictly in English)"
+        }
+      ],
+      "c1_c2_model_answer": "string"
+    },
+    "task2"?: { ...same structure as task1 with task_key "task2"... },
+    "task3"?: { ...same structure as task1 with task_key "task3"... }
+  }
+}`;
+
+  let promptContent = `The candidate completed a session containing ${activeTaskKeys.length} task(s): [${activeTaskKeys.join(', ')}].\n`;
+  if (result.isPracticeMode) {
+    promptContent += `NOTE: This was a TARGETED PRACTICE SESSION specifically for: ${activeTaskKeys.join(', ')}. Evaluate ONLY these tasks. Do NOT mark unpracticed tasks as absent or 0 words.\n\n`;
+  }
+
+  for (const tKey of activeTaskKeys) {
+    const req = result.combination.tasks[tKey];
+    const text = result.answers[tKey] || '';
+    const wc = result.wordCounts[tKey] || 0;
+
+    if (tKey === 'task1') {
+      promptContent += `--- TÂCHE 1 (${wc} mots) ---\n`;
+      promptContent += `Consigne: ${req.instruction}\n`;
+      promptContent += `Réponse du candidat:\n"""\n${text || '(Aucune réponse saisie)'}\n"""\n\n`;
+    } else if (tKey === 'task2') {
+      promptContent += `--- TÂCHE 2 (${wc} mots) ---\n`;
+      promptContent += `Consigne: ${req.instruction}\n`;
+      promptContent += `Réponse du candidat:\n"""\n${text || '(Aucune réponse saisie)'}\n"""\n\n`;
+    } else if (tKey === 'task3') {
+      promptContent += `--- TÂCHE 3 (${wc} mots) ---\n`;
+      promptContent += `Sujet / Titre: ${req.title || req.instruction}\n`;
+      if (req.document1) promptContent += `Document 1: ${req.document1}\n`;
+      if (req.document2) promptContent += `Document 2: ${req.document2}\n`;
+      promptContent += `Réponse du candidat:\n"""\n${text || '(Aucune réponse saisie)'}\n"""\n\n`;
+    }
+  }
+
+  promptContent += `MANDATORY REQUIREMENT: All mistake "explanation" values MUST be written 100% IN ENGLISH ONLY (explain grammar/spelling rule in English). Do NOT output explanations in French.\n`;
+  promptContent += `Please evaluate the active task(s) and output ONLY the valid JSON response.`;
+
+  // Memory & session cache for currently active working model
+  let cachedWorkingModel: string | null = null;
+  try {
+    cachedWorkingModel = sessionStorage.getItem('tcf_working_gemini_model');
+  } catch {}
+
+  const defaultPreferredModels = [
+    'gemini-3.5-flash-lite',
+    'gemini-3.5-flash',
+    'gemini-3.1-flash-lite',
+    'gemini-flash-latest',
+    'gemini-pro-latest'
+  ];
+
+  const candidateModels: string[] = cachedWorkingModel
+    ? [cachedWorkingModel, ...defaultPreferredModels.filter((m) => m !== cachedWorkingModel)]
+    : [...defaultPreferredModels];
+
+  let rawText = '';
+  let lastError = '';
+  const attemptedModels = new Set<string>();
+
+  // Helper function to dynamically discover live models directly from Google API
+  async function discoverLiveModels(key: string): Promise<string[]> {
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      if (!Array.isArray(data?.models)) return [];
+
+      return data.models
+        .filter(
+          (m: any) =>
+            Array.isArray(m.supportedGenerationMethods) &&
+            m.supportedGenerationMethods.includes('generateContent') &&
+            !m.name.includes('tts') &&
+            !m.name.includes('image') &&
+            !m.name.includes('robotics')
+        )
+        .map((m: any) => m.name.replace(/^models\//, ''))
+        .sort((a: string, b: string) => {
+          const aFlash = a.includes('flash') ? 1 : 0;
+          const bFlash = b.includes('flash') ? 1 : 0;
+          return bFlash - aFlash;
+        });
+    } catch (e) {
+      console.warn('Could not query dynamic ListModels from Google:', e);
+      return [];
+    }
+  }
+
+  // Phase 1: Try preferred/cached models
+  for (const modelName of candidateModels) {
+    if (attemptedModels.has(modelName)) continue;
+    attemptedModels.add(modelName);
+
+    try {
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: 'user',
+              parts: [{ text: `${systemInstructions}\n\n${promptContent}` }]
+            }
+          ],
+          generationConfig: {
+            responseMimeType: 'application/json',
+            temperature: 0.2
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        lastError = errorData?.error?.message || `Erreur API Gemini (${response.status}: ${response.statusText})`;
+        console.warn(`Model ${modelName} returned error: ${lastError}. Trying next candidate...`);
+        continue;
+      }
+
+      const jsonResponse = await response.json();
+      rawText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (rawText) {
+        try {
+          sessionStorage.setItem('tcf_working_gemini_model', modelName);
+        } catch {}
+        break;
+      }
+    } catch (err: any) {
+      lastError = err?.message || 'Erreur réseau';
+      console.warn(`Model ${modelName} failed with error:`, err);
+    }
+  }
+
+  // Phase 2 (Self-Healing Fallback): If all default models failed, dynamically query Google API
+  if (!rawText) {
+    console.info('Querying Google ModelService.ListModels to dynamically discover active generation models...');
+    const liveModels = await discoverLiveModels(apiKey);
+
+    for (const modelName of liveModels) {
+      if (attemptedModels.has(modelName)) continue;
+      attemptedModels.add(modelName);
+
+      try {
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: 'user',
+                parts: [{ text: `${systemInstructions}\n\n${promptContent}` }]
+              }
+            ],
+            generationConfig: {
+              responseMimeType: 'application/json',
+              temperature: 0.2
+            }
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          lastError = errorData?.error?.message || `Erreur API Gemini (${response.status}: ${response.statusText})`;
+          continue;
+        }
+
+        const jsonResponse = await response.json();
+        rawText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (rawText) {
+          try {
+            sessionStorage.setItem('tcf_working_gemini_model', modelName);
+          } catch {}
+          break;
+        }
+      } catch (err: any) {
+        lastError = err?.message || 'Erreur réseau';
+      }
+    }
+  }
+
+  if (!rawText) {
+    throw new Error(lastError || "Impossible d'obtenir une évaluation de l'IA pour le moment. Veuillez réessayer.");
+  }
+
+  let parsed: any;
+  try {
+    parsed = JSON.parse(rawText);
+  } catch (e) {
+    const cleaned = rawText.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
+    parsed = JSON.parse(cleaned);
+  }
+
+  // Build clean structured tasks record
+  const structuredTasks: Record<string, TaskEvaluation> = {};
+  let totalScore = 0;
+  let countTasks = 0;
+
+  for (const tKey of activeTaskKeys) {
+    const rawTask = parsed.tasks?.[tKey];
+    const taskTitleMap: Record<TaskKey, string> = {
+      task1: 'Tâche 1 : Description / Message',
+      task2: 'Tâche 2 : Narration / Récit',
+      task3: 'Tâche 3 : Argumentation'
+    };
+
+    const taskScore = typeof rawTask?.score === 'number' ? Math.min(20, Math.max(0, rawTask.score)) : 14;
+    totalScore += taskScore;
+    countTasks++;
+
+    const mistakesList = Array.isArray(rawTask?.mistakes)
+      ? rawTask.mistakes.map((m: any) => ({
+          category: m.category || 'Grammaire',
+          original_text: m.original_text || '',
+          corrected_text: m.corrected_text || '',
+          explanation: m.explanation || ''
+        })).filter((m: any) => Boolean(m.original_text || m.corrected_text))
+      : [];
+
+    const taskMapping = mapScoreToTcfCanadaLevels(taskScore);
+
+    structuredTasks[tKey] = {
+      task_key: tKey,
+      task_name: rawTask?.task_name || taskTitleMap[tKey],
+      score: taskScore,
+      estimated_level: taskMapping.cefr,
+      clb_level: taskMapping.clb,
+      general_feedback: rawTask?.general_feedback || '',
+      mistakes: mistakesList,
+      b2_model_answer: rawTask?.b2_model_answer || undefined,
+      c1_c2_model_answer: rawTask?.c1_c2_model_answer || ''
+    };
+  }
+
+  const finalOverallScore = countTasks > 0 ? Math.round(totalScore / countTasks) : (parsed.overall_score || 14);
+  const overallMapping = mapScoreToTcfCanadaLevels(finalOverallScore);
+
+  return {
+    id: `eval_${Date.now()}`,
+    created_at: new Date().toISOString(),
+    evaluated_tasks: activeTaskKeys,
+    estimated_cefr_level: overallMapping.cefr,
+    clb_level: overallMapping.clb,
+    overall_score: finalOverallScore,
+    overall_feedback: parsed.overall_feedback || "Évaluation complétée avec succès selon l'échelle officielle TCF Canada.",
+    tasks: structuredTasks
+  };
+}

@@ -164,11 +164,38 @@ export async function fetchSubmissionsFromSupabase(
         task1: row.task1_word_count,
         task2: row.task2_word_count,
         task3: row.task3_word_count
-      }
+      },
+      aiEvaluation: (row as any).ai_feedback || undefined
     };
   });
 
   return { submissions: mappedSubmissions, error: null };
+}
+
+/**
+ * Saves or updates AI evaluation feedback on an existing submission
+ */
+export async function updateSubmissionAiFeedback(
+  submissionId: string,
+  userId: string,
+  aiFeedback: any
+): Promise<{ error: Error | null }> {
+  if (!supabase || !isSupabaseConfigured) {
+    return { error: null };
+  }
+
+  const { error } = await supabase
+    .from('submissions')
+    .update({ ai_feedback: aiFeedback })
+    .eq('id', submissionId)
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error('Error updating AI feedback in Supabase:', error);
+    return { error: new Error(error.message) };
+  }
+
+  return { error: null };
 }
 
 /**
