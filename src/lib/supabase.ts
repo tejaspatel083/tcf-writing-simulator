@@ -3,13 +3,14 @@ import { ExamResult, ExamCombination } from '../types/exam';
 import questionsData from '../data/questions.json';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://zuctnfowdpndgumumrnx.supabase.co';
+const defaultAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1Y3RuZm93ZHBuZGd1bXVtcm54Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MjYxNzEsImV4cCI6MjEwNjAwMjE3MX0.SAAVDWVf9pgLdFLrQOgoF6AueQRMS8bMwJeUXTpz8SA';
 
 export function getSupabaseAnonKey(): string {
   if (typeof window !== 'undefined') {
     const local = localStorage.getItem('tcf_supabase_anon_key');
     if (local && local.trim().length > 0) return local.trim();
   }
-  return (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
+  return (import.meta.env.VITE_SUPABASE_ANON_KEY || defaultAnonKey).trim();
 }
 
 export function setSupabaseAnonKey(key: string): void {

@@ -4,7 +4,6 @@ import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { Eye, EyeOff } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import { normalizeUserEmail } from '../services/adminService';
 
 interface LoginProps {
   onSuccess: () => void;
@@ -93,7 +92,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
     setLoading(true);
 
     try {
-      const cleanEmail = normalizeUserEmail(email);
+      const cleanEmail = email.trim().toLowerCase();
       const res = await signIn(cleanEmail, password);
 
       if (res.error) {
@@ -151,7 +150,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
     setLoading(true);
 
     try {
-      const cleanEmail = normalizeUserEmail(email);
+      const cleanEmail = email.trim().toLowerCase();
       const res = await signUp(cleanEmail, password, fullName.trim());
 
       if (res.error) {
@@ -197,7 +196,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
     setLoading(true);
 
     try {
-      const cleanEmail = normalizeUserEmail(email);
+      const cleanEmail = email.trim().toLowerCase();
       const res = await resetPassword(cleanEmail);
       if (res.error) {
         setErrorMsg(res.error.message);
@@ -258,7 +257,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
     setResending(true);
     setErrorMsg(null);
     try {
-      const cleanEmail = normalizeUserEmail(email);
+      const cleanEmail = email.trim().toLowerCase();
       const res = await resendVerification(cleanEmail);
       if (res.error) {
         setErrorMsg(res.error.message);
@@ -371,15 +370,11 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
                   {t('Adresse e-mail')}
                 </label>
                 <input
-                  type="text"
-                  inputMode="email"
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  spellCheck={false}
+                  type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="candidat.tcf@exemple.com ou tejadon"
+                  placeholder="candidat.tcf@exemple.com"
                   className="w-full px-3 py-2 border border-slate-300 rounded text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 />
               </div>
@@ -464,11 +459,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
                   {t('Adresse e-mail')}
                 </label>
                 <input
-                  type="text"
-                  inputMode="email"
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  spellCheck={false}
+                  type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -559,11 +550,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
                   {t('Adresse e-mail')}
                 </label>
                 <input
-                  type="text"
-                  inputMode="email"
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  spellCheck={false}
+                  type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
