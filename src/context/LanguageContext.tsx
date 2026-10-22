@@ -440,6 +440,8 @@ const directFrenchToEnglish: Record<string, string> = {
   "Supprimer la clé": "Delete key",
   "Enregistrer la clé": "Save key",
   "✓ Enregistré !": "✓ Saved!",
+  "Entrez une clé API Google Gemini (ou laissez vide pour réinitialiser) :": "Enter a Google Gemini API key (or leave empty to reset):",
+  "Clé API": "API Key",
 
   // Admin & Notifications
   "Administration": "Administration",

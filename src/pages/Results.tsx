@@ -8,7 +8,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { AIEvaluation } from '../types/aiEvaluation';
 import { AIEvaluationView } from '../components/AIEvaluationView';
-import { evaluateTcfSubmissionWithGemini } from '../services/geminiEvaluator';
+import { evaluateTcfSubmissionWithGemini, setGeminiApiKey } from '../services/geminiEvaluator';
 import { updateStoredSubmission } from '../utils/storage';
 import { updateSubmissionAiFeedback } from '../lib/supabase';
 
@@ -243,18 +243,33 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
 
           {/* AI Evaluation Error Alert */}
           {evalError && (
-            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 flex items-start justify-between gap-3">
+            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
                 <p className="font-bold">⚠️ {t("Erreur lors de l'évaluation :")}</p>
                 <p className="mt-0.5">{evalError}</p>
               </div>
-              <button
-                type="button"
-                onClick={() => handleStartEvaluation()}
-                className="px-2.5 py-1 bg-white border border-red-300 rounded font-semibold text-red-700 hover:bg-red-50 cursor-pointer"
-              >
-                {t('Réessayer')}
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const customKey = window.prompt(t('Entrez une clé API Google Gemini (ou laissez vide pour réinitialiser) :'));
+                    if (customKey !== null) {
+                      setGeminiApiKey(customKey);
+                      handleStartEvaluation();
+                    }
+                  }}
+                  className="px-2.5 py-1 bg-white border border-slate-300 rounded font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                >
+                  {t('Clé API')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleStartEvaluation()}
+                  className="px-2.5 py-1 bg-white border border-red-300 rounded font-semibold text-red-700 hover:bg-red-50 cursor-pointer"
+                >
+                  {t('Réessayer')}
+                </button>
+              </div>
             </div>
           )}
 
