@@ -11,9 +11,9 @@ export const CharacterPanel: React.FC<CharacterPanelProps> = ({ onInsertCharacte
 
   const baseCharRows = [
     ['é', 'è', 'ê', 'ë', 'à'],
-    ['â', 'ù', 'û', 'ç', 'ô'],
-    ['œ', 'æ', '.', ',', ':'],
-    ["'"]
+    ['â', 'î', 'ô', 'ù', 'û'],
+    ['ç', 'œ', 'æ', '.', ','],
+    [':', "'"]
   ];
 
   return (
