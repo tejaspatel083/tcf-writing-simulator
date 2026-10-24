@@ -197,8 +197,14 @@ export const AIEvaluationView: React.FC<AIEvaluationViewProps> = ({
             </div>
 
             <div className="flex items-center gap-2 self-start sm:self-center pl-8 sm:pl-0">
-              <span className="text-xs font-medium text-slate-600">
-                {currentWordCount} {t('mots rédigés')}
+              <span className={`text-xs font-semibold px-2 py-0.5 rounded border ${
+                currentWordCount === 0 || !userText.trim()
+                  ? 'bg-red-50 text-red-700 border-red-300'
+                  : 'text-slate-600 bg-slate-100 border-slate-200'
+              }`}>
+                {currentWordCount === 0 || !userText.trim()
+                  ? (language === 'en' ? '⚠️ 0 words (Failed)' : '⚠️ 0 mot (Non réalisé)')
+                  : `${currentWordCount} ${t('mots rédigés')}`}
               </span>
               {taskReq && (
                 <>
@@ -278,7 +284,23 @@ export const AIEvaluationView: React.FC<AIEvaluationViewProps> = ({
               </span>
             </div>
 
-            {currentTask.mistakes.length === 0 ? (
+            {currentWordCount === 0 || !userText.trim() ? (
+              <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-900 text-xs sm:text-sm flex items-start gap-3">
+                <span className="text-xl shrink-0">⚠️</span>
+                <div className="space-y-1">
+                  <h5 className="font-bold text-red-800 text-sm">
+                    {language === 'en'
+                      ? 'Task Achievement Failed — 0 Words Submitted'
+                      : 'Échec de réalisation de la tâche — 0 mot rédigé'}
+                  </h5>
+                  <p className="text-xs text-red-700 leading-relaxed">
+                    {language === 'en'
+                      ? 'You did not write any response for this task (0 words). The prompt was not attempted, resulting in a failing score of 0/20. No grammatical mistakes can be evaluated. Please review the C1-C2 model answer below to learn how to fulfill this prompt.'
+                      : 'Aucun texte n’a été rédigé pour cette tâche (0 mot). La consigne n’a pas été traitée, ce qui entraîne une note éliminatoire de 0/20. Aucune faute linguistique ne peut être évaluée. Consultez la réponse modèle C1-C2 ci-dessous pour étudier la structure attendue.'}
+                  </p>
+                </div>
+              </div>
+            ) : currentTask.mistakes.length === 0 ? (
               <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm flex items-center gap-2">
                 <span>🎉</span>
                 <span className="font-semibold">

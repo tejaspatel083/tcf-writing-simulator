@@ -69,6 +69,13 @@ textarea {
   box-shadow: 0 4px 14px rgba(194, 206, 224, 0.45) !important;
 }
 
+.theme-neumorphism footer,
+.neu-theme footer {
+  background-color: #e8edf5 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 -4px 14px rgba(194, 206, 224, 0.35) !important;
+}
+
 /* 3. Neumorphic Inset / Depressed Wells (Inputs, Textarea, Inset Tabs) */
 .theme-neumorphism textarea,
 .theme-neumorphism input[type="text"],
@@ -206,4 +213,69 @@ textarea {
 .neu-theme .border-slate-300,
 .neu-theme .border-slate-100 {
   border-color: rgba(203, 213, 225, 0.4) !important;
+}
+
+/* ============================================================
+   MOBILE VIEWPORT & TOUCH UTILITIES
+   ============================================================ */
+
+/* Hide scrollbars for horizontal ribbons on mobile */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Touch-optimized tap targets and softened shadows on mobile screens */
+@media (max-width: 640px) {
+  button {
+    touch-action: manipulation;
+  }
+
+  .theme-neumorphism .bg-white:not(button):not(input):not(textarea):not(select),
+  .neu-theme .bg-white:not(button):not(input):not(textarea):not(select) {
+    box-shadow: 4px 4px 10px #c2cee0, -4px -4px 10px #ffffff !important;
+  }
+}
+
+/* Keyframe animations for mobile drawer & sheet */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideInUp {
+  animation: slideInUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
 }

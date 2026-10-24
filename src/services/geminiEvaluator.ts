@@ -1,5 +1,6 @@
 import { ExamResult, TaskKey } from '../types/exam';
 import { AIEvaluation, TaskEvaluation, CefrLevel } from '../types/aiEvaluation';
+import { countFrenchWords } from '../utils/wordCount';
 
 const GEMINI_API_KEY_STORAGE = 'tcf_gemini_api_key';
 
@@ -135,7 +136,23 @@ CRITICAL EVALUATION & PENALTY CRITERIA:
    - 6 / 20:     B1  | CLB 5  (Modest intermediate, repetitive vocabulary, frequent errors)
    - 4–5 / 20:   A2  | CLB 4  (Elementary, basic survival sentences, major grammar/spelling errors)
    - 1–3 / 20:   A1  | < CLB 4 (Beginner, isolated words, incomplete sentences)
-5. AI MODEL RESPONSE (CRITICAL - C1-C2 LEVEL ONLY):
+   - 0 / 20:     A1  | < CLB 4 (Zero score for unattempted/blank responses)
+5. CRITICAL: BLANK, UNWRITTEN, OR ZERO-WORD SUBMISSIONS:
+   - If the candidate's answer for any evaluated task is blank, empty, unwritten, or contains 0 to 4 words:
+     * Task achievement FAILED COMPLETELY.
+     * The task score MUST BE 0 / 20.
+     * The estimated level MUST BE "A1" and clb_level "< CLB 4".
+     * The mistakes array MUST BE EMPTY [] (do NOT invent mistakes and DO NOT praise).
+     * general_feedback in French MUST clearly state that task achievement failed because no text was written:
+       "Échec de réalisation de la tâche : Aucune rédaction n'a été fournie (0 mot rédigé). La consigne n'a pas été traitée, ce qui entraîne une note éliminatoire de 0/20 pour cette épreuve."
+     * general_feedback_en in English MUST state clearly:
+       "Task Achievement Failed: No response was written (0 words). The prompt was not attempted, resulting in a failing score of 0/20 for this task."
+     * Still provide an exemplary "c1_c2_model_answer" so the student can study the required structure.
+   - If ALL evaluated tasks are blank (0 words):
+     * overall_score MUST BE 0 / 20.
+     * overall_feedback MUST state: "Échec de l'examen : Aucune réponse n'a été rédigée. La réalisation de la tâche (Task Achievement) est de 0/20."
+     * overall_feedback_en MUST state: "Exam Failed: No responses were written for the required tasks. Task achievement was completely missed (0/20)."
+6. AI MODEL RESPONSE (CRITICAL - C1-C2 LEVEL ONLY):
    For each evaluated task, generate ONE reference response at C1-C2 level:
    - "c1_c2_model_answer": An exemplary, advanced, and elegant C1-C2 French response using nuanced vocabulary, sophisticated sentence structures, and idiomatic expressions.
    Formatting Constraints:
@@ -382,11 +399,14 @@ Return ONLY valid JSON matching this schema:
       task3: 'Tâche 3 : Argumentation'
     };
 
-    const taskScore = typeof rawTask?.score === 'number' ? Math.min(20, Math.max(0, rawTask.score)) : 14;
-    totalScore += taskScore;
-    countTasks++;
+    const userText = (result.answers[tKey] || '').trim();
+    const countWords = result.wordCounts?.[tKey] ?? countFrenchWords(userText);
+    const isBlank = countWords === 0 || userText.length === 0;
 
-    const mistakesList = Array.isArray(rawTask?.mistakes)
+    let taskScore = typeof rawTask?.score === 'number' ? Math.min(20, Math.max(0, rawTask.score)) : 14;
+    let taskFeedback = rawTask?.general_feedback || '';
+    let taskFeedbackEn = rawTask?.general_feedback_en || '';
+    let mistakesList = Array.isArray(rawTask?.mistakes)
       ? rawTask.mistakes.map((m: any) => ({
           category: m.category || 'Grammaire',
           original_text: m.original_text || '',
@@ -395,7 +415,19 @@ Return ONLY valid JSON matching this schema:
         })).filter((m: any) => Boolean(m.original_text || m.corrected_text))
       : [];
 
-    const taskMapping = mapScoreToTcfCanadaLevels(taskScore);
+    if (isBlank) {
+      taskScore = 0;
+      taskFeedback = "Échec de réalisation de la tâche : Aucune rédaction n'a été fournie (0 mot rédigé). La consigne n'a pas été traitée (Task Achievement manqué), note éliminatoire : 0/20.";
+      taskFeedbackEn = "Task Achievement Failed: No response was written (0 words). The prompt was not attempted, resulting in a failing score of 0/20.";
+      mistakesList = [];
+    }
+
+    totalScore += taskScore;
+    countTasks++;
+
+    const taskMapping = isBlank
+      ? { cefr: 'A1' as CefrLevel, clb: '< CLB 4' }
+      : mapScoreToTcfCanadaLevels(taskScore);
 
     structuredTasks[tKey] = {
       task_key: tKey,
@@ -403,16 +435,37 @@ Return ONLY valid JSON matching this schema:
       score: taskScore,
       estimated_level: taskMapping.cefr,
       clb_level: taskMapping.clb,
-      general_feedback: rawTask?.general_feedback || '',
-      general_feedback_en: rawTask?.general_feedback_en || '',
+      general_feedback: taskFeedback,
+      general_feedback_en: taskFeedbackEn,
       mistakes: mistakesList,
       b2_model_answer: rawTask?.b2_model_answer || undefined,
       c1_c2_model_answer: rawTask?.c1_c2_model_answer || ''
     };
   }
 
-  const finalOverallScore = countTasks > 0 ? Math.round(totalScore / countTasks) : (parsed.overall_score || 14);
-  const overallMapping = mapScoreToTcfCanadaLevels(finalOverallScore);
+  const allBlank = activeTaskKeys.every((k) => {
+    const txt = (result.answers[k] || '').trim();
+    const cnt = result.wordCounts?.[k] ?? countFrenchWords(txt);
+    return cnt === 0 || txt.length === 0;
+  });
+
+  const finalOverallScore = allBlank
+    ? 0
+    : countTasks > 0
+    ? Math.round(totalScore / countTasks)
+    : (parsed.overall_score || 14);
+
+  const overallMapping = allBlank
+    ? { cefr: 'A1' as CefrLevel, clb: '< CLB 4' }
+    : mapScoreToTcfCanadaLevels(finalOverallScore);
+
+  const finalOverallFeedback = allBlank
+    ? "Échec de l'examen : Aucune réponse n'a été rédigée pour les tâches requises (0 mot). La réalisation des tâches (Task Achievement) est non conforme (0/20)."
+    : (parsed.overall_feedback || "Évaluation complétée avec succès selon l'échelle officielle TCF Canada.");
+
+  const finalOverallFeedbackEn = allBlank
+    ? "Exam Failed: No responses were submitted for the required tasks (0 words). Task achievement was completely missed (0/20)."
+    : (parsed.overall_feedback_en || "Evaluation successfully completed according to official TCF Canada standards.");
 
   return {
     id: `eval_${Date.now()}`,
@@ -421,8 +474,8 @@ Return ONLY valid JSON matching this schema:
     estimated_cefr_level: overallMapping.cefr,
     clb_level: overallMapping.clb,
     overall_score: finalOverallScore,
-    overall_feedback: parsed.overall_feedback || "Évaluation complétée avec succès selon l'échelle officielle TCF Canada.",
-    overall_feedback_en: parsed.overall_feedback_en || "Evaluation successfully completed according to official TCF Canada standards.",
+    overall_feedback: finalOverallFeedback,
+    overall_feedback_en: finalOverallFeedbackEn,
     tasks: structuredTasks
   };
 }

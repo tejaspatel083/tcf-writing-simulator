@@ -279,7 +279,7 @@ export const Home: React.FC<HomeProps> = ({
       )}
 
       {/* Main Container - Full Screen Width */}
-      <div className="w-full px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex-1">
+      <div className="w-full px-3 sm:px-8 lg:px-12 py-4 sm:py-8 flex-1">
         {/* Banner if authenticated */}
         {userEmail ? (
           <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
@@ -329,10 +329,10 @@ export const Home: React.FC<HomeProps> = ({
         </div>
 
         {/* Practice Selection Box */}
-        <div className="bg-white border border-slate-300 rounded-lg shadow-xs p-6 mb-8">
+        <div className="bg-white border border-slate-300 rounded-lg shadow-xs p-4 sm:p-6 mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-3 mb-6 gap-3">
             <div>
-              <h2 className="text-lg font-bold text-slate-800">
+              <h2 className="text-base sm:text-lg font-bold text-slate-800">
                 {t("Mode d'entraînement")}
               </h2>
               <p className="text-xs text-slate-500">
@@ -343,11 +343,11 @@ export const Home: React.FC<HomeProps> = ({
             </div>
 
             {/* Mode Switcher Tabs */}
-            <div className="inline-flex p-1 bg-slate-100 rounded-lg border border-slate-200 shrink-0">
+            <div className="flex flex-col sm:inline-flex sm:flex-row p-1 bg-slate-100 rounded-lg border border-slate-200 shrink-0 gap-1 sm:gap-0 w-full sm:w-auto">
               <button
                 type="button"
                 onClick={() => setTrainingMode('full_exam')}
-                className={`px-3.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`flex-1 sm:flex-initial px-3.5 py-2 sm:py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                   trainingMode === 'full_exam'
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -360,7 +360,7 @@ export const Home: React.FC<HomeProps> = ({
               <button
                 type="button"
                 onClick={() => setTrainingMode('single_task')}
-                className={`px-3.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`flex-1 sm:flex-initial px-3.5 py-2 sm:py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                   trainingMode === 'single_task'
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -449,12 +449,12 @@ export const Home: React.FC<HomeProps> = ({
               </div>
 
               {/* Interactive Custom Dropdown */}
-              <div className="flex flex-wrap items-center gap-2.5">
-                <div className="relative">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
+                <div className="relative w-full sm:w-auto">
                   <button
                     type="button"
                     onClick={() => setComboDropdownOpen(!comboDropdownOpen)}
-                    className={`w-full sm:w-auto min-w-[280px] px-3.5 py-2.5 rounded-lg border text-left flex items-center justify-between gap-3 text-sm font-semibold transition-all cursor-pointer shadow-2xs ${
+                    className={`w-full sm:w-auto sm:min-w-[280px] px-3.5 py-2.5 rounded-lg border text-left flex items-center justify-between gap-3 text-sm font-semibold transition-all cursor-pointer shadow-2xs ${
                       isCurrentComboDone
                         ? 'bg-emerald-50/80 border-emerald-400 text-emerald-950 ring-1 ring-emerald-400/50'
                         : 'bg-white border-slate-300 text-slate-800 hover:border-slate-400 focus:border-blue-600'
@@ -546,7 +546,7 @@ export const Home: React.FC<HomeProps> = ({
                   <button
                     type="button"
                     onClick={handlePickRandomCombo}
-                    className="px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                    className="w-full sm:w-auto justify-center px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
                     title={t('Choisir une combinaison au hasard')}
                   >
                     <span>🎲</span>

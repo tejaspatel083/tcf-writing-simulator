@@ -4,6 +4,7 @@ import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { Eye, EyeOff } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { DeviceRecommendationModal } from '../components/DeviceRecommendationModal';
 
 interface LoginProps {
   onSuccess: () => void;
@@ -55,6 +56,14 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
         setEmail(savedEmail);
         setRememberMe(true);
       }
+    } catch {}
+  }, []);
+
+  // Ensure Neumorphism UI theme is immediately active on mount
+  useEffect(() => {
+    try {
+      document.documentElement.classList.add('theme-neumorphism', 'neu-theme');
+      document.documentElement.classList.remove('dark');
     } catch {}
   }, []);
 
@@ -272,24 +281,24 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
+    <div className="min-h-screen bg-[#e8edf5] flex flex-col justify-between">
       <Header
         onHomeClick={onHomeClick}
         subtitle={t('Accès obligatoire par authentification')}
       />
 
       <div className="max-w-md mx-auto w-full px-6 py-8 flex-1 flex flex-col justify-center">
-        <div className="bg-white border border-slate-300 rounded-lg shadow-sm p-6 sm:p-8">
+        <div className="bg-[#e8edf5] border border-white/80 rounded-2xl p-6 sm:p-8 shadow-[10px_10px_24px_#c2cee0,-10px_-10px_24px_#ffffff]">
           
           {/* Mode Selector Tabs (Login / Register) */}
           {mode !== 'forgot' && mode !== 'recovery' && (
-            <div className="flex border border-slate-200 rounded-lg p-1 bg-slate-100 mb-6">
+            <div className="flex border border-white/60 rounded-xl p-1.5 bg-[#e8edf5] mb-6 shadow-[inset_3px_3px_6px_#c2cee0,inset_-3px_-3px_6px_#ffffff]">
               <button
                 type="button"
                 onClick={() => switchMode('login')}
-                className={`flex-1 py-2 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                   mode === 'login'
-                    ? 'bg-white text-blue-700 shadow-xs'
+                    ? 'bg-[#e8edf5] text-blue-700 shadow-[3px_3px_7px_#c2cee0,-3px_-3px_7px_#ffffff] border border-white/80'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -298,9 +307,9 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
               <button
                 type="button"
                 onClick={() => switchMode('register')}
-                className={`flex-1 py-2 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                   mode === 'register'
-                    ? 'bg-white text-blue-700 shadow-xs'
+                    ? 'bg-[#e8edf5] text-blue-700 shadow-[3px_3px_7px_#c2cee0,-3px_-3px_7px_#ffffff] border border-white/80'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -311,7 +320,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
 
           {/* Header Icon & Title */}
           <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-700 font-bold text-xl mb-3">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#e8edf5] text-blue-600 font-bold text-2xl mb-3 shadow-[5px_5px_12px_#c2cee0,-5px_-5px_12px_#ffffff] border border-white/80">
               {mode === 'register' && <span>✍️</span>}
               {mode === 'login' && <span>🔒</span>}
               {mode === 'forgot' && <span>🔑</span>}
@@ -429,7 +438,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs mt-2 disabled:opacity-50 cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-[4px_4px_10px_#c2cee0,-4px_-4px_10px_#ffffff] hover:bg-blue-700 active:scale-[0.98] transition-all mt-2 disabled:opacity-50 cursor-pointer"
               >
                 {loading ? t('Connexion en cours...') : t('Se connecter')}
               </button>
@@ -535,7 +544,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs mt-2 disabled:opacity-50 cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-[4px_4px_10px_#c2cee0,-4px_-4px_10px_#ffffff] hover:bg-blue-700 active:scale-[0.98] transition-all mt-2 disabled:opacity-50 cursor-pointer"
               >
                 {loading ? t('Création en cours...') : t('Créer mon compte')}
               </button>
@@ -562,7 +571,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs mt-2 disabled:opacity-50 cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-[4px_4px_10px_#c2cee0,-4px_-4px_10px_#ffffff] hover:bg-blue-700 active:scale-[0.98] transition-all mt-2 disabled:opacity-50 cursor-pointer"
               >
                 {loading ? t('Envoi en cours...') : t('Envoyer les instructions')}
               </button>
@@ -636,7 +645,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 rounded bg-emerald-600 border border-emerald-700 text-white font-bold text-sm hover:bg-emerald-700 transition-colors shadow-xs mt-2 disabled:opacity-50 cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-[4px_4px_10px_#c2cee0,-4px_-4px_10px_#ffffff] hover:bg-emerald-700 active:scale-[0.98] transition-all mt-2 disabled:opacity-50 cursor-pointer"
               >
                 {loading ? t('Enregistrement du mot de passe...') : t('Enregistrer le nouveau mot de passe')}
               </button>
@@ -659,7 +668,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
 
           {/* Switch between Login and Register */}
           {mode !== 'forgot' && mode !== 'recovery' && (
-            <div className="mt-6 pt-4 border-t border-slate-200 text-center">
+            <div className="mt-6 pt-4 border-t border-slate-300/60 text-center">
               <button
                 type="button"
                 onClick={() => switchMode(mode === 'login' ? 'register' : 'login')}
@@ -676,14 +685,17 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
         </div>
 
         {/* Security Note */}
-        <div className="mt-6 bg-blue-50 border border-blue-100 rounded-lg p-3.5 text-center">
-          <p className="text-xs text-blue-800 font-medium">
+        <div className="mt-6 bg-[#e8edf5] border border-white/80 rounded-2xl p-4 text-center shadow-[4px_4px_10px_#c2cee0,-4px_-4px_10px_#ffffff]">
+          <p className="text-xs text-blue-900 font-medium">
             🔒 <strong>1 compte = 1 adresse e-mail unique :</strong> {t("Vos rédactions et vos statistiques d'examen sont protégées de manière sécurisée et confidentielle.")}
           </p>
         </div>
       </div>
 
       <Footer onFeedbackClick={onFeedbackClick} />
+
+      {/* Device Recommendation Modal for Mobile & Tablet Users */}
+      <DeviceRecommendationModal />
     </div>
   );
 };

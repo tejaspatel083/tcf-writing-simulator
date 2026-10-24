@@ -289,7 +289,7 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
                 ? 'grid-cols-1 sm:grid-cols-3'
                 : (isPractice && tasksList.length === 2)
                 ? 'grid-cols-1 sm:grid-cols-3'
-                : 'grid-cols-2 md:grid-cols-4'
+                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
             }`}>
               {/* Card 1: Time */}
               <div className="bg-white border border-slate-200 rounded-lg p-3.5 shadow-2xs flex flex-col justify-between">
@@ -304,11 +304,11 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
                     </span>
                   </div>
                 </div>
-                <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                  <span className="font-semibold text-slate-600">
+                <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
+                  <span className="font-semibold text-slate-600 flex items-center gap-1 shrink-0">
                     ⏱️ {isPractice ? t('Entraînement') : t('Conditions réelles')}
                   </span>
-                  <span className="text-slate-400 font-medium">
+                  <span className="text-slate-400 font-medium shrink-0">
                     {result.allocatedMinutes || 60} min
                   </span>
                 </div>
@@ -326,9 +326,9 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
                         {singleCount} <span className="text-xs text-slate-500 font-normal font-sans">{t('mots')}</span>
                       </div>
                     </div>
-                    <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                    <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
                       <span
-                        className={`font-bold px-2 py-0.5 rounded border inline-block ${
+                        className={`font-bold px-2 py-0.5 rounded border inline-flex items-center shrink-0 ${
                           isSingleWithin
                             ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
                             : 'bg-red-50 text-red-600 border-red-300'
@@ -336,7 +336,7 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
                       >
                         {isSingleWithin ? t('✓ Conforme') : t('⚠️ Non conforme')}
                       </span>
-                      <span className="text-slate-400 font-medium font-mono">
+                      <span className="text-slate-400 font-medium font-mono shrink-0">
                         {singleMin}–{singleMax} {t('mots')}
                       </span>
                     </div>
@@ -351,11 +351,11 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
                         {singleMin}–{singleMax} <span className="text-xs text-slate-500 font-normal font-sans">{t('mots')}</span>
                       </div>
                     </div>
-                    <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                      <span className="text-slate-600 font-medium">
+                    <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
+                      <span className="text-slate-600 font-medium truncate">
                         {t(singleTaskObj.name)}
                       </span>
-                      <span className="text-emerald-700 font-bold">
+                      <span className="text-emerald-700 font-bold shrink-0">
                         TCF Canada
                       </span>
                     </div>
@@ -379,9 +379,9 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
                           {count} <span className="text-xs text-slate-500 font-normal font-sans">{t('mots')}</span>
                         </div>
                       </div>
-                      <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between gap-1 text-[11px]">
+                      <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
                         <span
-                          className={`font-bold px-2 py-0.5 rounded border text-[10px] sm:text-[11px] whitespace-nowrap ${
+                          className={`font-bold px-2 py-0.5 rounded border text-[10px] sm:text-[11px] inline-flex items-center shrink-0 ${
                             isWithin
                               ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
                               : 'bg-red-50 text-red-600 border-red-300'
@@ -389,8 +389,8 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
                         >
                           {isWithin ? t('✓ Conforme') : t('⚠️ Non conforme')}
                         </span>
-                        <span className="text-slate-400 font-mono text-[10px] sm:text-[11px] whitespace-nowrap">
-                          {min}–{max}
+                        <span className="text-slate-400 font-mono text-[10px] sm:text-[11px] shrink-0">
+                          {min}–{max} {t('mots')}
                         </span>
                       </div>
                     </div>

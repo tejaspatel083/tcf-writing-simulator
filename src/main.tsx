@@ -34,6 +34,10 @@ try {
   console.warn('Could not patch Node prototype methods:', e);
 }
 
+try {
+  document.documentElement.classList.add('theme-neumorphism', 'neu-theme');
+} catch {}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ErrorBoundary>

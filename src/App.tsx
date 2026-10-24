@@ -59,12 +59,18 @@ const MainRouter: React.FC = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [view]);
 
+  // Keep Neumorphism UI theme active on root
+  useEffect(() => {
+    document.documentElement.classList.add('theme-neumorphism', 'neu-theme');
+    document.documentElement.classList.remove('dark');
+  }, []);
+
   // 1. Loading screen while determining auth session
   if (loading) {
     return (
       <div
         className="min-h-screen flex flex-col items-center justify-center p-4 text-center"
-        style={{ backgroundColor: '#f8fafc', color: '#0f172a' }}
+        style={{ backgroundColor: '#e8edf5', color: '#1e293b' }}
       >
         <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
         <p className="text-slate-600 font-medium text-sm mb-2">Chargement de votre session...</p>
@@ -200,7 +206,7 @@ const MainRouter: React.FC = () => {
   // Determine layout subtitle and combinationTitle
   const getLayoutSubtitle = () => {
     if (view === 'home') {
-      return t("Sélectionnez votre session et commencez à rédiger dans les conditions réelles.");
+      return undefined;
     }
     if (view === 'dashboard') {
       return isAdmin ? t("Espace Administrateur avec gestion des alertes.") : t("Bienvenue sur votre tableau de bord personnel.");

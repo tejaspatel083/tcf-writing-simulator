@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TaskKey, TaskRequirement } from '../types/exam';
 import { countFrenchWords } from '../utils/wordCount';
 import { cleanDocumentText, fixMojibake, normalizeParagraphText } from '../utils/cleanText';
@@ -17,6 +17,7 @@ interface TaskEditorProps {
   isLastTask: boolean;
   disabled?: boolean;
   isPracticeMode?: boolean;
+  onInsertCharacter?: (char: string) => void;
 }
 
 export const TaskEditor: React.FC<TaskEditorProps> = ({
@@ -30,11 +31,13 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
   isFirstTask,
   isLastTask,
   disabled = false,
-  isPracticeMode = false
+  isPracticeMode = false,
+  onInsertCharacter
 }) => {
   const { t } = useLanguage();
   const { isAdmin } = useAuth();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isPromptExpanded, setIsPromptExpanded] = useState<boolean>(true);
   const wordCount = countFrenchWords(value);
 
   // Allow copy/cut/paste and keyboard shortcuts exclusively for Admin
@@ -80,16 +83,27 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
       )}
 
       {/* Task Prompt Area */}
-      <div className={`p-4 sm:p-5 border-b border-slate-300 bg-slate-50 max-h-[46vh] overflow-y-auto ${allowCopyPaste ? 'select-text' : ''}`}>
+      <div className={`p-3 sm:p-5 border-b border-slate-300 bg-slate-50 transition-all ${
+        isPromptExpanded ? 'max-h-[34vh] sm:max-h-[46vh]' : 'max-h-14 sm:max-h-[46vh]'
+      } overflow-y-auto ${allowCopyPaste ? 'select-text' : ''}`}>
         {/* Header Bar matching Reference Website */}
-        <div className="flex items-center justify-between border-b border-slate-200 pb-2.5 mb-3">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-2 mb-2 sm:mb-3">
           <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-extrabold shrink-0 shadow-2xs">
+            <span className="w-5 sm:w-6 h-5 sm:h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-extrabold shrink-0 shadow-2xs">
               {taskNumberMap[taskKey]}
             </span>
-            <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">
               {t(`Tâche ${taskNumberMap[taskKey]}`)}
             </h2>
+
+            {/* Mobile Prompt Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsPromptExpanded(!isPromptExpanded)}
+              className="sm:hidden text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded cursor-pointer ml-1"
+            >
+              {isPromptExpanded ? t('▲ Réduire') : t('▼ Sujet')}
+            </button>
           </div>
 
           <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
@@ -140,7 +154,40 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
       </div>
 
       {/* Writing Textarea Area */}
-      <div className="flex-1 p-4 flex flex-col relative bg-white">
+      <div className="flex-1 p-3 sm:p-4 flex flex-col relative bg-white min-h-0">
+        {/* Mobile Quick Accents Ribbon */}
+        <div className="sm:hidden flex items-center gap-1 overflow-x-auto no-scrollbar pb-2 mb-1.5 border-b border-slate-100 select-none">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1">
+            {t('Accents')} :
+          </span>
+          {['é', 'è', 'ê', 'ë', 'à', 'â', 'î', 'ô', 'ù', 'û', 'ç', 'œ', '«', '»'].map((char) => (
+            <button
+              key={char}
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                if (onInsertCharacter) {
+                  onInsertCharacter(char);
+                } else if (textareaRef.current) {
+                  const start = textareaRef.current.selectionStart ?? value.length;
+                  const end = textareaRef.current.selectionEnd ?? value.length;
+                  const nextVal = value.substring(0, start) + char + value.substring(end);
+                  onChange(nextVal);
+                  setTimeout(() => {
+                    if (textareaRef.current) {
+                      textareaRef.current.selectionStart = textareaRef.current.selectionEnd = start + char.length;
+                      textareaRef.current.focus();
+                    }
+                  }, 0);
+                }
+              }}
+              className="h-7 min-w-[28px] px-1.5 flex items-center justify-center rounded bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-slate-800 text-sm font-semibold border border-slate-200 shrink-0 cursor-pointer"
+            >
+              {char}
+            </button>
+          ))}
+        </div>
+
         <textarea
           ref={textareaRef}
           value={value}
@@ -176,34 +223,36 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
       </div>
 
       {/* Footer / Status Bar */}
-      <div className="px-4 py-3 border-t border-slate-300 bg-slate-50 flex items-center justify-between text-sm shrink-0">
+      <div className="px-3 sm:px-4 py-2.5 sm:py-3 border-t border-slate-300 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 text-sm shrink-0">
         {/* Word Counter */}
-        <div className="flex items-center gap-2">
-          <span className={`font-bold font-mono text-base px-2 py-0.5 rounded border ${
-            isWithinRange
-              ? 'text-emerald-700 bg-emerald-50 border-emerald-300'
-              : 'text-red-600 bg-red-50 border-red-300'
-          }`}>
-            {wordCount}
-          </span>
-          <span className="text-slate-600 font-medium">
-            / ({taskRequirement.minWords}-{taskRequirement.maxWords} {t('mots')})
-          </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className={`font-bold font-mono text-base px-2 py-0.5 rounded border ${
+              isWithinRange
+                ? 'text-emerald-700 bg-emerald-50 border-emerald-300'
+                : 'text-red-600 bg-red-50 border-red-300'
+            }`}>
+              {wordCount}
+            </span>
+            <span className="text-slate-600 font-medium whitespace-nowrap">
+              / ({taskRequirement.minWords}-{taskRequirement.maxWords} {t('mots')})
+            </span>
+          </div>
 
           {isWithinRange && (
-            <span className="bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs px-2.5 py-0.5 rounded font-bold ml-2">
+            <span className="bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs px-2.5 py-0.5 rounded font-bold whitespace-nowrap">
               {t('✓ Nombre de mots conforme')}
             </span>
           )}
 
           {isTooLow && (
-            <span className="bg-red-100 border border-red-300 text-red-800 text-xs px-2 py-0.5 rounded font-bold ml-2">
+            <span className="bg-red-100 border border-red-300 text-red-800 text-xs px-2 py-0.5 rounded font-bold whitespace-nowrap">
               {t('⚠️ Mots insuffisants')} ({wordCount}/{taskRequirement.minWords})
             </span>
           )}
 
           {isTooHigh && (
-            <span className="bg-red-100 border border-red-300 text-red-800 text-xs px-2 py-0.5 rounded font-bold ml-2">
+            <span className="bg-red-100 border border-red-300 text-red-800 text-xs px-2 py-0.5 rounded font-bold whitespace-nowrap">
               {t('⚠️ Limite dépassée')} ({wordCount}/{taskRequirement.maxWords})
             </span>
           )}
@@ -211,7 +260,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
           {allowCopyPaste && (
             <span
               title={t('Le copier-coller et les raccourcis clavier sont débloqués pour le compte administrateur.')}
-              className="hidden sm:inline-flex items-center gap-1 bg-amber-50 border border-amber-300 text-amber-800 text-xs px-2.5 py-0.5 rounded font-bold ml-2 shadow-2xs"
+              className="hidden sm:inline-flex items-center gap-1 bg-amber-50 border border-amber-300 text-amber-800 text-xs px-2.5 py-0.5 rounded font-bold ml-1 shadow-2xs"
             >
               👑 {t('Admin : Copier-coller autorisé')}
             </span>
@@ -219,14 +268,14 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
         </div>
 
         {/* Navigation & Submit Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
           {!isPracticeMode && (
-            <>
+            <div className="flex items-center gap-2 flex-1 sm:flex-initial">
               <button
                 type="button"
                 onClick={onPrevTask}
                 disabled={isFirstTask}
-                className={`px-3 py-1.5 rounded border text-sm font-medium transition-colors cursor-pointer ${
+                className={`flex-1 sm:flex-initial px-3 py-2 sm:py-1.5 rounded-lg border text-xs sm:text-sm font-semibold transition-colors cursor-pointer text-center whitespace-nowrap ${
                   isFirstTask
                     ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
                     : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
@@ -239,7 +288,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
                 type="button"
                 onClick={onNextTask}
                 disabled={isLastTask}
-                className={`px-3 py-1.5 rounded border text-sm font-medium transition-colors cursor-pointer ${
+                className={`flex-1 sm:flex-initial px-3 py-2 sm:py-1.5 rounded-lg border text-xs sm:text-sm font-semibold transition-colors cursor-pointer text-center whitespace-nowrap ${
                   isLastTask
                     ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
                     : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
@@ -247,14 +296,14 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
               >
                 {t('Suivant')}
               </button>
-            </>
+            </div>
           )}
 
           <button
             type="button"
             onClick={onFinishExam}
-            className={`px-4 py-1.5 rounded bg-blue-600 border border-blue-700 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-xs cursor-pointer ${
-              !isPracticeMode ? 'ml-4' : ''
+            className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 sm:py-1.5 rounded-lg bg-blue-600 border border-blue-700 text-white font-bold text-xs sm:text-sm hover:bg-blue-700 transition-colors shadow-xs cursor-pointer text-center whitespace-nowrap ${
+              !isPracticeMode ? 'sm:ml-2' : ''
             }`}
           >
             {isPracticeMode ? t("Terminer l'entraînement") : t("Terminer l'examen")}
