@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    background-color: #f8fafc;
+    background-color: #e8edf5;
     color: #1e293b;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
@@ -23,4 +23,187 @@ textarea {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+/* ============================================================
+   NEUMORPHISM DESIGN SYSTEM
+   Soft, tactile embossed surfaces with realistic ambient light
+   ============================================================ */
+
+/* Global Neumorphic Canvas */
+.theme-neumorphism,
+.theme-neumorphism body,
+.theme-neumorphism .bg-slate-50,
+.theme-neumorphism .min-h-screen,
+.neu-theme,
+.neu-theme body,
+.neu-theme .bg-slate-50,
+.neu-theme .min-h-screen {
+  background-color: #e8edf5 !important;
+}
+
+/* 1. Neumorphic Extruded Cards & Panels */
+.theme-neumorphism .bg-white:not(button):not(input):not(textarea):not(select),
+.theme-neumorphism .neu-card,
+.neu-theme .bg-white:not(button):not(input):not(textarea):not(select),
+.neu-theme .neu-card {
+  background-color: #e8edf5 !important;
+  box-shadow: 8px 8px 18px #c2cee0, -8px -8px 18px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.75) !important;
+  border-radius: 1.25rem;
+}
+
+/* 2. Neumorphic Sidebar & Sticky Header */
+.theme-neumorphism nav,
+.neu-theme nav {
+  background-color: #e8edf5 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 6px 0 16px rgba(194, 206, 224, 0.45) !important;
+}
+
+.theme-neumorphism header,
+.neu-theme header {
+  background-color: rgba(232, 237, 245, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 4px 14px rgba(194, 206, 224, 0.45) !important;
+}
+
+/* 3. Neumorphic Inset / Depressed Wells (Inputs, Textarea, Inset Tabs) */
+.theme-neumorphism textarea,
+.theme-neumorphism input[type="text"],
+.theme-neumorphism input[type="email"],
+.theme-neumorphism input[type="password"],
+.theme-neumorphism select,
+.neu-theme textarea,
+.neu-theme input[type="text"],
+.neu-theme input[type="email"],
+.neu-theme input[type="password"],
+.neu-theme select {
+  background-color: #e8edf5 !important;
+  box-shadow: inset 4px 4px 8px #c2cee0, inset -4px -4px 8px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 0.75rem !important;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-neumorphism textarea:focus,
+.theme-neumorphism input:focus,
+.neu-theme textarea:focus,
+.neu-theme input:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  box-shadow: inset 4px 4px 8px #c2cee0, inset -4px -4px 8px #ffffff, 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+}
+
+/* 4. Neumorphic Tactile Buttons (Extruded default, Inset when pressed) */
+.theme-neumorphism button.bg-white,
+.theme-neumorphism button.bg-slate-50,
+.theme-neumorphism button.bg-slate-100,
+.neu-theme button.bg-white,
+.neu-theme button.bg-slate-50,
+.neu-theme button.bg-slate-100 {
+  background-color: #e8edf5 !important;
+  box-shadow: 5px 5px 11px #c2cee0, -5px -5px 11px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.theme-neumorphism button.bg-white:hover,
+.theme-neumorphism button.bg-slate-50:hover,
+.theme-neumorphism button.bg-slate-100:hover,
+.neu-theme button.bg-white:hover,
+.neu-theme button.bg-slate-50:hover,
+.neu-theme button.bg-slate-100:hover {
+  transform: translateY(-1px);
+  box-shadow: 7px 7px 14px #c2cee0, -7px -7px 14px #ffffff !important;
+}
+
+.theme-neumorphism button.bg-white:active,
+.theme-neumorphism button.bg-slate-50:active,
+.theme-neumorphism button.bg-slate-100:active,
+.neu-theme button.bg-white:active,
+.neu-theme button.bg-slate-50:active,
+.neu-theme button.bg-slate-100:active {
+  transform: translateY(0);
+  box-shadow: inset 3px 3px 6px #c2cee0, inset -3px -3px 6px #ffffff !important;
+}
+
+/* 5. Neumorphic Active / Selected Buttons & Tabs (Debossed state) */
+.theme-neumorphism button.bg-blue-50,
+.theme-neumorphism button.bg-blue-100,
+.neu-theme button.bg-blue-50,
+.neu-theme button.bg-blue-100 {
+  background-color: #e8edf5 !important;
+  box-shadow: inset 3px 3px 7px #c2cee0, inset -3px -3px 7px #ffffff !important;
+  border: 1px solid rgba(59, 130, 246, 0.4) !important;
+  color: #1d4ed8 !important;
+}
+
+/* 6. Neumorphic Primary CTA Buttons */
+.theme-neumorphism button.bg-blue-600,
+.neu-theme button.bg-blue-600 {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  box-shadow: 6px 6px 15px rgba(37, 99, 235, 0.4), -4px -4px 10px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.theme-neumorphism button.bg-blue-600:hover,
+.neu-theme button.bg-blue-600:hover {
+  transform: translateY(-1px);
+  box-shadow: 8px 8px 18px rgba(37, 99, 235, 0.48), -5px -5px 12px #ffffff !important;
+}
+
+.theme-neumorphism button.bg-blue-600:active,
+.neu-theme button.bg-blue-600:active {
+  transform: translateY(0);
+  box-shadow: inset 3px 3px 7px rgba(15, 23, 42, 0.5) !important;
+}
+
+/* 7. Neumorphic Completed Combinations */
+.theme-neumorphism button.bg-emerald-50,
+.theme-neumorphism .bg-emerald-50,
+.neu-theme button.bg-emerald-50,
+.neu-theme .bg-emerald-50 {
+  background-color: #e5f3ea !important;
+  box-shadow: 4px 4px 10px #c3ded0, -4px -4px 10px #ffffff !important;
+  border: 1px solid rgba(134, 239, 172, 0.6) !important;
+}
+
+.theme-neumorphism button.bg-emerald-100,
+.neu-theme button.bg-emerald-100 {
+  background-color: #e5f3ea !important;
+  box-shadow: inset 3px 3px 7px #c3ded0, inset -3px -3px 7px #ffffff !important;
+  border: 2px solid #10b981 !important;
+}
+
+.theme-neumorphism button.bg-emerald-600,
+.neu-theme button.bg-emerald-600 {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  box-shadow: 6px 6px 15px rgba(16, 185, 129, 0.38), -4px -4px 10px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+/* 8. Neumorphic Badges & Pills */
+.theme-neumorphism .rounded-full.bg-emerald-100,
+.theme-neumorphism .rounded-full.bg-blue-100,
+.theme-neumorphism .rounded-full.bg-slate-100,
+.neu-theme .rounded-full.bg-emerald-100,
+.neu-theme .rounded-full.bg-blue-100,
+.neu-theme .rounded-full.bg-slate-100 {
+  box-shadow: inset 2px 2px 4px #c2cee0, inset -2px -2px 4px #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Subtle separator lines in Neumorphism */
+.theme-neumorphism .border-slate-200,
+.theme-neumorphism .border-slate-300,
+.theme-neumorphism .border-slate-100,
+.neu-theme .border-slate-200,
+.neu-theme .border-slate-300,
+.neu-theme .border-slate-100 {
+  border-color: rgba(203, 213, 225, 0.4) !important;
 }

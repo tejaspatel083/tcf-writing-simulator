@@ -69,6 +69,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
     } catch {}
   }, []);
 
+  // Keep Neumorphism UI theme active
+  useEffect(() => {
+    document.documentElement.classList.add('theme-neumorphism', 'neu-theme');
+  }, []);
+
   const displayName = userName || (user?.email ? user.email.split('@')[0] : 'Étudiant');
 
   // Navigation guard if in simulator
