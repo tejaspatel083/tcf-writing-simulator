@@ -96,12 +96,6 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({
             <span>{t(taskTypeMap[taskKey])}</span>
             <span>•</span>
             <span className="font-semibold text-slate-700">{taskRequirement.minWords}-{taskRequirement.maxWords} {t('mots')}</span>
-            {taskKey === 'task3' && (
-              <>
-                <span>•</span>
-                <span>⏱️ 30 min</span>
-              </>
-            )}
           </div>
         </div>
 

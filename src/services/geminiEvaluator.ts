@@ -149,7 +149,8 @@ Return ONLY valid JSON matching this schema:
   "estimated_cefr_level": "A1" | "A2" | "B1" | "B2" | "C1" | "C2",
   "clb_level": "CLB 4" | "CLB 5" | "CLB 6" | "CLB 7" | "CLB 8" | "CLB 9" | "CLB 10" | "< CLB 4",
   "overall_score": number (0 to 20),
-  "overall_feedback": "string (1-3 sentences summary feedback)",
+  "overall_feedback": "string (1-3 sentences summary feedback in French)",
+  "overall_feedback_en": "string (1-3 sentences summary feedback in English)",
   "tasks": {
     "task1"?: {
       "task_key": "task1",
@@ -157,7 +158,8 @@ Return ONLY valid JSON matching this schema:
       "score": number (0 to 20),
       "estimated_level": "A1" | "A2" | "B1" | "B2" | "C1" | "C2",
       "clb_level": "string",
-      "general_feedback": "string",
+      "general_feedback": "string (feedback in French)",
+      "general_feedback_en": "string (feedback in English)",
       "mistakes": [
         {
           "category": "Grammaire" | "Orthographe / Accents" | "Conjugaison / Temps" | "Structure de phrase" | "Vocabulaire",
@@ -166,7 +168,7 @@ Return ONLY valid JSON matching this schema:
           "explanation": "string (strictly in English)"
         }
       ],
-      "c1_c2_model_answer": "string"
+      "c1_c2_model_answer": "string (C1-C2 exemplary model answer in French)"
     },
     "task2"?: { ...same structure as task1 with task_key "task2"... },
     "task3"?: { ...same structure as task1 with task_key "task3"... }
@@ -200,7 +202,11 @@ Return ONLY valid JSON matching this schema:
     }
   }
 
-  promptContent += `MANDATORY REQUIREMENT: All mistake "explanation" values MUST be written 100% IN ENGLISH ONLY (explain grammar/spelling rule in English). Do NOT output explanations in French.\n`;
+  promptContent += `MANDATORY REQUIREMENTS:\n`;
+  promptContent += `1. Provide overall_feedback in French AND provide its accurate English translation in overall_feedback_en.\n`;
+  promptContent += `2. For each task, provide general_feedback in French AND its accurate English translation in general_feedback_en.\n`;
+  promptContent += `3. All mistake "explanation" values MUST be written 100% IN ENGLISH ONLY (explain French grammar/spelling rule clearly in English).\n`;
+  promptContent += `4. Keep the student's original_text, corrected_text, and c1_c2_model_answer in French.\n`;
   promptContent += `Please evaluate the active task(s) and output ONLY the valid JSON response.`;
 
   // Memory & session cache for currently active working model
@@ -398,6 +404,7 @@ Return ONLY valid JSON matching this schema:
       estimated_level: taskMapping.cefr,
       clb_level: taskMapping.clb,
       general_feedback: rawTask?.general_feedback || '',
+      general_feedback_en: rawTask?.general_feedback_en || '',
       mistakes: mistakesList,
       b2_model_answer: rawTask?.b2_model_answer || undefined,
       c1_c2_model_answer: rawTask?.c1_c2_model_answer || ''
@@ -415,6 +422,7 @@ Return ONLY valid JSON matching this schema:
     clb_level: overallMapping.clb,
     overall_score: finalOverallScore,
     overall_feedback: parsed.overall_feedback || "Évaluation complétée avec succès selon l'échelle officielle TCF Canada.",
+    overall_feedback_en: parsed.overall_feedback_en || "Evaluation successfully completed according to official TCF Canada standards.",
     tasks: structuredTasks
   };
 }

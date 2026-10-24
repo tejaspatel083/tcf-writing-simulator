@@ -20,6 +20,7 @@ interface SimulatorProps {
   practiceTask?: TaskKey | string;
   practiceTasks?: TaskKey[];
   durationMinutes?: number;
+  hideHeader?: boolean;
 }
 
 export const Simulator: React.FC<SimulatorProps> = ({
@@ -31,7 +32,8 @@ export const Simulator: React.FC<SimulatorProps> = ({
   isPracticeMode = false,
   practiceTask = 'task1',
   practiceTasks,
-  durationMinutes = 60
+  durationMinutes = 60,
+  hideHeader = false
 }) => {
   const { t } = useLanguage();
   const { isAdmin } = useAuth();
@@ -171,17 +173,19 @@ export const Simulator: React.FC<SimulatorProps> = ({
   const practiceTitleLabel = activeTaskKeys.map((k) => t(`Tâche ${k.slice(-1)}`)).join(' + ');
 
   return (
-    <div className={`h-screen w-screen flex flex-col bg-white overflow-hidden ${allowCopyPaste ? 'select-text' : 'select-none'}`}>
+    <div className={`flex flex-col bg-white dark:bg-gray-900 ${hideHeader ? 'h-full w-full' : 'h-screen w-screen'} overflow-hidden ${allowCopyPaste ? 'select-text' : 'select-none'}`}>
       {/* Header */}
-      <Header
-        onHomeClick={onCancelExam}
-        subtitle={
-          isPracticeMode
-            ? `${t('Entraînement')} — ${practiceTitleLabel}`
-            : t("Examen en cours")
-        }
-        combinationTitle={`${t('Combinaison')} ${combination.combinationNumber} — ${t(month)} ${year}`}
-      />
+      {!hideHeader && (
+        <Header
+          onHomeClick={onCancelExam}
+          subtitle={
+            isPracticeMode
+              ? `${t('Entraînement')} — ${practiceTitleLabel}`
+              : t("Examen en cours")
+          }
+          combinationTitle={`${t('Combinaison')} ${combination.combinationNumber} — ${t(month)} ${year}`}
+        />
+      )}
 
       {/* Main Exam Grid */}
       <div className="flex-1 flex overflow-hidden">

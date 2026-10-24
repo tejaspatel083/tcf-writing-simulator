@@ -3,12 +3,18 @@ import { useAuth } from '../context/AuthContext';
 import { fetchSubmissionsFromSupabase, deleteSubmissionFromSupabase } from '../lib/supabase';
 import { getStoredSubmissions, deleteStoredSubmission, mergeSubmissions, syncStoredSubmissions } from '../utils/storage';
 import { ExamResult, TaskKey } from '../types/exam';
-import { formatTime } from '../utils/wordCount';
-import { Header } from '../components/Header';
-import { Footer } from '../components/Footer';
 import { AdminPanel } from '../components/AdminPanel';
 import { useLanguage } from '../context/LanguageContext';
-import { UserProfileModal } from '../components/UserProfileModal';
+import {
+  BarChart3,
+  CheckCircle2,
+  Calendar,
+  Award,
+  Shield,
+  Trash2,
+  Eye,
+  TrendingUp
+} from 'lucide-react';
 
 interface DashboardProps {
   onStartNewExam: () => void;
@@ -20,17 +26,13 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({
   onStartNewExam,
-  onViewSubmission,
-  onRetakeCombination,
-  onHomeClick,
-  onFeedbackClick
+  onViewSubmission
 }) => {
-  const { user, userName, signOut, isConfigured, isAdmin } = useAuth();
+  const { user, userName, isConfigured, isAdmin } = useAuth();
   const { t } = useLanguage();
   const [submissions, setSubmissions] = useState<ExamResult[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'submissions' | 'admin'>(isAdmin ? 'admin' : 'submissions');
-  const [showProfileModal, setShowProfileModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (isAdmin) {
@@ -74,10 +76,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
     );
     if (!confirmed) return;
 
-    // 1. Delete from local storage
     deleteStoredSubmission(sub.id);
 
-    // 2. Delete from Supabase if logged in
     if (user && isConfigured) {
       try {
         await deleteSubmissionFromSupabase(sub.id, user.id);
@@ -86,140 +86,166 @@ export const Dashboard: React.FC<DashboardProps> = ({
       }
     }
 
-    // 3. Update state immediately
     setSubmissions((prev) => prev.filter((item) => item.id !== sub.id));
   };
 
-  const displayName = user?.email ? user.email.split('@')[0] : 'Utilisateur';
+  // Compute summary stats
+  const totalSubmissions = submissions.length;
+  const totalTasksCompleted = submissions.reduce((acc, sub) => {
+    let tasksCount = 0;
+    if (sub.wordCounts?.task1 > 0) tasksCount++;
+    if (sub.wordCounts?.task2 > 0) tasksCount++;
+    if (sub.wordCounts?.task3 > 0) tasksCount++;
+    return acc + tasksCount;
+  }, 0);
+  const lastSubmissionDate = submissions[0]?.date ? submissions[0].date.split(' ')[0] : '—';
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
-      <Header
-        onHomeClick={onHomeClick}
-        onFeedbackClick={onFeedbackClick}
-        onProfileClick={() => setShowProfileModal(true)}
-        userEmail={user?.email}
-        subtitle={isAdmin ? t('👑 Espace Administrateur') : t('Tableau de bord utilisateur')}
-      />
-
-      <div className="w-full px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex-1">
-        {/* User Greeting & Primary CTA */}
-        <div className="bg-white border border-slate-300 rounded-lg p-5 sm:p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-1.5 flex-wrap">
-                <span>{t('Bonjour,')}</span>
-                <span className="text-blue-700">{userName || displayName}</span>
-                <button
-                  type="button"
-                  onClick={() => setShowProfileModal(true)}
-                  className="text-xs text-slate-400 hover:text-blue-700 p-1 rounded-md hover:bg-slate-100 transition-colors cursor-pointer ml-1 inline-flex items-center"
-                  title={t('Modifier mon profil')}
-                >
-                  ✏️
-                </button>
-              </h1>
-              {isAdmin && (
-                <span className="bg-amber-100 text-amber-800 border border-amber-300 text-[11px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
-                  <span>👑</span>
-                  <span>{t('Admin')}</span>
-                </span>
-              )}
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 bg-slate-50 text-slate-900">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-xs">
+          <div className="flex items-center justify-between mb-3">
+            <div className="p-2 bg-blue-50 rounded-lg">
+              <BarChart3 className="h-5 w-5 text-blue-600" />
             </div>
-            <p className="text-xs text-slate-500 mt-1">
-              {user?.email} • {isAdmin ? t('Compte administrateur avec gestion des alertes e-mail.') : t('Bienvenue sur votre tableau de bord personnel.')}
-            </p>
+            <TrendingUp className="h-4 w-4 text-emerald-500" />
           </div>
+          <h3 className="font-semibold text-xs text-slate-500 mb-1 uppercase tracking-wide">
+            {t('Examens Soumis')}
+          </h3>
+          <p className="text-2xl font-black text-slate-900">{totalSubmissions}</p>
+          <p className="text-xs text-emerald-600 mt-1">
+            {submissions.length > 0 ? t('Enregistrés sur votre compte') : t('Aucune soumission')}
+          </p>
+        </div>
 
-          <div className="flex items-center gap-2.5 w-full sm:w-auto flex-wrap">
+        <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-xs">
+          <div className="flex items-center justify-between mb-3">
+            <div className="p-2 bg-emerald-50 rounded-lg">
+              <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+            </div>
+            <TrendingUp className="h-4 w-4 text-emerald-500" />
+          </div>
+          <h3 className="font-semibold text-xs text-slate-500 mb-1 uppercase tracking-wide">
+            {t('Tâches Rédigées')}
+          </h3>
+          <p className="text-2xl font-black text-slate-900">{totalTasksCompleted}</p>
+          <p className="text-xs text-emerald-600 mt-1">
+            {t('Tâche 1, 2 ou 3 complétées')}
+          </p>
+        </div>
+
+        <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-xs">
+          <div className="flex items-center justify-between mb-3">
+            <div className="p-2 bg-indigo-50 rounded-lg">
+              <Calendar className="h-5 w-5 text-indigo-600" />
+            </div>
+            <Award className="h-4 w-4 text-indigo-500" />
+          </div>
+          <h3 className="font-semibold text-xs text-slate-500 mb-1 uppercase tracking-wide">
+            {t('Dernière Session')}
+          </h3>
+          <p className="text-lg font-bold text-slate-900 truncate">{lastSubmissionDate}</p>
+          <p className="text-xs text-slate-500 mt-1">
+            {submissions.length > 0 ? t('Entraînement régulier') : t('Prêt à débuter')}
+          </p>
+        </div>
+
+        <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-xs">
+          <div className="flex items-center justify-between mb-3">
+            <div className="p-2 bg-amber-50 rounded-lg">
+              <Shield className="h-5 w-5 text-amber-600" />
+            </div>
+            <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
+              {t('ACTIF')}
+            </span>
+          </div>
+          <h3 className="font-semibold text-xs text-slate-500 mb-1 uppercase tracking-wide">
+            {t('Statut du Compte')}
+          </h3>
+          <p className="text-base font-bold text-slate-900 truncate">
+            {isAdmin ? t('👑 Administrateur') : t('Candidat Vérifié')}
+          </p>
+          <p className="text-xs text-slate-500 mt-1 truncate" title={user?.email || ''}>
+            {user?.email || 'Local'}
+          </p>
+        </div>
+      </div>
+
+      {/* Tab navigation if Admin */}
+      {isAdmin && (
+        <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+          <button
+            type="button"
+            onClick={() => setActiveTab('admin')}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === 'admin'
+                ? 'bg-blue-600 text-white shadow-2xs'
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
+            }`}
+          >
+            <span>👑</span>
+            <span>{t('Gestion des Notifications')}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('submissions')}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === 'submissions'
+                ? 'bg-blue-600 text-white shadow-2xs'
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
+            }`}
+          >
+            <span>📊</span>
+            <span>{t('Mes Examens')} ({submissions.length})</span>
+          </button>
+        </div>
+      )}
+
+      {/* Main Tab Content */}
+      {isAdmin && activeTab === 'admin' ? (
+        <AdminPanel />
+      ) : (
+        <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-4 mb-6 gap-3">
+            <div>
+              <h2 className="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+                <span>{t('Mes examens précédents')}</span>
+                <span className="text-xs font-normal text-slate-500">({submissions.length})</span>
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {t('Consultez le détail de vos rédactions passées et leur nombre de mots.')}
+              </p>
+            </div>
+
             <button
               type="button"
               onClick={onStartNewExam}
-              className="flex-1 sm:flex-initial px-4 py-2.5 rounded bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+              className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-2xs cursor-pointer inline-flex items-center gap-1.5 self-start sm:self-auto"
             >
               <span>+</span>
-              <span>{t('Commencer un nouvel examen')}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowProfileModal(true)}
-              className="px-3 py-2.5 rounded border border-slate-300 bg-white text-slate-700 font-semibold text-xs hover:bg-slate-100 transition-colors cursor-pointer flex items-center gap-1.5"
-            >
-              <span>👤</span>
-              <span>{t('Mon Profil')}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={signOut}
-              className="px-3 py-2.5 rounded border border-slate-300 bg-white text-slate-700 font-semibold text-xs hover:bg-slate-100 transition-colors cursor-pointer"
-            >
-              {t('Déconnexion')}
+              <span>{t('Commencer un examen')}</span>
             </button>
           </div>
-        </div>
-
-        {/* Admin Navigation Tabs */}
-        {isAdmin && (
-          <div className="flex items-center gap-2 mb-6 border-b border-slate-200 pb-2">
-            <button
-              type="button"
-              onClick={() => setActiveTab('admin')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
-                activeTab === 'admin'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
-              }`}
-            >
-              <span>👑</span>
-              <span>{t('Gestion des Notifications')}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('submissions')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
-                activeTab === 'submissions'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
-              }`}
-            >
-              <span>📊</span>
-              <span>{t('Mes Examens')} ({submissions.length})</span>
-            </button>
-          </div>
-        )}
-
-        {/* View Content */}
-        {isAdmin && activeTab === 'admin' ? (
-          <AdminPanel />
-        ) : (
-          <div className="bg-white border border-slate-300 rounded-lg p-5 sm:p-6 shadow-xs">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-6">
-              <div>
-                <h2 className="text-base sm:text-lg font-bold text-slate-800">
-                  {t('Mes examens précédents')}
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  {t('Consultez le détail de vos rédactions passées et leur nombre de mots.')}
-                </p>
-              </div>
-            </div>
 
           {loading ? (
-            <div className="text-center py-8 text-slate-500 text-sm font-medium">
+            <div className="text-center py-12 text-slate-500 text-sm font-medium">
               {t('Chargement de vos soumissions...')}
             </div>
           ) : submissions.length === 0 ? (
-            <div className="text-center py-10 text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-6">
-              <p className="text-sm font-medium text-slate-700 mb-2">
+            <div className="text-center py-12 text-slate-500 bg-slate-50 border border-slate-200 rounded-xl p-8">
+              <p className="text-sm font-semibold text-slate-700 mb-2">
                 {t('Aucun examen enregistré pour le moment.')}
+              </p>
+              <p className="text-xs text-slate-500 mb-4 max-w-md mx-auto">
+                {t("Entraînez-vous dans les conditions réelles du TCF Canada (60 minutes pour 3 tâches rédigées).")}
               </p>
               <button
                 type="button"
                 onClick={onStartNewExam}
-                className="inline-block px-5 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors mt-1 cursor-pointer shadow-xs"
+                className="inline-block px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
               >
                 {t('Passer votre premier examen')}
               </button>
@@ -228,7 +254,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-200 text-xs uppercase font-bold text-slate-700 bg-slate-50">
+                  <tr className="border-b border-slate-200 text-xs uppercase font-bold text-slate-600 bg-slate-50/80">
                     <th className="py-3 px-3.5">{t('Date')}</th>
                     <th className="py-3 px-3.5 whitespace-nowrap">{t('Série / Combinaison')}</th>
                     <th className="py-3 px-3.5">{t('Tâche 1')}</th>
@@ -242,8 +268,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   {submissions.map((sub) => {
                     const comboNum = sub.combination?.combinationNumber || sub.combination?.combination;
                     const isPract = !!sub.isPracticeMode && (!!sub.practiceTasks || !!sub.practiceTask);
-                    
-                    // Determine which tasks were practiced (supports 1, 2, or 3 tasks)
+
                     const activeTasksList: TaskKey[] = sub.practiceTasks && sub.practiceTasks.length > 0
                       ? sub.practiceTasks
                       : typeof sub.practiceTask === 'string'
@@ -260,14 +285,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     const t2Ok = sub.wordCounts.task2 >= 120 && sub.wordCounts.task2 <= 150;
                     const t3Ok = sub.wordCounts.task3 >= 120 && sub.wordCounts.task3 <= 180;
 
-                    // Split date and time (e.g. "02/10/2026 10:07")
                     const dateParts = sub.date ? sub.date.split(/(?: à |[ ,]+)/) : [];
                     const dPart = dateParts[0] || sub.date || '—';
                     const tPart = dateParts.length >= 2 ? dateParts[1] : '';
 
                     return (
-                      <tr key={sub.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-3.5 font-medium text-slate-800 text-xs whitespace-nowrap">
+                      <tr key={sub.id} className="hover:bg-slate-50/70 transition-colors">
+                        <td className="py-3.5 px-3.5 font-medium text-slate-800 text-xs whitespace-nowrap">
                           <div className="flex flex-col leading-tight">
                             <span className="font-semibold">{dPart}</span>
                             {tPart && (
@@ -277,7 +301,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             )}
                           </div>
                         </td>
-                        <td className="py-3 px-3.5 font-medium text-slate-800 whitespace-nowrap">
+                        <td className="py-3.5 px-3.5 font-medium text-slate-800 whitespace-nowrap">
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-1.5 font-bold text-slate-900">
                               <span>{sub.year} / {t(sub.month)} / {t('Combinaison')} {comboNum}</span>
@@ -291,7 +315,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             )}
                           </div>
                         </td>
-                        <td className="py-3 px-3.5">
+                        <td className="py-3.5 px-3.5">
                           {isPract && !activeTasksList.includes('task1') ? (
                             <span className="text-slate-400 text-xs font-mono">—</span>
                           ) : (
@@ -304,7 +328,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             </span>
                           )}
                         </td>
-                        <td className="py-3 px-3.5">
+                        <td className="py-3.5 px-3.5">
                           {isPract && !activeTasksList.includes('task2') ? (
                             <span className="text-slate-400 text-xs font-mono">—</span>
                           ) : (
@@ -317,7 +341,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             </span>
                           )}
                         </td>
-                        <td className="py-3 px-3.5">
+                        <td className="py-3.5 px-3.5">
                           {isPract && !activeTasksList.includes('task3') ? (
                             <span className="text-slate-400 text-xs font-mono">—</span>
                           ) : (
@@ -330,7 +354,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             </span>
                           )}
                         </td>
-                        <td className="py-3 px-3.5 whitespace-nowrap">
+                        <td className="py-3.5 px-3.5 whitespace-nowrap">
                           {sub.aiEvaluation ? (
                             (() => {
                               const evaluatedCount = sub.aiEvaluation.evaluated_tasks?.length || (isPract ? activeTasksList.length : 3);
@@ -366,25 +390,24 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             <span className="text-slate-400 text-xs italic font-mono">—</span>
                           )}
                         </td>
-                        <td className="py-3 px-3.5 text-left whitespace-nowrap">
+                        <td className="py-3.5 px-3.5 text-left whitespace-nowrap">
                           <div className="flex items-center justify-start gap-2">
                             <button
                               type="button"
                               onClick={() => onViewSubmission(sub)}
-                              className="px-2.5 py-1 rounded bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold hover:bg-blue-100 transition-colors cursor-pointer"
+                              className="px-2.5 py-1 rounded bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold hover:bg-blue-100 transition-colors cursor-pointer flex items-center gap-1"
                             >
-                              {t('Voir')}
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>{t('Voir')}</span>
                             </button>
                             <button
                               type="button"
                               onClick={() => handleDeleteSubmission(sub)}
-                              className="w-7 h-7 flex items-center justify-center rounded border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-300 transition-colors cursor-pointer"
+                              className="w-7 h-7 flex items-center justify-center rounded border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition-colors cursor-pointer"
                               title={t('Supprimer cette soumission')}
                               aria-label={t('Supprimer')}
                             >
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </td>
@@ -396,21 +419,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
           )}
         </div>
-        )}
+      )}
 
-        {/* Confidentiality / Privacy Notice */}
-        <div className="mt-8 bg-slate-100 border border-slate-200 rounded p-4 text-xs text-slate-600 leading-relaxed">
-          🔒 <strong>{t('Respect de la vie privée :')}</strong> {t("Vos réponses rédigées sont enregistrées de façon confidentielle dans votre compte personnel uniquement. Vos soumissions ne sont jamais publiques, aucun profil public n'est généré, et aucun classement n'est partagé.")}
-        </div>
+      {/* Confidentiality / Privacy Notice */}
+      <div className="bg-slate-100 border border-slate-200 rounded-xl p-4 text-xs text-slate-600 leading-relaxed">
+        🔒 <strong>{t('Respect de la vie privée :')}</strong> {t("Vos réponses rédigées sont enregistrées de façon confidentielle dans votre compte personnel uniquement. Vos soumissions ne sont jamais publiques, aucun profil public n'est généré, et aucun classement n'est partagé.")}
       </div>
-
-      {/* User Profile Modal */}
-      <UserProfileModal
-        isOpen={showProfileModal}
-        onClose={() => setShowProfileModal(false)}
-      />
-
-      <Footer onFeedbackClick={onFeedbackClick} />
     </div>
   );
 };

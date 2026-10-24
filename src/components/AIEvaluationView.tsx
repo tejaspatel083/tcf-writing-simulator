@@ -27,7 +27,7 @@ export const AIEvaluationView: React.FC<AIEvaluationViewProps> = ({
   userAnswers,
   wordCounts
 }) => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
 
   // Determine which tasks were actually evaluated (only active practiced tasks)
   const availableTasks = (evaluation.evaluated_tasks && evaluation.evaluated_tasks.length > 0)
@@ -61,19 +61,32 @@ export const AIEvaluationView: React.FC<AIEvaluationViewProps> = ({
     setTimeout(() => setCopiedUser(false), 2000);
   };
 
+  const resolvedOverallFeedback = language === 'en'
+    ? (evaluation.overall_feedback_en || t(evaluation.overall_feedback))
+    : (evaluation.overall_feedback || evaluation.overall_feedback_en);
+
+  const resolvedGeneralFeedback = currentTask
+    ? (language === 'en'
+      ? (currentTask.general_feedback_en || t(currentTask.general_feedback))
+      : (currentTask.general_feedback || currentTask.general_feedback_en))
+    : '';
+
   const getCategoryBadge = (category: string) => {
     const c = category.toLowerCase();
+    if (c.includes('ortho') || c.includes('accent') || c.includes('spell')) {
+      return <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200 whitespace-nowrap">{t('Orthographe / Accents')}</span>;
+    }
+    if (c.includes('temps') || c.includes('conjug')) {
+      return <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap">{t('Conjugaison / Temps')}</span>;
+    }
+    if (c.includes('struct') || c.includes('phrase') || c.includes('syntax')) {
+      return <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap">{t('Structure de phrase')}</span>;
+    }
     if (c.includes('gramm')) {
       return <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200 whitespace-nowrap">{t('Grammaire')}</span>;
     }
-    if (c.includes('ortho') || c.includes('accent') || c.includes('spell')) {
-      return <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200 whitespace-nowrap">{t('Orthographe')}</span>;
-    }
-    if (c.includes('temps') || c.includes('conjug')) {
-      return <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap">{t('Temps / Conjugaison')}</span>;
-    }
-    if (c.includes('struct') || c.includes('phrase') || c.includes('syntax')) {
-      return <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap">{t('Structure')}</span>;
+    if (c.includes('vocab')) {
+      return <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-teal-50 text-teal-700 border border-teal-200 whitespace-nowrap">{t('Vocabulaire')}</span>;
     }
     return <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap">{t(category)}</span>;
   };
@@ -103,7 +116,7 @@ export const AIEvaluationView: React.FC<AIEvaluationViewProps> = ({
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-slate-600">
-              {evaluation.overall_feedback || t("Consultez l'analyse des fautes, votre note globale et la réponse modèle C1-C2.")}
+              {resolvedOverallFeedback || t("Consultez l'analyse des fautes, votre note globale et la réponse modèle C1-C2.")}
             </p>
           </div>
 
@@ -154,7 +167,7 @@ export const AIEvaluationView: React.FC<AIEvaluationViewProps> = ({
                       : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100'
                   }`}
                 >
-                  {taskShortLabel[tKey]}
+                  {t(taskShortLabel[tKey])}
                 </button>
               );
             })}
@@ -175,9 +188,9 @@ export const AIEvaluationView: React.FC<AIEvaluationViewProps> = ({
                 <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">
                   {t(taskTitleMap[activeTaskKey] || currentTask.task_name)}
                 </h3>
-                {currentTask.general_feedback && (
+                {resolvedGeneralFeedback && (
                   <p className="text-xs text-slate-600 mt-0.5">
-                    {currentTask.general_feedback}
+                    {resolvedGeneralFeedback}
                   </p>
                 )}
               </div>
@@ -203,7 +216,7 @@ export const AIEvaluationView: React.FC<AIEvaluationViewProps> = ({
             <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
               <h4 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
                 <span>✍️</span>
-                <span>{t('Votre texte rédigé')} ({taskShortLabel[activeTaskKey]})</span>
+                <span>{t('Votre texte rédigé')} ({t(taskShortLabel[activeTaskKey])})</span>
               </h4>
               <button
                 type="button"
@@ -293,7 +306,7 @@ export const AIEvaluationView: React.FC<AIEvaluationViewProps> = ({
 
                     {m.explanation && (
                       <p className="text-slate-600 text-xs leading-relaxed pl-0.5 pt-0.5">
-                        <span className="font-semibold text-slate-700">💡 Rule: </span>
+                        <span className="font-semibold text-slate-700">💡 {language === 'en' ? 'Rule:' : 'Règle :'} </span>
                         {m.explanation}
                       </p>
                     )}

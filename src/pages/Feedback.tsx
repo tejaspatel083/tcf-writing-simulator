@@ -6,9 +6,10 @@ import { useLanguage } from '../context/LanguageContext';
 interface FeedbackProps {
   onHomeClick: () => void;
   userEmail?: string | null;
+  hideHeader?: boolean;
 }
 
-export const Feedback: React.FC<FeedbackProps> = ({ onHomeClick, userEmail }) => {
+export const Feedback: React.FC<FeedbackProps> = ({ onHomeClick, userEmail, hideHeader = false }) => {
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -110,9 +111,9 @@ export const Feedback: React.FC<FeedbackProps> = ({ onHomeClick, userEmail }) =>
   )}`;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
+    <div className={`flex flex-col justify-between ${hideHeader ? 'w-full' : 'min-h-screen bg-slate-50'}`}>
       {/* Header */}
-      <Header onHomeClick={onHomeClick} userEmail={userEmail} />
+      {!hideHeader && <Header onHomeClick={onHomeClick} userEmail={userEmail} />}
 
       <main className="max-w-3xl mx-auto w-full px-4 sm:px-6 py-8 flex-1">
         {/* Navigation Breadcrumb */}
@@ -159,7 +160,7 @@ export const Feedback: React.FC<FeedbackProps> = ({ onHomeClick, userEmail }) =>
                     onClick={handleCopyEmail}
                     className="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-2 py-0.5 rounded border border-slate-300 transition-colors"
                   >
-                    {copiedEmail ? '✓ Copié !' : t('Copier')}
+                    {copiedEmail ? t('✓ Copié !') : t('Copier')}
                   </button>
                 </div>
               </div>
@@ -349,12 +350,12 @@ export const Feedback: React.FC<FeedbackProps> = ({ onHomeClick, userEmail }) =>
                     required
                     placeholder={
                       type === 'thanks'
-                        ? "Dites un mot à Tejas, partagez comment cette plateforme vous a aidé pour votre entraînement au TCF..."
+                        ? t("Dites un mot à Tejas, partagez comment cette plateforme vous a aidé pour votre entraînement au TCF...")
                         : type === 'suggestion'
-                        ? "Quelle fonctionnalité ou amélioration aimeriez-vous voir sur le site ?"
+                        ? t("Quelle fonctionnalité ou amélioration aimeriez-vous voir sur le site ?")
                         : type === 'bug'
-                        ? "Décrivez le problème rencontré (sur quel exercice ou tâche, ce qui s'est passé)..."
-                        : "Posez votre question..."
+                        ? t("Décrivez le problème rencontré (sur quel exercice ou tâche, ce qui s'est passé)...")
+                        : t("Posez votre question...")
                     }
                     className="w-full p-3 text-xs border border-slate-300 rounded-lg focus:outline-hidden focus:border-blue-500 bg-white leading-relaxed resize-y"
                   />

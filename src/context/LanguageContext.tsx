@@ -550,7 +550,141 @@ const directFrenchToEnglish: Record<string, string> = {
   "Notifications activées": "Notifications enabled",
   "Notifications désactivées": "Notifications disabled",
   "Désactiver les alertes pour cet utilisateur": "Disable alerts for this user",
-  "Activer les alertes pour cet utilisateur": "Enable alerts for this user"
+  "Activer les alertes pour cet utilisateur": "Enable alerts for this user",
+
+  // Top Bar & Layout Subtitles / Badges
+  "Espace Administrateur avec gestion des alertes.": "Administrator Area with alert management.",
+  "Sélectionnez votre session et commencez à rédiger dans les conditions réelles.": "Select your session and start writing under real exam conditions.",
+  "Bienvenue sur votre tableau de bord personnel.": "Welcome to your personal dashboard.",
+  "Entraînement chronométré": "Timed practice",
+  "Examen en cours (60 minutes)": "Exam in progress (60 minutes)",
+  "Compte-rendu de votre session d'examen": "Exam Session Report",
+  "Vos retours, suggestions et messages de remerciements": "Your feedback, suggestions and thank-you messages",
+  "Nouvel examen": "New Exam",
+  "Nouvel Examen": "New Exam",
+  "👑 Administrateur": "👑 Administrator",
+  "👑 Admin": "👑 Admin",
+  "Admin": "Admin",
+  "Administrateur": "Administrator",
+  "Administrateur (Tejas)": "Administrator (Tejas)",
+  "Candidat TCF": "TCF Candidate",
+  "Candidat Vérifié": "Verified Candidate",
+  "Compte & Aide": "Account & Support",
+  "Réduire le menu": "Collapse menu",
+  "Agrandir le menu": "Expand menu",
+  "Un examen est en cours. Êtes-vous sûr de vouloir quitter ? Vos réponses non soumises seront perdues.": "An exam is currently in progress. Are you sure you want to leave? Your unsubmitted answers will be lost.",
+  "Simulateur TCF Canada": "TCF Canada Simulator",
+  "Résultats de l'épreuve": "Exam Results",
+  "Feedback & Remerciements": "Feedback & Thanks",
+
+  // Dashboard Stats & Badges
+  "Examens Soumis": "Submitted Exams",
+  "EXAMENS SOUMIS": "Submitted Exams",
+  "Aucune soumission": "No submissions",
+  "Enregistrés sur votre compte": "Saved to your account",
+  "Tâches Rédigées": "Written Tasks",
+  "TÂCHES RÉDIGÉES": "Written Tasks",
+  "Tâche 1, 2 ou 3 complétées": "Task 1, 2 or 3 completed",
+  "Dernière Session": "Last Session",
+  "DERNIÈRE SESSION": "Last Session",
+  "Entraînement régulier": "Regular practice",
+  "Prêt à débuter": "Ready to start",
+  "Statut du Compte": "Account Status",
+  "STATUT DU COMPTE": "Account Status",
+  "ACTIF": "ACTIVE",
+  "Actif": "Active",
+  "Commencer un examen": "Start an exam",
+  "Chargement de vos soumissions...": "Loading your submissions...",
+  "Aucun examen enregistré pour le moment.": "No exams recorded yet.",
+  "Entraînez-vous dans les conditions réelles du TCF Canada (60 minutes pour 3 tâches rédigées).": "Practice under real TCF Canada conditions (60 minutes for 3 written tasks).",
+  "Passer votre premier examen": "Take your first exam",
+  "Supprimer cette soumission": "Delete this submission",
+  "Respect de la vie privée :": "Privacy Policy:",
+  "Vos réponses rédigées sont enregistrées de façon confidentielle dans votre compte personnel uniquement. Vos soumissions ne sont jamais publiques, aucun profil public n'est généré, et aucun classement n'est partagé.": "Your written responses are stored privately in your personal account only. Your submissions are never public, no public profile is created, and no ranking is shared.",
+
+  // Home Page Options & Confirmation
+  "Vert = Déjà complétée": "Green = Already completed",
+  "Choisir une combinaison au hasard": "Pick a random combination",
+  "Vous avez déjà complété la Combinaison": "You have already completed Combination",
+  "1. Choisissez la ou les tâches à pratiquer": "1. Choose the task(s) to practice",
+  "Sélectionnez 1 tâche ou combinez 2 tâches (ex: T1+T2, T1+T3, T2+T3)": "Select 1 task or combine 2 tasks (e.g. T1+T2, T1+T3, T2+T3)",
+  "allouées pour ces rédactions.": "allocated for these writings.",
+  "allouées pour cette rédaction.": "allocated for this writing.",
+  "Exacte même interface d'examen TCF avec décompte des mots et clavier d'accents.": "Exact same TCF exam interface with word counter and accents keyboard.",
+  "Message (60–120 mots)": "Message (60–120 words)",
+  "Narration (120–150 mots)": "Narration (120–150 words)",
+  "Argumentation (120–180 mots)": "Opinion Essay (120–180 words)",
+  "Prêt pour l'entraînement": "Ready for practice",
+  "Vous aurez": "You will have",
+  "minutes pour compléter": "minutes to complete",
+  "ces tâches": "these tasks",
+  "cette tâche": "this task",
+  "dans les conditions d'examen du TCF Canada.": "under TCF Canada exam conditions.",
+  "Diminuer d'une minute": "Decrease by one minute",
+  "Augmenter d'une minute": "Increase by one minute",
+
+  // Results & Evaluation
+  "Entraînement terminé": "Practice completed",
+  "Copier cette tâche": "Copy this task",
+  "Aucune réponse rédigée.": "No response submitted.",
+  "Expression Écrite": "Written Expression",
+  "Document 1": "Document 1",
+  "Document 2": "Document 2",
+  "Orthographe / Accents": "Spelling / Accents",
+  "Conjugaison / Temps": "Conjugation / Tenses",
+  "Structure de phrase": "Sentence Structure",
+  "Rule :": "Rule:",
+  "💡 Rule:": "💡 Rule:",
+  "💡 Règle :": "💡 Rule:",
+
+  // Feedback View
+  "✓ Copié !": "✓ Copied!",
+  "Idée / Suggestion d'amélioration": "Idea / Suggestion for improvement",
+  "Signalement de bug / problème technique": "Bug report / Technical issue",
+  "Question sur le simulateur": "Question about the simulator",
+  "Veuillez renseigner votre message.": "Please enter your message.",
+  "Un grand merci pour cette plateforme !": "A big thank you for this platform!",
+  "Bien": "Good",
+  "Dites un mot à Tejas, partagez comment cette plateforme vous a aidé pour votre entraînement au TCF...": "Leave a note for Tejas, share how this platform helped your TCF training...",
+  "Quelle fonctionnalité ou amélioration aimeriez-vous voir sur le site ?": "What feature or improvement would you like to see on the site?",
+  "Décrivez le problème rencontré (sur quel exercice ou tâche, ce qui s'est passé)...": "Describe the problem encountered (on which exercise or task, what happened)...",
+  "Posez votre question...": "Ask your question...",
+  "Ex: Alexandre, Sarah...": "E.g.: Alex, Sarah...",
+
+  // Login / Auth View
+  "Chargement de votre session...": "Loading your session...",
+  "La vérification réseau prend du temps en raison de votre connexion.": "Network verification is taking time due to your connection.",
+  "Recharger": "Reload",
+  "Minimum 6 caractères": "Minimum 6 characters",
+  "← Retour à la connexion": "← Back to login",
+  "Veuillez saisir votre nouveau mot de passe ci-dessous.": "Please enter your new password below.",
+  "Veuillez renseigner votre adresse e-mail et votre mot de passe.": "Please enter your email address and password.",
+  "Votre adresse e-mail n'a pas encore été confirmée. Veuillez ouvrir votre messagerie et cliquer sur le lien de confirmation.": "Your email address has not been confirmed yet. Please open your inbox and click the confirmation link.",
+  "Identifiants incorrects. Veuillez vérifier votre adresse e-mail et votre mot de passe.": "Incorrect credentials. Please verify your email address and password.",
+  "Un compte existe déjà avec cette adresse e-mail. Veuillez vous connecter.": "An account already exists with this email address. Please log in.",
+  "Une erreur inattendue est survenue.": "An unexpected error occurred.",
+  "Veuillez renseigner tous les champs obligatoires.": "Please fill in all required fields.",
+  "Le mot de passe doit comporter au moins 6 caractères.": "Password must be at least 6 characters long.",
+  "Les mots de passe ne correspondent pas.": "Passwords do not match.",
+  "→ Cliquer ici pour vous connecter avec ce compte": "→ Click here to log in with this account",
+  "Masquer le mot de passe": "Hide password",
+  "Afficher le mot de passe": "Show password",
+  "Vos rédactions et vos statistiques d'examen sont protégées de manière sécurisée et confidentielle.": "Your writings and exam statistics are protected securely and confidentially."
+};
+
+const FRENCH_MONTHS_MAP: Record<string, string> = {
+  "Janvier": "January",
+  "Février": "February",
+  "Mars": "March",
+  "Avril": "April",
+  "Mai": "May",
+  "Juin": "June",
+  "Juillet": "July",
+  "Août": "August",
+  "Septembre": "September",
+  "Octobre": "October",
+  "Novembre": "November",
+  "Décembre": "December"
 };
 
 const LanguageContext = createContext<LanguageContextType>({
@@ -600,7 +734,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     // Dynamic / Pattern-based translation
     if (trimmed.startsWith('Combinaison ')) {
-      return trimmed.replace('Combinaison', 'Combination');
+      let res = trimmed.replace('Combinaison', 'Combination');
+      for (const [frMonth, enMonth] of Object.entries(FRENCH_MONTHS_MAP)) {
+        if (res.includes(frMonth)) {
+          res = res.replace(frMonth, enMonth);
+        }
+      }
+      return res;
     }
     if (trimmed.startsWith('Tâche ')) {
       return trimmed.replace('Tâche', 'Task');
@@ -622,6 +762,21 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
     if (trimmed.includes('faite')) {
       return trimmed.replace(/faites?/g, 'done');
+    }
+
+    // Check month replacement if composite date string (e.g. "2026 / Septembre / Combinaison 1")
+    let translatedComposite = trimmed;
+    let hasMonthMatch = false;
+    for (const [frMonth, enMonth] of Object.entries(FRENCH_MONTHS_MAP)) {
+      if (translatedComposite.includes(frMonth)) {
+        translatedComposite = translatedComposite.replace(new RegExp(`\\b${frMonth}\\b`, 'g'), enMonth);
+        hasMonthMatch = true;
+      }
+    }
+    if (hasMonthMatch) {
+      translatedComposite = translatedComposite.replace(/\bCombinaison\b/g, 'Combination');
+      translatedComposite = translatedComposite.replace(/\bTâche\b/g, 'Task');
+      return translatedComposite;
     }
 
     // Check without punctuation or leading emojis

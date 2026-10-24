@@ -31,6 +31,7 @@ interface HomeProps {
   onLoginClick?: () => void;
   onLogoutClick?: () => void;
   userEmail?: string | null;
+  hideHeader?: boolean;
 }
 
 const FRENCH_MONTHS_ORDER = [
@@ -91,7 +92,8 @@ export const Home: React.FC<HomeProps> = ({
   onFeedbackClick,
   onLoginClick,
   onLogoutClick,
-  userEmail
+  userEmail,
+  hideHeader = false
 }) => {
   const { user, userName, isConfigured } = useAuth();
   const { t } = useLanguage();
@@ -263,16 +265,18 @@ export const Home: React.FC<HomeProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
+    <div className={`flex flex-col justify-between ${hideHeader ? 'w-full' : 'min-h-screen bg-slate-50'}`}>
       {/* App Header */}
-      <Header
-        onDashboardClick={onDashboardClick}
-        onFeedbackClick={onFeedbackClick}
-        onProfileClick={() => setShowProfileModal(true)}
-        onLoginClick={onLoginClick}
-        onLogoutClick={onLogoutClick}
-        userEmail={userEmail}
-      />
+      {!hideHeader && (
+        <Header
+          onDashboardClick={onDashboardClick}
+          onFeedbackClick={onFeedbackClick}
+          onProfileClick={() => setShowProfileModal(true)}
+          onLoginClick={onLoginClick}
+          onLogoutClick={onLogoutClick}
+          userEmail={userEmail}
+        />
+      )}
 
       {/* Main Container - Full Screen Width */}
       <div className="w-full px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex-1">
@@ -280,7 +284,7 @@ export const Home: React.FC<HomeProps> = ({
         {userEmail ? (
           <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
             <div className="text-xs text-blue-900 font-medium">
-              {t('Connecté en tant que')} <strong>{userName || userEmail}</strong> {userName && <span className="text-slate-500 font-normal">({userEmail})</span>}
+              {t('Connecté en tant que')} <strong>{t(userName || userEmail || '')}</strong> {userName && <span className="text-slate-500 font-normal">({userEmail})</span>}
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -442,11 +446,6 @@ export const Home: React.FC<HomeProps> = ({
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
                   {t('Combinaison')} ({t(selectedMonth)} {selectedYear})
                 </label>
-                {isCurrentComboDone && (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
-                    <span>✓</span> {t('Déjà complétée (Refaire disponible)')}
-                  </span>
-                )}
               </div>
 
               {/* Interactive Custom Dropdown */}
@@ -473,11 +472,6 @@ export const Home: React.FC<HomeProps> = ({
                       <span>
                         {t('Combinaison')} {currentCombo?.combinationNumber || selectedComboIndex + 1}
                       </span>
-                      {isCurrentComboDone && (
-                        <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded">
-                          ✓ {t('Faite')}
-                        </span>
-                      )}
                     </div>
                     <span
                       className="text-xs text-slate-500 transition-transform duration-200 inline-block"
@@ -490,9 +484,8 @@ export const Home: React.FC<HomeProps> = ({
                   {/* Dropdown Menu Options */}
                   {comboDropdownOpen && (
                     <div className="absolute z-30 mt-1.5 w-full sm:w-[380px] max-h-72 overflow-y-auto bg-white border border-slate-300 rounded-lg shadow-xl p-1.5 space-y-1 animate-fadeIn">
-                      <div className="px-2.5 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1 flex items-center justify-between">
+                      <div className="px-2.5 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1">
                         <span>{t('Sélectionner une combinaison')}</span>
-                        <span className="text-emerald-700 font-semibold normal-case">{t('Vert = Déjà complétée')}</span>
                       </div>
 
                       {combinations.map((c, idx) => {
@@ -533,15 +526,15 @@ export const Home: React.FC<HomeProps> = ({
                               </span>
                             </div>
 
-                            {isDone ? (
-                              <span className="text-[11px] font-bold text-emerald-800 bg-emerald-200/90 border border-emerald-400 px-2.5 py-0.5 rounded-full whitespace-nowrap">
-                                ✓ {t('Déjà faite (Refaire disponible)')}
-                              </span>
-                            ) : isSelected ? (
-                              <span className="text-[10px] font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full whitespace-nowrap">
+                            {isSelected && (
+                              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${
+                                isDone
+                                  ? 'text-emerald-800 bg-emerald-200/90 border border-emerald-400'
+                                  : 'text-blue-700 bg-blue-100'
+                              }`}>
                                 {t('Sélectionnée')}
                               </span>
-                            ) : null}
+                            )}
                           </button>
                         );
                       })}

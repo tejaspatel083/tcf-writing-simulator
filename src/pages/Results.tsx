@@ -17,9 +17,16 @@ interface ResultsProps {
   onHomeClick: () => void;
   onDashboardClick?: () => void;
   onFeedbackClick?: () => void;
+  hideHeader?: boolean;
 }
 
-export const Results: React.FC<ResultsProps> = ({ result, onHomeClick, onDashboardClick, onFeedbackClick }) => {
+export const Results: React.FC<ResultsProps> = ({
+  result,
+  onHomeClick,
+  onDashboardClick,
+  onFeedbackClick,
+  hideHeader = false
+}) => {
   const { t } = useLanguage();
   const { user } = useAuth();
   const [copiedTask, setCopiedTask] = useState<string | null>(null);
@@ -150,15 +157,17 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
   const isSingleWithin = singleCount >= singleMin && singleCount <= singleMax;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Header
-        onHomeClick={onHomeClick}
-        onDashboardClick={onDashboardClick}
-        onFeedbackClick={onFeedbackClick}
-        userEmail={user?.email}
-        subtitle={isPractice ? t("Compte-rendu d'entraînement") : t("Compte-rendu de votre session")}
-        combinationTitle={`${t('Combinaison')} ${result.combination.combinationNumber} — ${t(result.month)} ${result.year}`}
-      />
+    <div className={`flex flex-col ${hideHeader ? 'w-full' : 'min-h-screen bg-slate-50'}`}>
+      {!hideHeader && (
+        <Header
+          onHomeClick={onHomeClick}
+          onDashboardClick={onDashboardClick}
+          onFeedbackClick={onFeedbackClick}
+          userEmail={user?.email}
+          subtitle={isPractice ? t("Compte-rendu d'entraînement") : t("Compte-rendu de votre session")}
+          combinationTitle={`${t('Combinaison')} ${result.combination.combinationNumber} — ${t(result.month)} ${result.year}`}
+        />
+      )}
 
       <div className="w-full px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex-1">
         {/* Main Summary Card */}

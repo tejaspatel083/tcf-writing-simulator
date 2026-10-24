@@ -341,13 +341,13 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
 
           {infoMsg && (
             <div className="mb-4 bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs p-3.5 rounded font-medium leading-relaxed">
-              <span>📬 {infoMsg}</span>
+              <span>📬 {t(infoMsg)}</span>
             </div>
           )}
 
           {errorMsg && (
             <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-xs p-3.5 rounded font-medium leading-relaxed">
-              ⚠️ {errorMsg}
+              ⚠️ {t(errorMsg)}
               {emailAlreadyExists && (
                 <div className="mt-2 pt-2 border-t border-red-200">
                   <button
@@ -355,7 +355,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
                     onClick={() => switchMode('login')}
                     className="text-xs font-bold text-blue-700 hover:text-blue-900 underline cursor-pointer"
                   >
-                    → Cliquer ici pour vous connecter avec ce compte
+                    {t('→ Cliquer ici pour vous connecter avec ce compte')}
                   </button>
                 </div>
               )}

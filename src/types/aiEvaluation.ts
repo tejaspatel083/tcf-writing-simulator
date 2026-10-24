@@ -14,6 +14,7 @@ export interface TaskEvaluation {
   estimated_level: CefrLevel;
   clb_level?: string; // e.g. 'CLB 7', 'CLB 8', 'CLB 9', 'CLB 10'
   general_feedback: string;
+  general_feedback_en?: string;
   mistakes: MistakeItem[];
   c1_c2_model_answer: string;
   b2_model_answer?: string;
@@ -27,6 +28,7 @@ export interface AIEvaluation {
   clb_level?: string; // e.g. 'CLB 7', 'CLB 8', 'CLB 9', 'CLB 10'
   overall_score: number; // e.g. average or single task score out of 20
   overall_feedback: string;
+  overall_feedback_en?: string;
   tasks: {
     task1?: TaskEvaluation;
     task2?: TaskEvaluation;

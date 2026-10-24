@@ -5,15 +5,18 @@ import { Results } from './pages/Results';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Feedback } from './pages/Feedback';
+import { AppLayout } from './components/AppLayout';
 import { ExamCombination, ExamResult, TaskKey } from './types/exam';
-import { saveSubmission } from './utils/storage';
+import { saveSubmission, getStoredSubmissions } from './utils/storage';
 import { saveSubmissionToSupabase } from './lib/supabase';
 import { getLocalISOString } from './utils/dateUtils';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { sendSubmissionNotification } from './services/notificationService';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 
 const MainRouter: React.FC = () => {
-  const { user, loading, isEmailVerified, signOut } = useAuth();
+  const { user, loading, isEmailVerified, signOut, isAdmin } = useAuth();
+  const { t } = useLanguage();
 
   const [view, setView] = useState<'home' | 'simulator' | 'results' | 'dashboard' | 'feedback'>('home');
   const [activeCombo, setActiveCombo] = useState<ExamCombination | null>(null);
@@ -25,8 +28,21 @@ const MainRouter: React.FC = () => {
   const [practiceTask, setPracticeTask] = useState<TaskKey>('task1');
   const [practiceTasks, setPracticeTasks] = useState<TaskKey[]>(['task1']);
   const [practiceDuration, setPracticeDuration] = useState<number>(60);
+  const [submissionsCount, setSubmissionsCount] = useState<number>(() => {
+    try {
+      return getStoredSubmissions().length;
+    } catch {
+      return 0;
+    }
+  });
 
   const [showSlowNotice, setShowSlowNotice] = useState(false);
+
+  useEffect(() => {
+    try {
+      setSubmissionsCount(getStoredSubmissions().length);
+    } catch {}
+  }, [view]);
 
   useEffect(() => {
     let t: any;
@@ -58,7 +74,7 @@ const MainRouter: React.FC = () => {
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="px-3 py-1.5 bg-blue-600 text-white font-medium rounded text-xs hover:bg-blue-700 transition-colors"
+              className="px-3 py-1.5 bg-blue-600 text-white font-medium rounded text-xs hover:bg-blue-700 transition-colors cursor-pointer"
             >
               Recharger
             </button>
@@ -68,8 +84,8 @@ const MainRouter: React.FC = () => {
     );
   }
 
-  // 1.5. If view is feedback, accessible by any user
-  if (view === 'feedback') {
+  // 1.5. If view is feedback and user is not authenticated, show standalone Feedback
+  if (view === 'feedback' && (!user || !isEmailVerified)) {
     return (
       <Feedback
         onHomeClick={() => setView('home')}
@@ -137,11 +153,13 @@ const MainRouter: React.FC = () => {
     setStartedAt('');
     const savedLocal = saveSubmission(finalResult);
     setExamResult(savedLocal);
+    try {
+      setSubmissionsCount(getStoredSubmissions().length);
+    } catch {}
 
     // Trigger Admin Notification for monitored users
     try {
       const candidateEmail = user?.email || localStorage.getItem('tcf_demo_user') || 'utilisateur@tcf.local';
-      // Await notification dispatch with timeout so mobile/Safari connections have sufficient time to complete
       await Promise.race([
         sendSubmissionNotification(candidateEmail, finalResult),
         new Promise((resolve) => setTimeout(resolve, 5000))
@@ -179,10 +197,52 @@ const MainRouter: React.FC = () => {
     setView('home');
   };
 
+  // Determine layout subtitle and combinationTitle
+  const getLayoutSubtitle = () => {
+    if (view === 'home') {
+      return t("Sélectionnez votre session et commencez à rédiger dans les conditions réelles.");
+    }
+    if (view === 'dashboard') {
+      return isAdmin ? t("Espace Administrateur avec gestion des alertes.") : t("Bienvenue sur votre tableau de bord personnel.");
+    }
+    if (view === 'simulator') {
+      return isPracticeMode ? t("Entraînement chronométré") : t("Examen en cours (60 minutes)");
+    }
+    if (view === 'results') {
+      return examResult?.isPracticeMode ? t("Compte-rendu d'entraînement") : t("Compte-rendu de votre session d'examen");
+    }
+    if (view === 'feedback') {
+      return t("Vos retours, suggestions et messages de remerciements");
+    }
+    return undefined;
+  };
+
+  const getLayoutComboTitle = () => {
+    if (view === 'simulator' && activeCombo) {
+      return `${t('Combinaison')} ${activeCombo.combinationNumber} — ${t(activeMonth)} ${activeYear}`;
+    }
+    if (view === 'results' && examResult) {
+      const comboNum = examResult.combination?.combinationNumber || examResult.combination?.combination;
+      return `${t('Combinaison')} ${comboNum} — ${t(examResult.month)} ${examResult.year}`;
+    }
+    return undefined;
+  };
+
   return (
-    <React.Fragment>
+    <AppLayout
+      currentView={view}
+      subtitle={getLayoutSubtitle()}
+      combinationTitle={getLayoutComboTitle()}
+      onNavigateHome={handleGoHome}
+      onNavigateDashboard={() => setView('dashboard')}
+      onNavigateFeedback={() => setView('feedback')}
+      onStartNewExam={handleGoHome}
+      onSignOut={handleSignOut}
+      submissionsCount={submissionsCount}
+    >
       {view === 'home' && (
         <Home
+          hideHeader
           onStartExam={handleStartExam}
           onViewSubmission={handleViewPastSubmission}
           onDashboardClick={() => setView('dashboard')}
@@ -204,6 +264,7 @@ const MainRouter: React.FC = () => {
 
       {view === 'simulator' && activeCombo && (
         <Simulator
+          hideHeader
           combination={activeCombo}
           year={activeYear}
           month={activeMonth}
@@ -218,17 +279,24 @@ const MainRouter: React.FC = () => {
 
       {view === 'results' && examResult && (
         <Results
+          hideHeader
           result={examResult}
           onHomeClick={handleGoHome}
           onDashboardClick={() => setView('dashboard')}
           onFeedbackClick={() => setView('feedback')}
         />
       )}
-    </React.Fragment>
+
+      {view === 'feedback' && (
+        <Feedback
+          hideHeader
+          onHomeClick={handleGoHome}
+          userEmail={user?.email}
+        />
+      )}
+    </AppLayout>
   );
 };
-
-import { LanguageProvider } from './context/LanguageContext';
 
 export const App: React.FC = () => {
   return (
