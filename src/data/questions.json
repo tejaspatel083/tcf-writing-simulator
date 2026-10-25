@@ -6210,6 +6210,54 @@
             "document2": "Il y aurait 50 milliards d’objets connectés dans le monde : l’alarme, le téléviseur, la caméra de surveillance, les volets, le détecteur de fumée, etc. Face à cette évolution, la question de la sécurité se pose. En effet, un pirate informatique peut prendre le contrôle d’un objet connecté en quelques minutes. Ou encore, un cambrioleur pourrait vérifier grâce aux caméras de surveillance connectées d’une habitation si les occupants sont absents. Il est aussi possible d’entrer dans le système connecté d’une voiture et d’en prendre les commandes à distance."
           }
         }
+      },
+      {
+        "combination": 798,
+        "combinationNumber": 19,
+        "tasks": {
+          "task1": {
+            "instruction": "Un nouveau centre de loisirs vient d’ouvrir dans votre quartier. Vous écrivez un message à un(e) ami(e) pour lui proposer d’y aller ensemble. Présentez le centre, les activités qui vous intéressent et les détails pratiques de votre sortie.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez participé à une journée durant laquelle les habitants de votre quartier pouvaient échanger des objets et des services sans utiliser d’argent. Sur votre blog, racontez cette expérience, expliquez ce que vous avez échangé et donnez votre avis sur cette initiative.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les consultations médicales à distance",
+            "title": "Les consultations médicales à distance",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "« Depuis que je peux consulter mon médecin à distance, mon quotidien est plus simple. Pour renouveler une ordonnance ou discuter de résultats d’analyses, je n’ai plus besoin de me déplacer ni de prendre une demi-journée de congé. C’est aussi une solution pratique pour les personnes qui vivent loin d’un cabinet médical. Lorsque la situation le permet, je trouve que ce service facilite vraiment l’accès aux soins. »\nCamille, 38 ans",
+            "document2": "« Je préfère les consultations en cabinet. À travers un écran, le médecin ne peut pas toujours examiner correctement son patient. Certaines personnes peuvent aussi avoir du mal à décrire leurs symptômes ou à utiliser les outils numériques. Enfin, je trouve que les échanges sont moins personnels à distance. Pour moi, la consultation médicale doit rester avant tout une rencontre en face à face. »\nLaurent, 56 ans"
+          }
+        }
+      },
+      {
+        "combination": 799,
+        "combinationNumber": 20,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous prêtez votre logement à un(e) ami(e) pendant votre absence. Vous lui écrivez un message pour lui expliquer comment récupérer les clés, lui présenter les équipements disponibles et lui donner quelques conseils pour son séjour.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Pendant une promenade, vous avez découvert une activité à laquelle vous avez décidé de participer sans l’avoir prévu. Sur votre blog, racontez cette expérience et expliquez pourquoi elle vous a marqué(e).",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Le covoiturage : Pour ou contre ?",
+            "title": "Le covoiturage : Pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "« Depuis quelques mois, je partage mes trajets avec deux personnes qui travaillent près de mon entreprise. Nous répartissons les frais, ce qui me permet de faire des économies. Nos déplacements sont aussi plus agréables, car nous discutons pendant le voyage. En utilisant une seule voiture au lieu de trois, nous contribuons également à limiter la circulation. Pour moi, le covoiturage est une solution intéressante pour les déplacements quotidiens. »\nSarah, 34 ans",
+            "document2": "« J’ai essayé le covoiturage pour aller au travail, mais j’ai finalement arrêté. Il fallait respecter des horaires fixes et faire des détours pour récupérer les autres passagers. Lorsqu’une personne annulait au dernier moment, toute l’organisation était à revoir. Je ne pouvais plus non plus faire mes courses ou rester plus longtemps au bureau sans prévenir les autres. Je préfère donc garder mon indépendance, même si cela me coûte davantage. »\nThomas, 42 ans"
+          }
+        }
       }
     ]
   },
