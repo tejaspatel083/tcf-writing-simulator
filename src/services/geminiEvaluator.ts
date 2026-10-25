@@ -90,6 +90,109 @@ export function mapScoreToTcfCanadaLevels(score: number): { cefr: CefrLevel; clb
   return { cefr: 'A1', clb: '< CLB 4' };
 }
 
+/**
+ * Robustly sanitizes and parses JSON returned by Google Gemini models.
+ * Fixes common LLM JSON formatting issues:
+ * 1. Markdown code block wrappers (```json ... ```)
+ * 2. Bad escape characters like \' (single quotes must NEVER be escaped in JSON RFC 8259)
+ * 3. Stray backslashes followed by spaces, accents, or non-escape characters (e.g. \ , \(, \+, etc.)
+ * 4. Trailing commas before closing braces/brackets
+ * 5. Unescaped raw newlines or control characters inside string literals
+ * 6. Extraneous text/preamble before or after the JSON payload
+ */
+export function safeParseGeminiJson(rawText: string): any {
+  if (!rawText || typeof rawText !== 'string') {
+    throw new Error("Réponse vide reçue de l'API Gemini.");
+  }
+
+  // 1. Strip markdown fences and whitespace
+  let cleaned = rawText.trim();
+  cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+
+  // 2. Extract outermost JSON object if model included prefix/suffix text
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+  }
+
+  // Strategy 1: Standard JSON parse
+  try {
+    return JSON.parse(cleaned);
+  } catch (err1: any) {
+    // Strategy 2: Fix invalid JSON escape sequences
+    // In JSON (RFC 8259), valid escapes are ONLY: \\, \", \/, \b, \f, \n, \r, \t, and \uXXXX
+    // Models very frequently output \' (e.g. in French text like l\'orthographe, d\'accord, qu\'il)
+    // or stray backslashes before spaces or symbols.
+    try {
+      const fixedEscapes = cleaned.replace(/\\(.)/gs, (match, char) => {
+        if (/["\\/bfnrt]/.test(char)) return match;
+        if (char === 'u') return match; // Keep unicode escape \uXXXX
+        if (char === "'") return "'"; // Change \' to '
+        return char; // Drop invalid backslash and keep character
+      });
+      return JSON.parse(fixedEscapes);
+    } catch (err2: any) {
+      // Strategy 3: Fix invalid escapes AND remove trailing commas
+      try {
+        const sanitized = cleaned
+          .replace(/\\(.)/gs, (match, char) => {
+            if (/["\\/bfnrt]/.test(char)) return match;
+            if (char === 'u') return match;
+            if (char === "'") return "'";
+            return char;
+          })
+          .replace(/,\s*([}\]])/g, '$1');
+        return JSON.parse(sanitized);
+      } catch (err3: any) {
+        // Strategy 4: Handle unescaped raw newlines or control characters inside string literals
+        try {
+          let inString = false;
+          let isEscaped = false;
+          let rebuilt = '';
+
+          for (let i = 0; i < cleaned.length; i++) {
+            const ch = cleaned[i];
+            if (ch === '"' && !isEscaped) {
+              inString = !inString;
+              rebuilt += ch;
+            } else if (inString) {
+              if (ch === '\\' && !isEscaped) {
+                isEscaped = true;
+                rebuilt += ch;
+              } else {
+                if (isEscaped) {
+                  // If preceded by backslash, check if it's a valid JSON escape char
+                  if (!/["\\/bfnrtu]/.test(ch)) {
+                    // Remove the previous invalid backslash from rebuilt
+                    rebuilt = rebuilt.slice(0, -1);
+                  }
+                  isEscaped = false;
+                }
+                if (ch === '\n') rebuilt += '\\n';
+                else if (ch === '\r') rebuilt += '\\r';
+                else if (ch === '\t') rebuilt += '\\t';
+                else rebuilt += ch;
+              }
+            } else {
+              isEscaped = false;
+              rebuilt += ch;
+            }
+          }
+
+          rebuilt = rebuilt.replace(/,\s*([}\]])/g, '$1');
+          return JSON.parse(rebuilt);
+        } catch (finalErr: any) {
+          console.error('safeParseGeminiJson failed. Raw text length:', rawText.length, 'Error:', finalErr);
+          throw new Error(
+            `Erreur de format JSON dans la réponse IA (${finalErr?.message || err1?.message}). Veuillez relancer l'évaluation.`
+          );
+        }
+      }
+    }
+  }
+}
+
 export async function evaluateTcfSubmissionWithGemini(
   result: ExamResult,
   customApiKey?: string
@@ -224,6 +327,7 @@ Return ONLY valid JSON matching this schema:
   promptContent += `2. For each task, provide general_feedback in French AND its accurate English translation in general_feedback_en.\n`;
   promptContent += `3. All mistake "explanation" values MUST be written 100% IN ENGLISH ONLY (explain French grammar/spelling rule clearly in English).\n`;
   promptContent += `4. Keep the student's original_text, corrected_text, and c1_c2_model_answer in French.\n`;
+  promptContent += `5. Output strictly standard RFC 8259 JSON. Do NOT escape single quotes (\\') in French text (write "c'est", "l'écriture", never "c\\'est"). Ensure all strings are strictly valid JSON.\n`;
   promptContent += `Please evaluate the active task(s) and output ONLY the valid JSON response.`;
 
   // Memory & session cache for currently active working model
@@ -245,6 +349,7 @@ Return ONLY valid JSON matching this schema:
     : [...defaultPreferredModels];
 
   let rawText = '';
+  let parsed: any = null;
   let lastError = '';
   const attemptedModels = new Set<string>();
 
@@ -311,12 +416,20 @@ Return ONLY valid JSON matching this schema:
       }
 
       const jsonResponse = await response.json();
-      rawText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (rawText) {
+      const candidateText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (candidateText) {
         try {
-          sessionStorage.setItem('tcf_working_gemini_model', modelName);
-        } catch {}
-        break;
+          parsed = safeParseGeminiJson(candidateText);
+          rawText = candidateText;
+          try {
+            sessionStorage.setItem('tcf_working_gemini_model', modelName);
+          } catch {}
+          break;
+        } catch (parseErr: any) {
+          console.warn(`Model ${modelName} returned unparseable JSON:`, parseErr?.message);
+          lastError = `Erreur de format JSON avec le modèle ${modelName}: ${parseErr?.message}`;
+          continue;
+        }
       }
     } catch (err: any) {
       lastError = err?.message || 'Erreur réseau';
@@ -325,7 +438,7 @@ Return ONLY valid JSON matching this schema:
   }
 
   // Phase 2 (Self-Healing Fallback): If all default models failed, dynamically query Google API
-  if (!rawText) {
+  if (!parsed) {
     console.info('Querying Google ModelService.ListModels to dynamically discover active generation models...');
     const liveModels = await discoverLiveModels(apiKey);
 
@@ -361,12 +474,20 @@ Return ONLY valid JSON matching this schema:
         }
 
         const jsonResponse = await response.json();
-        rawText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (rawText) {
+        const candidateText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (candidateText) {
           try {
-            sessionStorage.setItem('tcf_working_gemini_model', modelName);
-          } catch {}
-          break;
+            parsed = safeParseGeminiJson(candidateText);
+            rawText = candidateText;
+            try {
+              sessionStorage.setItem('tcf_working_gemini_model', modelName);
+            } catch {}
+            break;
+          } catch (parseErr: any) {
+            console.warn(`Model ${modelName} returned unparseable JSON:`, parseErr?.message);
+            lastError = `Erreur de format JSON avec le modèle ${modelName}: ${parseErr?.message}`;
+            continue;
+          }
         }
       } catch (err: any) {
         lastError = err?.message || 'Erreur réseau';
@@ -374,16 +495,8 @@ Return ONLY valid JSON matching this schema:
     }
   }
 
-  if (!rawText) {
+  if (!parsed) {
     throw new Error(lastError || "Impossible d'obtenir une évaluation de l'IA pour le moment. Veuillez réessayer.");
-  }
-
-  let parsed: any;
-  try {
-    parsed = JSON.parse(rawText);
-  } catch (e) {
-    const cleaned = rawText.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
-    parsed = JSON.parse(cleaned);
   }
 
   // Build clean structured tasks record
