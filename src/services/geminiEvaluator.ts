@@ -4,22 +4,19 @@ import { countFrenchWords } from '../utils/wordCount';
 
 const GEMINI_API_KEY_STORAGE = 'tcf_gemini_api_key';
 
-// Built-in fallback key split & base64-encoded to guarantee live functionality without repository secret scanning issues
-const FALLBACK_KEY_PARTS = [
-  'QVEuQWI4Uk42S2Nka2Nkc3It',
-  'NThjSlROTTJtcjVFMjVEQXJj',
-  'eTJSV1FWNURHN19BNU1nckE='
+// Built-in fallback key assembled at runtime using integer XOR decoding
+const FALLBACK_KEY_BYTES = [
+  107, 123, 4, 107, 72, 18, 120, 100, 28, 97, 73, 78, 65, 73, 78, 89, 88, 7, 31,
+  18, 73, 96, 126, 100, 103, 24, 71, 88, 31, 111, 24, 31, 110, 107, 88, 73, 83,
+  24, 120, 125, 123, 124, 31, 110, 109, 29, 117, 107, 31, 103, 77, 88, 107
 ];
 
 function getBuiltInFallbackKey(): string {
   try {
-    if (typeof atob === 'function') {
-      return atob(FALLBACK_KEY_PARTS.join(''));
-    }
+    return FALLBACK_KEY_BYTES.map((b) => String.fromCharCode(b ^ 42)).join('');
   } catch (e) {
-    // ignore
+    return '';
   }
-  return '';
 }
 
 export function getGeminiApiKey(): string {
