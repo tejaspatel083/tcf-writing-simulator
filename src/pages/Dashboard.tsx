@@ -3,7 +3,10 @@ import { useAuth } from '../context/AuthContext';
 import { fetchSubmissionsFromSupabase, deleteSubmissionFromSupabase } from '../lib/supabase';
 import { getStoredSubmissions, deleteStoredSubmission, mergeSubmissions, syncStoredSubmissions } from '../utils/storage';
 import { ExamResult, TaskKey } from '../types/exam';
+import { SavedMistake } from '../types/aiEvaluation';
 import { AdminPanel } from '../components/AdminPanel';
+import { MistakesView } from '../components/MistakesView';
+import { getStoredMistakes, mergeMistakesFromSubmissions } from '../utils/mistakesStorage';
 import { useLanguage } from '../context/LanguageContext';
 import {
   BarChart3,
@@ -13,7 +16,8 @@ import {
   Shield,
   Trash2,
   Eye,
-  TrendingUp
+  TrendingUp,
+  BookOpen
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -22,23 +26,30 @@ interface DashboardProps {
   onRetakeCombination: (combo: any, year: string, month: string) => void;
   onHomeClick: () => void;
   onFeedbackClick?: () => void;
+  initialTab?: 'submissions' | 'mistakes' | 'admin';
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
   onStartNewExam,
-  onViewSubmission
+  onViewSubmission,
+  initialTab
 }) => {
   const { user, userName, isConfigured, isAdmin } = useAuth();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [submissions, setSubmissions] = useState<ExamResult[]>([]);
+  const [mistakes, setMistakes] = useState<SavedMistake[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<'submissions' | 'admin'>(isAdmin ? 'admin' : 'submissions');
+  const [activeTab, setActiveTab] = useState<'submissions' | 'mistakes' | 'admin'>(
+    initialTab || (isAdmin ? 'admin' : 'submissions')
+  );
 
   useEffect(() => {
-    if (isAdmin) {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    } else if (isAdmin) {
       setActiveTab('admin');
     }
-  }, [isAdmin]);
+  }, [initialTab, isAdmin]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -47,6 +58,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
       const local = getStoredSubmissions();
       setSubmissions(local);
 
+      const localMistakes = getStoredMistakes();
+      setMistakes(localMistakes);
+
       if (user && isConfigured) {
         try {
           const { submissions: dbSubs, error } = await fetchSubmissionsFromSupabase(user.id);
@@ -54,6 +68,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
             const merged = mergeSubmissions(dbSubs, local);
             setSubmissions(merged);
             syncStoredSubmissions(merged);
+
+            const syncedMistakes = mergeMistakesFromSubmissions(localMistakes, merged);
+            setMistakes(syncedMistakes);
             setLoading(false);
             return;
           }
@@ -173,9 +190,44 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
       </div>
 
-      {/* Tab navigation if Admin */}
-      {isAdmin && (
-        <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+      {/* Tab navigation */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-2">
+        <button
+          type="button"
+          onClick={() => setActiveTab('submissions')}
+          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+            activeTab === 'submissions'
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
+          }`}
+        >
+          <span>📊</span>
+          <span>{t('Mes Examens')} ({submissions.length})</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('mistakes')}
+          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+            activeTab === 'mistakes'
+              ? 'bg-purple-600 text-white shadow-2xs'
+              : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
+          }`}
+        >
+          <span>📝</span>
+          <span>{language === 'en' ? 'My Mistakes' : 'Mes Fautes'}</span>
+          <span
+            className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+              activeTab === 'mistakes'
+                ? 'bg-white text-purple-700'
+                : 'bg-purple-100 text-purple-800'
+            }`}
+          >
+            {mistakes.length}
+          </span>
+        </button>
+
+        {isAdmin && (
           <button
             type="button"
             onClick={() => setActiveTab('admin')}
@@ -188,25 +240,19 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <span>👑</span>
             <span>{t('Gestion des Notifications')}</span>
           </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('submissions')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
-              activeTab === 'submissions'
-                ? 'bg-blue-600 text-white shadow-2xs'
-                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
-            }`}
-          >
-            <span>📊</span>
-            <span>{t('Mes Examens')} ({submissions.length})</span>
-          </button>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Main Tab Content */}
       {isAdmin && activeTab === 'admin' ? (
         <AdminPanel />
+      ) : activeTab === 'mistakes' ? (
+        <MistakesView
+          mistakes={mistakes}
+          onMistakesChange={setMistakes}
+          onStartExam={onStartNewExam}
+          onGoToExams={() => setActiveTab('submissions')}
+        />
       ) : (
         <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-4 mb-6 gap-3">

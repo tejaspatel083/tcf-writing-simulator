@@ -6,6 +6,7 @@ import { DeviceRecommendationModal } from './DeviceRecommendationModal';
 import {
   Home,
   BarChart3,
+  BookOpen,
   FileEdit,
   Shield,
   User,
@@ -27,6 +28,9 @@ interface AppLayoutProps {
   combinationTitle?: string;
   onNavigateHome: () => void;
   onNavigateDashboard: () => void;
+  onNavigateMistakes?: () => void;
+  mistakesCount?: number;
+  isMistakesTabActive?: boolean;
   onNavigateFeedback: () => void;
   onStartNewExam?: () => void;
   onSignOut: () => void;
@@ -41,6 +45,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   combinationTitle,
   onNavigateHome,
   onNavigateDashboard,
+  onNavigateMistakes,
+  mistakesCount,
+  isMistakesTabActive,
   onNavigateFeedback,
   onStartNewExam,
   onSignOut,
@@ -159,15 +166,22 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
               <SidebarOption
                 Icon={BarChart3}
                 title={t('Tableau de bord')}
-                isSelected={currentView === 'dashboard'}
+                isSelected={currentView === 'dashboard' && !isMistakesTabActive}
                 onClick={() => handleNav(onNavigateDashboard)}
+                open={sidebarOpen}
+              />
+              <SidebarOption
+                Icon={BookOpen}
+                title={language === 'en' ? 'My Mistakes' : 'Mes Fautes'}
+                isSelected={isMistakesTabActive}
+                onClick={() => handleNav(onNavigateMistakes || onNavigateDashboard)}
                 open={sidebarOpen}
               />
               {isAdmin && (
                 <SidebarOption
                   Icon={Shield}
                   title={t('Administration')}
-                  isSelected={currentView === 'dashboard'}
+                  isSelected={currentView === 'dashboard' && !isMistakesTabActive}
                   onClick={() => handleNav(onNavigateDashboard)}
                   open={sidebarOpen}
                   badge="👑"
@@ -380,10 +394,20 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                 <SidebarOption
                   Icon={BarChart3}
                   title={t('Tableau de bord')}
-                  isSelected={currentView === 'dashboard'}
+                  isSelected={currentView === 'dashboard' && !isMistakesTabActive}
                   onClick={() => {
                     setMobileMenuOpen(false);
                     handleNav(onNavigateDashboard);
+                  }}
+                  open={true}
+                />
+                <SidebarOption
+                  Icon={BookOpen}
+                  title={language === 'en' ? 'My Mistakes' : 'Mes Fautes'}
+                  isSelected={isMistakesTabActive}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleNav(onNavigateMistakes || onNavigateDashboard);
                   }}
                   open={true}
                 />
@@ -391,7 +415,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                   <SidebarOption
                     Icon={Shield}
                     title={t('Administration')}
-                    isSelected={currentView === 'dashboard'}
+                    isSelected={currentView === 'dashboard' && !isMistakesTabActive}
                     onClick={() => {
                       setMobileMenuOpen(false);
                       handleNav(onNavigateDashboard);

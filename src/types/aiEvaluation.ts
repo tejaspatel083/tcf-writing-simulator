@@ -35,3 +35,17 @@ export interface AIEvaluation {
     task3?: TaskEvaluation;
   };
 }
+
+export interface SavedMistake {
+  id: string;
+  category: string;
+  original_text: string;
+  corrected_text: string;
+  explanation: string;
+  task_key?: 'task1' | 'task2' | 'task3';
+  task_name?: string;
+  submission_id?: string;
+  exam_title?: string;
+  date: string;
+  timestamp: number;
+}

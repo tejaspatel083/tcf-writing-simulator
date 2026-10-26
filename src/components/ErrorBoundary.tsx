@@ -36,9 +36,18 @@ export class ErrorBoundary extends Component<Props, State> {
             <h1 className="text-xl font-bold text-slate-900 mb-2">
               Une erreur inattendue est survenue
             </h1>
-            <p className="text-xs text-slate-600 mb-6 leading-relaxed">
+            <p className="text-xs text-slate-600 mb-4 leading-relaxed">
               Une extension du navigateur ou une modification du texte a interrompu l'affichage. Veuillez recharger la page pour reprendre votre session.
             </p>
+            {this.state.error && (
+              <div className="mb-4 text-left p-3 rounded bg-red-50 border border-red-200 text-red-800 text-xs font-mono overflow-auto max-h-48">
+                <div className="font-bold mb-1">Détail de l'erreur :</div>
+                <div className="text-[11px] whitespace-pre-wrap">{this.state.error.message || String(this.state.error)}</div>
+                {this.state.error.stack && (
+                  <div className="mt-2 text-[10px] text-red-600 whitespace-pre-wrap">{this.state.error.stack}</div>
+                )}
+              </div>
+            )}
             <button
               type="button"
               onClick={this.handleReload}

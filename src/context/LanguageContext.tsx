@@ -212,6 +212,9 @@ const directFrenchToEnglish: Record<string, string> = {
   "Mots écrits (T1 / T2 / T3)": "Words written (T1 / T2 / T3)",
   "Évaluation IA": "AI Evaluation",
   "Banque d'erreurs IA": "AI Mistake Bank",
+  "Mes Fautes": "My Mistakes",
+  "Mon Carnet de Fautes IA": "My AI Mistakes Bank",
+  "fautes enregistrées": "mistakes saved",
   "Voulez-vous vraiment supprimer cette soumission": "Are you sure you want to delete this submission",
 
   // Results Page & AI Evaluation

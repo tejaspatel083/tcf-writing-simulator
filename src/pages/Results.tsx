@@ -11,6 +11,7 @@ import { AIEvaluationView } from '../components/AIEvaluationView';
 import { evaluateTcfSubmissionWithGemini, setGeminiApiKey } from '../services/geminiEvaluator';
 import { updateStoredSubmission } from '../utils/storage';
 import { updateSubmissionAiFeedback } from '../lib/supabase';
+import { saveEvaluationMistakes } from '../utils/mistakesStorage';
 
 interface ResultsProps {
   result: ExamResult;
@@ -27,7 +28,7 @@ export const Results: React.FC<ResultsProps> = ({
   onFeedbackClick,
   hideHeader = false
 }) => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { user } = useAuth();
   const [copiedTask, setCopiedTask] = useState<string | null>(null);
 
@@ -54,6 +55,9 @@ export const Results: React.FC<ResultsProps> = ({
         aiEvaluation: evalData
       };
       updateStoredSubmission(updatedResult);
+
+      // Save mistakes to local Mistakes Bank
+      saveEvaluationMistakes(evalData, updatedResult);
 
       // Persist in Supabase if logged in
       if (user && result.id) {
@@ -402,7 +406,28 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
 
           {/* AI Evaluation View Component */}
           {evaluation && (
-            <div className="mb-8">
+            <div className="mb-8 space-y-4">
+              <div className="p-3 sm:p-4 rounded-xl bg-purple-50/90 border border-purple-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                <div className="flex items-center gap-2.5 text-xs text-purple-900">
+                  <span className="text-base shrink-0">📝</span>
+                  <p className="font-medium">
+                    {language === 'en'
+                      ? 'Mistakes from this evaluation are saved to your Mistakes Bank in the Dashboard.'
+                      : 'Les fautes de cette évaluation sont enregistrées dans votre carnet de fautes (Tableau de bord).'}
+                  </p>
+                </div>
+                {onDashboardClick && (
+                  <button
+                    type="button"
+                    onClick={onDashboardClick}
+                    className="px-3 py-1.5 rounded-lg bg-white border border-purple-200 hover:bg-purple-100/80 text-purple-800 font-bold text-xs shadow-2xs transition-colors cursor-pointer shrink-0 self-start sm:self-auto flex items-center gap-1"
+                  >
+                    <span>{language === 'en' ? 'Open Mistakes Bank' : 'Ouvrir mon carnet'}</span>
+                    <span>→</span>
+                  </button>
+                )}
+              </div>
+
               <AIEvaluationView
                 evaluation={evaluation}
                 combination={result.combination}

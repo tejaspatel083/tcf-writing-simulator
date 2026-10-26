@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { QuestionsDB, ExamCombination, ExamResult, TaskKey } from '../types/exam';
 import questionsData from '../data/questions.json';
 import { ConfirmationModal } from '../components/ConfirmationModal';
+import { MistakesRevisionModal } from '../components/MistakesRevisionModal';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { UserProfileModal } from '../components/UserProfileModal';
@@ -12,6 +13,7 @@ import {
   syncStoredSubmissions,
   mergeSubmissions
 } from '../utils/storage';
+import { getStoredMistakes } from '../utils/mistakesStorage';
 import { useLanguage } from '../context/LanguageContext';
 
 export type TrainingMode = 'full_exam' | 'single_task';
@@ -27,6 +29,7 @@ interface HomeProps {
   ) => void;
   onViewSubmission?: (result: ExamResult) => void;
   onDashboardClick?: () => void;
+  onNavigateToMistakes?: () => void;
   onFeedbackClick?: () => void;
   onLoginClick?: () => void;
   onLogoutClick?: () => void;
@@ -53,7 +56,7 @@ const FRENCH_MONTHS_ORDER = [
  * Normalizes month names across French and English, removing accents and extra text
  * so "May 2026", "Mai", "May", "mai" all map cleanly to "mai".
  */
-export const normalizeMonth = (m?: string): string => {
+const normalizeMonth = (m?: string): string => {
   if (!m) return '';
   const firstWord = m.trim().split(/[\s_-]+/)[0];
   const cleaned = firstWord.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -89,6 +92,7 @@ export const normalizeMonth = (m?: string): string => {
 export const Home: React.FC<HomeProps> = ({
   onStartExam,
   onDashboardClick,
+  onNavigateToMistakes,
   onFeedbackClick,
   onLoginClick,
   onLogoutClick,
@@ -125,6 +129,8 @@ export const Home: React.FC<HomeProps> = ({
   const [selectedTasks, setSelectedTasks] = useState<TaskKey[]>(['task1']);
   const [customMinutes, setCustomMinutes] = useState<number>(15);
   const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
+  const [isMistakesModalOpen, setIsMistakesModalOpen] = useState<boolean>(false);
+  const [currentMistakes, setCurrentMistakes] = useState<any[]>([]);
   const [pastSubmissions, setPastSubmissions] = useState<ExamResult[]>([]);
   const [comboDropdownOpen, setComboDropdownOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -885,7 +891,19 @@ export const Home: React.FC<HomeProps> = ({
 
               <button
                 type="button"
-                onClick={() => setIsConfirmOpen(true)}
+                onClick={() => {
+                  try {
+                    const storedMistakes = getStoredMistakes();
+                    if (storedMistakes && storedMistakes.length > 0) {
+                      setCurrentMistakes(storedMistakes);
+                      setIsMistakesModalOpen(true);
+                      return;
+                    }
+                  } catch (e) {
+                    console.error('Error checking mistakes:', e);
+                  }
+                  setIsConfirmOpen(true);
+                }}
                 className={`w-full sm:w-auto px-6 py-2.5 rounded font-bold text-sm transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer ${
                   trainingMode === 'full_exam' && isCurrentComboDone
                     ? 'bg-emerald-600 border border-emerald-700 text-white hover:bg-emerald-700'
@@ -930,7 +948,42 @@ export const Home: React.FC<HomeProps> = ({
         )}
       </div>
 
-      {/* Confirmation Modal before starting exam or practice */}
+      {/* Pop-up: Did you revise past mistakes before starting? */}
+      <MistakesRevisionModal
+        isOpen={isMistakesModalOpen}
+        mistakes={currentMistakes}
+        trainingModeLabel={
+          trainingMode === 'single_task'
+            ? `${t('Entraînement')} (${selectedTasks.map((k) => t(k === 'task1' ? 'Tâche 1' : k === 'task2' ? 'Tâche 2' : 'Tâche 3')).join(' + ')}) • ${customMinutes} min`
+            : t('Examen complet (60 minutes)')
+        }
+        combinationLabel={
+          currentCombo
+            ? `${t('Combinaison')} ${currentComboNum} (${t(selectedMonth)} ${selectedYear})`
+            : undefined
+        }
+        onConfirmStart={() => {
+          setIsMistakesModalOpen(false);
+          if (currentCombo) {
+            if (trainingMode === 'single_task') {
+              onStartExam(currentCombo, selectedYear, selectedMonth, true, selectedTasks, customMinutes);
+            } else {
+              onStartExam(currentCombo, selectedYear, selectedMonth, false, 'task1', 60);
+            }
+          }
+        }}
+        onGoToMistakes={() => {
+          setIsMistakesModalOpen(false);
+          if (onNavigateToMistakes) {
+            onNavigateToMistakes();
+          } else if (onDashboardClick) {
+            onDashboardClick();
+          }
+        }}
+        onCancel={() => setIsMistakesModalOpen(false)}
+      />
+
+      {/* Confirmation Modal before starting exam or practice (used if no past mistakes) */}
       <ConfirmationModal
         isOpen={isConfirmOpen}
         title={

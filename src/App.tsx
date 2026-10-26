@@ -8,6 +8,8 @@ import { Feedback } from './pages/Feedback';
 import { AppLayout } from './components/AppLayout';
 import { ExamCombination, ExamResult, TaskKey } from './types/exam';
 import { saveSubmission, getStoredSubmissions } from './utils/storage';
+import { getStoredMistakes } from './utils/mistakesStorage';
+import { MistakesRevisionModal } from './components/MistakesRevisionModal';
 import { saveSubmissionToSupabase } from './lib/supabase';
 import { getLocalISOString } from './utils/dateUtils';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -19,6 +21,7 @@ const MainRouter: React.FC = () => {
   const { t } = useLanguage();
 
   const [view, setView] = useState<'home' | 'simulator' | 'results' | 'dashboard' | 'feedback'>('home');
+  const [dashboardTab, setDashboardTab] = useState<'submissions' | 'mistakes' | 'admin'>('submissions');
   const [activeCombo, setActiveCombo] = useState<ExamCombination | null>(null);
   const [activeYear, setActiveYear] = useState<string>('2026');
   const [activeMonth, setActiveMonth] = useState<string>('Septembre');
@@ -35,12 +38,22 @@ const MainRouter: React.FC = () => {
       return 0;
     }
   });
+  const [mistakesCount, setMistakesCount] = useState<number>(() => {
+    try {
+      return getStoredMistakes().length;
+    } catch {
+      return 0;
+    }
+  });
+  const [retakePendingCombo, setRetakePendingCombo] = useState<{ combo: ExamCombination; year: string; month: string } | null>(null);
+  const [showRetakeMistakesModal, setShowRetakeMistakesModal] = useState<boolean>(false);
 
   const [showSlowNotice, setShowSlowNotice] = useState(false);
 
   useEffect(() => {
     try {
       setSubmissionsCount(getStoredSubmissions().length);
+      setMistakesCount(getStoredMistakes().length);
     } catch {}
   }, [view]);
 
@@ -184,8 +197,20 @@ const MainRouter: React.FC = () => {
     setView('results');
   };
 
+  const handleNavigateToMistakes = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    setDashboardTab('mistakes');
+    setView('dashboard');
+  };
+
   const handleRetakeCombination = (combo: ExamCombination, year: string, month: string) => {
-    handleStartExam(combo, year, month, false, 'task1', 60);
+    const storedMistakes = getStoredMistakes();
+    if (storedMistakes && storedMistakes.length > 0) {
+      setRetakePendingCombo({ combo, year, month });
+      setShowRetakeMistakesModal(true);
+    } else {
+      handleStartExam(combo, year, month, false, 'task1', 60);
+    }
   };
 
   const handleGoHome = () => {
@@ -240,7 +265,13 @@ const MainRouter: React.FC = () => {
       subtitle={getLayoutSubtitle()}
       combinationTitle={getLayoutComboTitle()}
       onNavigateHome={handleGoHome}
-      onNavigateDashboard={() => setView('dashboard')}
+      onNavigateDashboard={() => {
+        setDashboardTab('submissions');
+        setView('dashboard');
+      }}
+      onNavigateMistakes={handleNavigateToMistakes}
+      mistakesCount={mistakesCount}
+      isMistakesTabActive={view === 'dashboard' && dashboardTab === 'mistakes'}
       onNavigateFeedback={() => setView('feedback')}
       onStartNewExam={handleGoHome}
       onSignOut={handleSignOut}
@@ -251,7 +282,11 @@ const MainRouter: React.FC = () => {
           hideHeader
           onStartExam={handleStartExam}
           onViewSubmission={handleViewPastSubmission}
-          onDashboardClick={() => setView('dashboard')}
+          onDashboardClick={() => {
+            setDashboardTab('submissions');
+            setView('dashboard');
+          }}
+          onNavigateToMistakes={handleNavigateToMistakes}
           onFeedbackClick={() => setView('feedback')}
           onLogoutClick={handleSignOut}
           userEmail={user.email}
@@ -260,11 +295,36 @@ const MainRouter: React.FC = () => {
 
       {view === 'dashboard' && (
         <Dashboard
+          initialTab={dashboardTab}
           onStartNewExam={handleGoHome}
           onViewSubmission={handleViewPastSubmission}
           onRetakeCombination={handleRetakeCombination}
           onHomeClick={handleGoHome}
           onFeedbackClick={() => setView('feedback')}
+        />
+      )}
+
+      {/* Retake Combination Mistakes Check Modal */}
+      {showRetakeMistakesModal && retakePendingCombo && (
+        <MistakesRevisionModal
+          isOpen={showRetakeMistakesModal}
+          mistakes={getStoredMistakes()}
+          trainingModeLabel={t('Examen complet (60 minutes)')}
+          combinationLabel={`${t('Combinaison')} ${retakePendingCombo.combo.combinationNumber || (retakePendingCombo.combo as any)?.combination || 1} (${t(retakePendingCombo.month)} ${retakePendingCombo.year})`}
+          onConfirmStart={() => {
+            setShowRetakeMistakesModal(false);
+            handleStartExam(retakePendingCombo.combo, retakePendingCombo.year, retakePendingCombo.month, false, 'task1', 60);
+            setRetakePendingCombo(null);
+          }}
+          onGoToMistakes={() => {
+            setShowRetakeMistakesModal(false);
+            setRetakePendingCombo(null);
+            handleNavigateToMistakes();
+          }}
+          onCancel={() => {
+            setShowRetakeMistakesModal(false);
+            setRetakePendingCombo(null);
+          }}
         />
       )}
 
