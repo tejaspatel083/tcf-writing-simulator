@@ -6258,6 +6258,176 @@
             "document2": "« J’ai essayé le covoiturage pour aller au travail, mais j’ai finalement arrêté. Il fallait respecter des horaires fixes et faire des détours pour récupérer les autres passagers. Lorsqu’une personne annulait au dernier moment, toute l’organisation était à revoir. Je ne pouvais plus non plus faire mes courses ou rester plus longtemps au bureau sans prévenir les autres. Je préfère donc garder mon indépendance, même si cela me coûte davantage. »\nThomas, 42 ans"
           }
         }
+      },
+      {
+        "combination": 800,
+        "combinationNumber": 21,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous voulez partir en week-end avec vos amis le mois prochain. Vous leur écrivez un\nmessage pour décrire votre projet (lieu, transport, activités, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "COURRIER DES LECTEURS\nTout quitter pour partir en voyage pendant un an: bonne ou mauvaise idée ?\nRépondez sur notre site Internet : “voyage.internaute.fr”. Vous écrivez un message sur ce\nsite internet, vous répondez à la question posée en prenant des exemples de votre vie\npersonnelle.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Le travail : favorable ou défavorable ?",
+            "title": "Le travail : favorable ou défavorable ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Le travail est au centre de notre vie. Dès l’enfance, on entend souvent la question : « Qu’est-ce que tu veux faire quand tu seras grand ? ». Le travail devrait être synonyme de réussite\net de satisfaction, mais il est trop souvent synonyme de fatigue et d’emprisonnement.\nAujourd’hui, beaucoup pensent que l’on ne passe pas assez de temps avec sa famille, ses\namis. Il est urgent de revoir la place occupée par le travail dans notre société. Certains\npensent que travailler moins permettrait d’avoir plus de temps libre pour mieux vivre.",
+            "document2": "Certaines personnes ont décidé d’arrêter de travailler pour changer de mode de vie.\nPourtant, aujourd’hui, travailler, c’est exister. La question : « Qu’est-ce que tu fais dans la\nvie ? » revient souvent lors d’une première rencontre. Elle prouve que l’emploi fait partie de\nnotre identité. D’après le spécialiste Jean-Daniel Remond, la vie en entreprise est très\nimportante. Les contacts quotidiens, les réseaux, les amitiés, l’impression d’être utile, mais\naussi les difficultés, tout cela contribue à construire notre personnalité et notre identité."
+          }
+        }
+      },
+      {
+        "combination": 801,
+        "combinationNumber": 22,
+        "tasks": {
+          "task1": {
+            "instruction": "Votre ami souhaite commencer à faire du sport. Rédigez un message pour lui recommander une salle de sport située dans votre quartier (localisation, tarifs, types d’activités, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez participé à un événement qui vous a marqué (anniversaire, mariage, etc.). Racontez votre souvenir en décrivant ce qui vous a le plus marqué.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "La lecture pour les enfants.",
+            "title": "La lecture pour les enfants.",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Avec l’avancée technologique et les produits high-tech qui envahissent de plus en plus notre quotidien, nos enfants oublient la lecture et s’intéressent davantage aux jeux vidéo, aux sports, à la musique… Contrairement à nous, les adultes, dont beaucoup d’entre nous ont lu des milliers de pages, la génération actuelle est toujours occupée par les réseaux sociaux et le gaming ou prend du plaisir à pratiquer du sport qui attire davantage de jeunes grâce aux stars internationales du football, du tennis, de l’athlétisme… alors avec tout ça, pourquoi devons-nous forcer les enfants à lire un bouquin ? Et comme le dit un proverbe, ‘’le goût de la lecture ne peut pas s’imposer’’… il faut laisser l’enfant choisir ce qu’il veut lire et surtout ne pas l’obliger à lire quand il n’en a pas envie.",
+            "document2": "L’amour de la lecture se transmet de génération en génération bien que, ces dernières années, on ne trouve plus beaucoup de bouquins entre les mains des enfants, laissant la place aux smartphones et aux tablettes. En apprenant à lire régulièrement, l’enfant acquiert le langage plus aisément tout en développant sa capacité d’audition et de concentration. De plus, et pour prendre du plaisir ensemble, les parents peuvent consacrer quotidiennement 10 minutes à leurs enfants pour lire des bouquins ; une activité qui renforcera à coup sûr la complicité parent-enfant."
+          }
+        }
+      },
+      {
+        "combination": 802,
+        "combinationNumber": 23,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous organisez un anniversaire surprise pour votre ami(e) Karim. Écrivez un message à vos amis pour les inviter et leur expliquer l'organisation de la fête (date, lieu, cadeau, rôle de chacun, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez participé à un concours artistique (peinture, photographie, chant, danse, etc.). Sur votre blog, racontez votre expérience : comment s'est déroulé le concours, ce que vous avez ressenti et ce que cette expérience vous a apporté.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les salaires des sportifs professionnels : pour ou contre ?",
+            "title": "Les salaires des sportifs professionnels : pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Les salaires des sportifs professionnels sont souvent critiqués, mais ils sont justifiés. Une carrière sportive est très courte : elle s'arrête en général avant 35 ans et peut prendre fin brutalement à cause d'une blessure. Pour arriver au plus haut niveau, ces athlètes s'entraînent tous les jours depuis l'enfance et font de nombreux sacrifices. De plus, ils rapportent des sommes énormes à leur club grâce aux billets, aux droits télévisés et aux sponsors. Il est donc normal qu'ils reçoivent une partie de cet argent.",
+            "document2": "Je trouve scandaleux qu'un footballeur gagne en un mois ce qu'une infirmière ou un enseignant gagne en toute une vie. Ces métiers sont pourtant essentiels à la société. Ces salaires démesurés donnent aussi une mauvaise image aux jeunes, qui rêvent de devenir riches et célèbres au lieu de poursuivre leurs études. Enfin, cet argent pourrait être mieux utilisé : il permettrait de financer le sport amateur, les équipements des quartiers et les clubs qui manquent de moyens."
+          }
+        }
+      }
+    ],
+    "Novembre": [
+      {
+        "combination": 803,
+        "combinationNumber": 1,
+        "tasks": {
+          "task1": {
+            "instruction": "le journal ” Bienvenue” compte publier un article qui parle des habitants de notre ville. Écrivez nous un message qui sera diffusé dans ce numéro. Vous êtes récemment installé dans cette ville, et il vous est demandé de vous présenter et décrire ensuite tous vos lieux préférés au sein de cette ville.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous venez d’assister au concert de votre artiste favori. Vous écrivez un article sur votre blog personnel, pour partager cette expérience et inciter vos amis et les autres à assister à son prochain concert.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les Jeux Vidéo : Pour ou contre ?",
+            "title": "Les Jeux Vidéo : Pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "les enfants, jusqu’à l’âge de l’adolescence, jouent d’une manière régulière aux jeux vidéo et à force, ils peuvent développer des pensée négatives et des comportements agressifs. En effet, une étude récente, menée sur des enfants âgés de 9 à 18 ans jouant fréquemment aux jeux vidéo, a révélé que le fait de jouer à des jeux de violence augmente considérablement un comportement agressif. Et selon Diego Gentil, ce phénomène est inévitable quelque soit le degré de vigilance des parents!",
+            "document2": "On parle tout le temps des effets négatifs des jeux vidéo, mais ces derniers peuvent également avoir quelques avantages pour le fonctionnement du cerveau et pour la santé d’une manière générale. si on prend, par exemple, leur rapport pour le cerveau, les jeux vidéo permettent d’améliorer plusieurs fonctions cognitives telles que l’amélioration de la concentration, de la création et de la capacité d’analyse. Ceci peut paraitre évident, dans la mesure où lorsqu’on y joue, on doit toujours trouver."
+          }
+        }
+      },
+      {
+        "combination": 804,
+        "combinationNumber": 2,
+        "tasks": {
+          "task1": {
+            "instruction": "Écrivez un message à vos amis pour leur proposer de passer un week-end avec\nvous pour faire du sport.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Écrivez un article de blog sur un forum pour raconter pourquoi vous avez décidé de changer vos habitudes alimentaires.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "La sieste au travail.",
+            "title": "La sieste au travail.",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "La sieste au travail peut avoir de nombreux avantages pour les employés et les entreprises. En permettant aux travailleurs de faire une petite sieste, cela peut aider à augmenter leur productivité et à améliorer leur santé et leur bien-être. Les siestes courtes peuvent aider à améliorer la vigilance et la concentration, réduire les niveaux\nde stress et améliorer l’humeur. En outre, la pratique de la sieste peut aider à réduire les coûts pour les employeurs en diminuant les coûts liés à la fatigue et aux accidents du travail. Il est donc important pour les entreprises de considérer les avantages potentiels de la sieste au travail et d’envisager d’offrir cette option à leur personnel.",
+            "document2": "Malgré les nombreux avantages de la sieste au travail, il peut être difficile pour toutes les entreprises de mettre en place des lits et des salles dédiées à cette pratique. Cela peut être dû à des contraintes financières ou logistiques, ou encore à des politiques de travail strictes qui ne permettent pas aux employés de faire des siestes pendant les heures de travail. En outre, certains travailleurs peuvent ne pas se sentir à l’aise de faire une sieste au travail, ce qui peut limiter l’adoption de cette pratique. Il est donc important pour les entreprises de considérer les avantages et les limites de la sieste au travail et de trouver des solutions créatives pour permettre à leurs employés de se reposer et de se régénérer pendant la journée de travail."
+          }
+        }
+      },
+      {
+        "combination": 805,
+        "combinationNumber": 3,
+        "tasks": {
+          "task1": {
+            "instruction": "Votre amie Jeanne envisage de visiter votre pays. Rédigez un message personnalisé lui proposant un itinéraire de visite. Incluez une variété de lieux tels que des villes, sites touristiques et monuments célèbres, en expliquant brièvement l’intérêt de chaque recommandation.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Racontez votre expérience personnelle de participation à une émission de télévision. Détaillez le contexte de votre participation, votre rôle dans l’émission, et les impressions que vous en avez retirées.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Égalité Homme/Femme en Milieu de Travail.",
+            "title": "Égalité Homme/Femme en Milieu de Travail.",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Certains postes sont majoritairement occupés par des hommes. Au Québec, l’égalité entre les femmes et les hommes est respectée, les femmes peuvent les métiers réservés aux hommes tel que les postes de direction.",
+            "document2": "Malgré les efforts pour imposer la parité à tous les postes dans les entreprises et les collectivités, il y a, dans les faits, des métiers où les femmes sont largement majoritaires tels que : les sage-femmes. De plus, les femmes ne doivent pas faire les métiers d’homme, car ils doivent prendre soin de ses enfants."
+          }
+        }
+      },
+      {
+        "combination": 806,
+        "combinationNumber": 4,
+        "tasks": {
+          "task1": {
+            "instruction": "Votre ami souhaite commencer à faire du sport. Rédigez un message pour lui recommander une salle de sport située dans votre quartier (localisation, tarifs, types d’activités, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez participé à un événement qui vous a marqué (anniversaire, mariage, etc.). Racontez votre souvenir en décrivant ce qui vous a le plus marqué.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "La lecture pour les enfants.",
+            "title": "La lecture pour les enfants.",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Avec l’avancée technologique et les produits high-tech qui envahissent de plus en plus notre quotidien, nos enfants oublient la lecture et s’intéressent davantage aux jeux vidéo, aux sports, à la musique… Contrairement à nous, les adultes, dont beaucoup d’entre nous ont lu des milliers de pages, la génération actuelle est toujours occupée par les réseaux sociaux et le gaming ou prend du plaisir à pratiquer du sport qui attire davantage de jeunes grâce aux stars internationales du football, du tennis, de l’athlétisme… alors avec tout ça, pourquoi devons-nous forcer les enfants à lire un bouquin ? Et comme le dit un proverbe, ‘’le goût de la lecture ne peut pas s’imposer’’… il faut laisser l’enfant choisir ce qu’il veut lire et surtout ne pas l’obliger à lire quand il n’en a pas envie.",
+            "document2": "L’amour de la lecture se transmet de génération en génération bien que, ces dernières années, on ne trouve plus beaucoup de bouquins entre les mains des enfants, laissant la place aux smartphones et aux tablettes. En apprenant à lire régulièrement, l’enfant acquiert le langage plus aisément tout en développant sa capacité d’audition et de concentration. De plus, et pour prendre du plaisir ensemble, les parents peuvent consacrer quotidiennement 10 minutes à leurs enfants pour lire des bouquins ; une activité qui renforcera à coup sûr la complicité parent-enfant."
+          }
+        }
       }
     ]
   },
