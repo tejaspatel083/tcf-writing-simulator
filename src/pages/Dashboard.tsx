@@ -27,12 +27,14 @@ interface DashboardProps {
   onHomeClick: () => void;
   onFeedbackClick?: () => void;
   initialTab?: 'submissions' | 'mistakes' | 'admin';
+  onTabChange?: (tab: 'submissions' | 'mistakes' | 'admin') => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
   onStartNewExam,
   onViewSubmission,
-  initialTab
+  initialTab,
+  onTabChange
 }) => {
   const { user, userName, isConfigured, isAdmin } = useAuth();
   const { language, t } = useLanguage();
@@ -42,6 +44,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [activeTab, setActiveTab] = useState<'submissions' | 'mistakes' | 'admin'>(
     initialTab || (isAdmin ? 'admin' : 'submissions')
   );
+
+  const handleSwitchTab = (tab: 'submissions' | 'mistakes' | 'admin') => {
+    setActiveTab(tab);
+    if (onTabChange) {
+      onTabChange(tab);
+    }
+  };
 
   useEffect(() => {
     if (initialTab) {
@@ -194,7 +203,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-2">
         <button
           type="button"
-          onClick={() => setActiveTab('submissions')}
+          onClick={() => handleSwitchTab('submissions')}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
             activeTab === 'submissions'
               ? 'bg-blue-600 text-white shadow-2xs'
@@ -207,7 +216,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         <button
           type="button"
-          onClick={() => setActiveTab('mistakes')}
+          onClick={() => handleSwitchTab('mistakes')}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
             activeTab === 'mistakes'
               ? 'bg-purple-600 text-white shadow-2xs'
@@ -230,7 +239,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         {isAdmin && (
           <button
             type="button"
-            onClick={() => setActiveTab('admin')}
+            onClick={() => handleSwitchTab('admin')}
             className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === 'admin'
                 ? 'bg-blue-600 text-white shadow-2xs'

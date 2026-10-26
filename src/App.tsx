@@ -75,7 +75,10 @@ const MainRouter: React.FC = () => {
   // Keep Neumorphism UI theme active on root
   useEffect(() => {
     document.documentElement.classList.add('theme-neumorphism', 'neu-theme');
-    document.documentElement.classList.remove('dark');
+    document.documentElement.classList.remove('dark', 'theme-ocean', 'theme-classic');
+    try {
+      localStorage.removeItem('tcf_color_theme');
+    } catch {}
   }, []);
 
   // 1. Loading screen while determining auth session
@@ -296,6 +299,7 @@ const MainRouter: React.FC = () => {
       {view === 'dashboard' && (
         <Dashboard
           initialTab={dashboardTab}
+          onTabChange={(tab) => setDashboardTab(tab === 'mistakes' ? 'mistakes' : 'submissions')}
           onStartNewExam={handleGoHome}
           onViewSubmission={handleViewPastSubmission}
           onRetakeCombination={handleRetakeCombination}
