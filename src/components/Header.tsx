@@ -58,8 +58,8 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
         <div>
-          <h1 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span>
+          <h1 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight flex items-center gap-2.5">
+            <img src="./logo-icon.png" alt="TCF Canada" className="w-7 h-7 sm:w-8 sm:h-8 object-contain rounded-lg shrink-0 shadow-xs border border-white/80" />
             {tr('header.title')}
           </h1>
           {subtitle && (

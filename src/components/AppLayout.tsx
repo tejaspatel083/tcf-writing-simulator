@@ -130,11 +130,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
             <div className="mb-4 border-b border-slate-200 pb-3">
               <div
                 onClick={() => setShowProfileModal(true)}
-                className="flex cursor-pointer items-center justify-between rounded-lg p-2 transition-colors hover:bg-slate-100"
+                className={`flex cursor-pointer items-center rounded-xl transition-colors hover:bg-slate-100 ${
+                  sidebarOpen ? 'p-2 justify-between' : 'py-1 px-0 justify-center'
+                }`}
                 title={t('Mon Profil')}
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="grid size-10 shrink-0 place-content-center rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold text-sm shadow-xs">
+                <div className={`flex items-center ${sidebarOpen ? 'gap-3 min-w-0' : 'justify-center w-full'}`}>
+                  <div className="grid size-10 shrink-0 place-content-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold text-sm shadow-xs mx-auto">
                     {isAdmin ? '👑' : displayName.charAt(0).toUpperCase()}
                   </div>
                   {sidebarOpen && (
@@ -261,9 +263,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                 <Menu className="w-5 h-5 text-slate-700" />
               </button>
 
-              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap min-w-0">
-                <h1 className="text-sm sm:text-lg font-bold text-slate-900 tracking-tight flex items-center gap-1.5 sm:gap-2 truncate">
-                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block shrink-0"></span>
+              <div className="flex items-center gap-2.5 flex-wrap min-w-0">
+                <h1 className="text-base sm:text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5 truncate">
+                  <img
+                    src="./logo-icon.png"
+                    alt="TCF Canada"
+                    className="w-9 h-9 sm:w-11 sm:h-11 object-contain rounded-xl shrink-0 shadow-xs border border-white/80"
+                  />
                   <span className="truncate">{resolvedTitle}</span>
                 </h1>
                 {isAdmin && (
@@ -565,17 +571,21 @@ const SidebarOption: React.FC<SidebarOptionProps> = ({
     <button
       type="button"
       onClick={onClick}
-      className={`relative flex h-11 w-full items-center rounded-lg transition-all duration-200 cursor-pointer ${
+      className={`relative flex h-11 w-full items-center rounded-xl transition-all duration-200 cursor-pointer ${
+        open ? 'px-2 justify-start' : 'justify-center px-0'
+      } ${
         isSelected
-          ? "bg-blue-50 text-blue-700 font-bold shadow-2xs border-l-3 border-blue-600"
+          ? open
+            ? "bg-blue-50 text-blue-700 font-bold shadow-2xs border-l-4 border-blue-600"
+            : "bg-blue-100/90 text-blue-700 font-bold shadow-2xs border border-blue-300"
           : isDestructive
           ? "text-red-600 hover:bg-red-50 font-medium"
           : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium"
       }`}
       title={open ? undefined : title}
     >
-      <div className="grid h-full w-12 place-content-center shrink-0">
-        <Icon className="h-4 w-4" />
+      <div className={`grid h-full place-content-center shrink-0 ${open ? 'w-10' : 'w-full'}`}>
+        <Icon className="h-5 w-5" />
       </div>
 
       {open && (

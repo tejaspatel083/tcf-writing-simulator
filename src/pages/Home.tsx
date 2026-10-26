@@ -326,10 +326,17 @@ export const Home: React.FC<HomeProps> = ({
 
         {/* Header Title */}
         <div className="text-center mb-8 border-b border-slate-200 pb-6">
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">
-            {t('TCF Canada — Expression Écrite Simulator')}
-          </h1>
-          <p className="text-slate-600 text-base font-normal">
+          <div className="inline-flex items-center justify-center gap-3.5 sm:gap-4.5 flex-wrap sm:flex-nowrap mb-2">
+            <img
+              src="./logo-icon.png"
+              alt="TCF Canada"
+              className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-contain rounded-2xl shrink-0 shadow-sm border border-white/90"
+            />
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight text-center sm:text-left">
+              {t('TCF Canada — Expression Écrite Simulator')}
+            </h1>
+          </div>
+          <p className="text-slate-600 text-sm sm:text-base font-normal">
             {t("Entraînez-vous dans les conditions de l'examen réel.")}
           </p>
         </div>
