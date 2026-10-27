@@ -59,7 +59,7 @@ export const Header: React.FC<HeaderProps> = ({
         )}
         <div>
           <h1 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight flex items-center gap-2.5">
-            <img src="./logo-icon.png" alt="TCF Canada" className="w-7 h-7 sm:w-8 sm:h-8 object-contain rounded-lg shrink-0 shadow-xs border border-white/80" />
+            <img src="./logo-icon.png" alt="TCF Canada" className="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0 drop-shadow-2xs select-none" />
             {tr('header.title')}
           </h1>
           {subtitle && (

@@ -229,11 +229,11 @@ export const TitleSection: React.FC<TitleSectionProps> = ({
 
 export const Logo: React.FC = () => {
   return (
-    <div className="grid size-10 shrink-0 place-content-center rounded-lg bg-[#e8edf5] shadow-xs border border-white/80 overflow-hidden">
+    <div className="grid size-10 shrink-0 place-content-center">
       <img
         src="./logo-icon.png"
         alt="TCF Canada"
-        className="w-8 h-8 object-contain"
+        className="w-9 h-9 object-contain drop-shadow-2xs"
       />
     </div>
   );

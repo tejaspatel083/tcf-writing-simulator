@@ -268,7 +268,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                   <img
                     src="./logo-icon.png"
                     alt="TCF Canada"
-                    className="w-9 h-9 sm:w-11 sm:h-11 object-contain rounded-xl shrink-0 shadow-xs border border-white/80"
+                    className="w-8 h-8 sm:w-10 sm:h-10 object-contain shrink-0 drop-shadow-2xs select-none"
                   />
                   <span className="truncate">{resolvedTitle}</span>
                 </h1>
