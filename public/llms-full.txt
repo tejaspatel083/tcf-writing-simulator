@@ -1,0 +1,51 @@
+# TCF Canada Expression Écrite Simulator - Full Documentation
+
+> Complete guide, task breakdowns, scoring criteria, and practice instructions for TCF Canada candidates and AI agents.
+
+URL: https://tejaspatel083.github.io/tcf-writing-simulator/
+Developer / Repository: tejaspatel083/tcf-writing-simulator
+License: Free Educational Resource
+Category: Educational Software / Language Learning / Test Preparation
+
+---
+
+## 1. Exam Structure & Official Guidelines
+The TCF Canada Expression Écrite (written expression) test assesses French proficiency on the CEFR scale (A1 to C2) corresponding to Canadian Language Benchmarks (CLB / NCLC 1 to 10+).
+
+### Total Time: 60 minutes
+Candidates must complete three mandatory tasks without extra time:
+
+#### Tâche 1: Rédaction d'un message court (60 à 120 mots)
+- **Format**: Email, friendly letter, postcard, note, or invitation to one or more recipients.
+- **Objectives**: Describe an event, explain a situation, ask for or provide information, accept or decline an offer.
+- **Evaluation Criteria**: Respect of the word count (minimum 60 words), appropriate greeting and sign-off, address of all required prompt points, correct usage of basic verb tenses (présent, passé composé, futur proche).
+
+#### Tâche 2: Rédaction d'un article ou récit (120 à 150 mots)
+- **Format**: Article for a community bulletin, magazine, personal blog post, or narrative account.
+- **Objectives**: Narrate a personal experience, express personal feelings, describe events in chronological order, provide advice or commentary.
+- **Evaluation Criteria**: Cohesion and logical flow (connectors: d'abord, ensuite, cependant, enfin), varied past tenses (imparfait vs passé composé), descriptive vocabulary.
+
+#### Tâche 3: Rédaction d'un texte d'opinion argumentée (120 à 180 mots)
+- **Format**: Formal essay, opinion letter to a forum or newspaper.
+- **Objectives**: Synthesize two contrasting viewpoints on a societal topic (technology, environment, remote work, education, etc.) and present personal, justified arguments.
+- **Evaluation Criteria**: Balanced presentation of arguments, nuanced argumentation (concession, conditionnel, subjonctif), clear structure (introduction, body paragraphs, conclusion).
+
+---
+
+## 2. Word Count Rules
+The simulator precisely enforces France Éducation International's official counting standard:
+1. Every sequence of characters separated by spaces or punctuation marks counts as one word.
+2. Apostrophes create separate words: e.g., "c'est" = 2 words ("c'" and "est"), "j'ai" = 2 words, "d'accord" = 2 words, "qu'il" = 2 words.
+3. Hyphenated compound words count as multiple words depending on components: e.g., "rendez-vous" = 2 words, "peut-être" = 2 words.
+4. If candidate writes under the minimum word limit, heavy penalties are incurred on the official exam. The simulator visually flags under-limit and over-limit thresholds.
+
+---
+
+## 3. Simulator Features & Architecture
+- **Real-Time Word Counter**: Automatic live count with instant compliance indicators.
+- **French Accent Keys**: Quick buttons for `é`, `è`, `ê`, `à`, `â`, `ù`, `û`, `ô`, `î`, `ç`, `« »`, `œ` for seamless typing on English QWERTY keyboards.
+- **AI Diagnostic Evaluation**: Provides scores across 4 official criteria with CEFR level estimate (B2 / C1 / C2), detailed corrections, and improved model answers.
+- **Mistakes Bank ("Mes Fautes")**: Saves candidate grammar errors, explanation of rules, and corrected sentences.
+- **Full Offline-Friendly Design**: Runs smoothly on low bandwidth, smartphones, tablets, and laptops.
+
+Visit: https://tejaspatel083.github.io/tcf-writing-simulator/
