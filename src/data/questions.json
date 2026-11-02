@@ -6428,6 +6428,174 @@
             "document2": "L’amour de la lecture se transmet de génération en génération bien que, ces dernières années, on ne trouve plus beaucoup de bouquins entre les mains des enfants, laissant la place aux smartphones et aux tablettes. En apprenant à lire régulièrement, l’enfant acquiert le langage plus aisément tout en développant sa capacité d’audition et de concentration. De plus, et pour prendre du plaisir ensemble, les parents peuvent consacrer quotidiennement 10 minutes à leurs enfants pour lire des bouquins ; une activité qui renforcera à coup sûr la complicité parent-enfant."
           }
         }
+      },
+      {
+        "combination": 807,
+        "combinationNumber": 5,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous voulez partir en week-end avec vos amis le mois prochain. Vous leur écrivez un\nmessage pour décrire votre projet (lieu, transport, activités, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "COURRIER DES LECTEURS\nTout quitter pour partir en voyage pendant un an: bonne ou mauvaise idée ?\nRépondez sur notre site Internet : “voyage.internaute.fr”. Vous écrivez un message sur ce\nsite internet, vous répondez à la question posée en prenant des exemples de votre vie\npersonnelle.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Le travail : favorable ou défavorable ?",
+            "title": "Le travail : favorable ou défavorable ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Le travail est au centre de notre vie. Dès l’enfance, on entend souvent la question : « Qu’est-ce que tu veux faire quand tu seras grand ? ». Le travail devrait être synonyme de réussite\net de satisfaction, mais il est trop souvent synonyme de fatigue et d’emprisonnement.\nAujourd’hui, beaucoup pensent que l’on ne passe pas assez de temps avec sa famille, ses\namis. Il est urgent de revoir la place occupée par le travail dans notre société. Certains\npensent que travailler moins permettrait d’avoir plus de temps libre pour mieux vivre.",
+            "document2": "Certaines personnes ont décidé d’arrêter de travailler pour changer de mode de vie.\nPourtant, aujourd’hui, travailler, c’est exister. La question : « Qu’est-ce que tu fais dans la\nvie ? » revient souvent lors d’une première rencontre. Elle prouve que l’emploi fait partie de\nnotre identité. D’après le spécialiste Jean-Daniel Remond, la vie en entreprise est très\nimportante. Les contacts quotidiens, les réseaux, les amitiés, l’impression d’être utile, mais\naussi les difficultés, tout cela contribue à construire notre personnalité et notre identité."
+          }
+        }
+      },
+      {
+        "combination": 808,
+        "combinationNumber": 6,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous écrivez une lettre à votre ami pour l’inviter à un festival de musique dans votre ville. Vous mentionnez les détails importants tels que le lieu, la date, les artistes invités et toutes les informations pratiques nécessaires.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Sur votre blog, parlez de votre dernière visite à un restaurant (l'endroit, la nourriture, le service, etc.). Racontez ce que vous avez vécu et dites ce qui vous a vraiment plu.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Voyage seul ou voyage accompagné ?",
+            "title": "Voyage seul ou voyage accompagné ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Voyager seul est une expérience riche et singulière qui présente de nombreux attraits. Tout d'abord, cela offre une liberté totale d'organiser son parcours et ses activités selon ses envies sans avoir à se plier aux contraintes d'un groupe. On découvre ainsi les lieux visités à son propre rythme, en prenant tout le temps nécessaire pour s'imprégner pleinement de leur atmosphère unique. Surtout, voyager en solo permet de sortir de sa zone de confort et de faire d'inestimables rencontres avec les populations locales ou d'autres voyageurs, favorisant ainsi l'ouverture d'esprit et l'enrichissement personnel.",
+            "document2": "S'il comporte des avantages certains, le voyage en solo n'est pas exempt d'inconvénients que l'on ne saurait négliger. Outre le sentiment de solitude qui peut parfois s'installer, l'absence d'un compagnon de route prive le voyageur d'un soutien précieux en cas d'imprévu ou de situation délicate. De plus, certaines activités comme l'exploration de sites reculés ou de régions au climat rude gagnent à être réalisées en groupe pour des raisons évidentes de sécurité. Enfin, partager ses découvertes et ses émotions avec un proche ou des amis demeure l'un des plaisirs uniques du voyage accompagné."
+          }
+        }
+      },
+      {
+        "combination": 809,
+        "combinationNumber": 7,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous souhaitez fêter votre anniversaire dans un restaurant. Vous invitez vos amis. Vous leur écrivez un courriel pour leur donner toutes les informations nécessaires (lieu, date, menu, prix…) et vous leur demandez une réponse.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez quitté la ville afin de vous installer à la campagne. Sur votre blog, vous expliquez pourquoi vous avez fait ce choix et vous présentez les avantages de votre nouvelle vie.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les caméras de surveillance à l’école : pour ou contre ?",
+            "title": "Les caméras de surveillance à l’école : pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Dans l’école où j’enseigne à Montréal, les caméras de surveillance sont omniprésentes. Leur présence permet de dissuader les élèves de commettre des actes de violence. Les enseignants, les parents et la majorité des élèves les acceptent volontiers, car ils se sentent rassurés quant à la sécurité des enfants et cela permet aux enseignants de travailler dans de bonnes conditions. Toutefois, certains élèves considèrent que cela porte atteinte à leur vie privée.",
+            "document2": "Je suis opposé à l’installation des caméras de surveillance dans nos écoles à Montréal. Les résultats obtenus dans les pays où ce système est utilisé ne sont pas convaincants. Les personnes mal intentionnées peuvent facilement contourner les caméras, qui sont très visibles. Les problèmes de discipline dans une école peuvent être résolus en améliorant la communication entre les enseignants, l’administration et les élèves. Il est également nécessaire de faire respecter et expliquer les règles de l’école par tous, plutôt que de recourir aux caméras."
+          }
+        }
+      },
+      {
+        "combination": 810,
+        "combinationNumber": 8,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous partez en voyage et vous laissez votre appartement à un ami qui veut venir rester chez-vous pendant vos vacances. Vous lui envoyez un message pour décrire votre appartement (immeuble, logement, accès...).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Écrivez un article de blog sur le souvenir de voyage que vous avez le plus aimé.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Vivre chez ses parents, pour ou contre ?",
+            "title": "Vivre chez ses parents, pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Les avantages : penser à l’avenir, avoir les vêtements propres, être en confort surtout que l’argent n’est pas tjrs suffisant. Vivre avec ses parents pendant la période des études permet aux jeunes d’économiser les frais de logement, des plats faits maison et une certaine stabilité psychique, tels les adolescents qui vivent avec leurs parents leur permettent d’économiser leur argent pour des projets de vie (ils payent pas ni le loyer ni la nourriture) (pour ne pas payer le loyer qui coûte cher, le ménage est fait, les vêtements sont propres). Favorise que les jeunes vivent avec leurs parents avec le témoignage de deux jeunes, la jeune fille disait que le loyer est très cher et étudier loin de chez soi revient plus cher. Le deuxième jeune trouve que vivre avec ses parents est plus bénéfique pour lui par exemple : la bouffe est bonne, les vêtements toujours propres et y a pas de place pour la solitude.",
+            "document2": "Les inconvénients : manque de liberté. Vivre seuls leur permet d’être indépendants, les adolescents qui vivent avec leurs parents s’ennuient car leurs parents décident à leur place et sont toujours dépendants des parents [...] un avis d’un certain monsieur qui a 25 ans et il a perdu son job, donc il était dans l’obligation de rentrer vivre avec ses parents, et maintenant il a perdu son espace d’intimité... contre la vie des jeunes avec leurs parents, un témoignage d’un jeune qui considère revenir chez ses parents, c’est revenir en arrière."
+          }
+        }
+      },
+      {
+        "combination": 811,
+        "combinationNumber": 9,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous organisez un anniversaire surprise pour votre ami(e) Karim. Écrivez un message à vos amis pour les inviter et leur expliquer l'organisation de la fête (date, lieu, cadeau, rôle de chacun, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez participé à un concours artistique (peinture, photographie, chant, danse, etc.). Sur votre blog, racontez votre expérience : comment s'est déroulé le concours, ce que vous avez ressenti et ce que cette expérience vous a apporté.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les salaires des sportifs professionnels : pour ou contre ?",
+            "title": "Les salaires des sportifs professionnels : pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Les salaires des sportifs professionnels sont souvent critiqués, mais ils sont justifiés. Une carrière sportive est très courte : elle s'arrête en général avant 35 ans et peut prendre fin brutalement à cause d'une blessure. Pour arriver au plus haut niveau, ces athlètes s'entraînent tous les jours depuis l'enfance et font de nombreux sacrifices. De plus, ils rapportent des sommes énormes à leur club grâce aux billets, aux droits télévisés et aux sponsors. Il est donc normal qu'ils reçoivent une partie de cet argent.",
+            "document2": "Je trouve scandaleux qu'un footballeur gagne en un mois ce qu'une infirmière ou un enseignant gagne en toute une vie. Ces métiers sont pourtant essentiels à la société. Ces salaires démesurés donnent aussi une mauvaise image aux jeunes, qui rêvent de devenir riches et célèbres au lieu de poursuivre leurs études. Enfin, cet argent pourrait être mieux utilisé : il permettrait de financer le sport amateur, les équipements des quartiers et les clubs qui manquent de moyens."
+          }
+        }
+      },
+      {
+        "combination": 812,
+        "combinationNumber": 10,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous allez déménager. Des amis ont accepté de vous aider. Vous leur écrivez un message collectif pour leur expliquer comment le déménagement va se passer (lieux, horaires, durée, trajet, tâches à faire, etc.)",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Participez à notre concours pour gagner un séjour pour deux personnes dans la ville de votre choix. Rédigez un article sur le thème : « La vie de mon artiste préféré(e) ». Vous participez à ce concours. Vous expliquez pourquoi vous avez choisi cet(te) artiste et vous racontez sa vie.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les objets connectés",
+            "title": "Les objets connectés",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Les objets connectés facilitent notre vie quotidienne. Ce sont des objets ou des équipements pilotés à distance à l’aide d’un téléphone portable ou par Internet, comme le système de chauffage ou la fermeture des portes. De plus, avec une montre ou un bracelet connecté, toutes nos activités peuvent être analysées. Un logiciel va mesurer le nombre de nos pas pour nous inciter à faire davantage d’exercice. Un domaine où l’on comprend mieux leur utilité est celui de la surveillance de la santé. Certains objets agissent comme un carnet de santé, toujours prêts à vous rappeler un rendez-vous chez le médecin ou des médicaments à prendre.",
+            "document2": "Il y aurait 50 milliards d’objets connectés dans le monde : l’alarme, le téléviseur, la caméra de surveillance, les volets, le détecteur de fumée, etc. Face à cette évolution, la question de la sécurité se pose. En effet, un pirate informatique peut prendre le contrôle d’un objet connecté en quelques minutes. Ou encore, un cambrioleur pourrait vérifier grâce aux caméras de surveillance connectées d’une habitation si les occupants sont absents. Il est aussi possible d’entrer dans le système connecté d’une voiture et d’en prendre les commandes à distance."
+          }
+        }
+      },
+      {
+        "combination": 813,
+        "combinationNumber": 11,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous avez lu une annonce sur un site internet qui propose d’aider ceux qui souhaitent apprendre le français en les mettant en contact avec des partenaires linguistiques. Envoyez un courriel en vous présentant et en expliquant pourquoi vous souhaitez pratiquer le français.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez assisté à une fête de famille. Envoyez un message à vos amis pour leur raconter cette fête et expliquez ce que vous avez le plus apprécié.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "l’interdiction des voitures dans les centres-villes",
+            "title": "l’interdiction des voitures dans les centres-villes",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Avec des taux de pollution alarmants constatés dans plusieurs endroits dans le monde, plusieurs villes ont réussi leur pari d’interdire la circulation de voitures en zones urbaines. La capitale de la Norvège, Oslo, a récemment opté pour cette solution et s’en félicite, estimant que c’est une décision bénéfique pour tout le monde. Après un certain temps, les accidents diminueront, la dépendance au pétrole baissera et la qualité d’air sera meilleure.",
+            "document2": "Beaucoup de villes se lancent dans des projets d’interdiction de voitures en zone urbaine sans mettre en place les outils et les infrastructures nécessaires pour réussir cette transition. Certes, en diminuant les voitures, on aura moins d’embouteillages, de stress et surtout un air beaucoup moins pollué, mais en contrepartie, il faut prévoir entre autres de gigantesques parkings pour garer les voitures, opter davantage pour le transport en commun (métros et bus) et prévoir des autorisations de circulation pour certains corps de métiers (comme la police, les urgentistes, les livreurs…)."
+          }
+        }
       }
     ]
   },
