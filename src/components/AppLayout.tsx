@@ -102,7 +102,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   const resolvedTitle = title || (() => {
     switch (currentView) {
       case 'home':
-        return t('Accueil');
+        return t('Sélecteur d\'Examens');
       case 'dashboard':
         return t('Tableau de bord');
       case 'simulator':
@@ -159,17 +159,17 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
             {/* Main Navigation Items */}
             <div className="space-y-1 mb-6">
               <SidebarOption
-                Icon={Home}
-                title={t('Accueil')}
-                isSelected={currentView === 'home'}
-                onClick={() => handleNav(onNavigateHome)}
-                open={sidebarOpen}
-              />
-              <SidebarOption
                 Icon={BarChart3}
                 title={t('Tableau de bord')}
                 isSelected={currentView === 'dashboard' && !isMistakesTabActive}
                 onClick={() => handleNav(onNavigateDashboard)}
+                open={sidebarOpen}
+              />
+              <SidebarOption
+                Icon={BookOpen}
+                title={t('Sélecteur d\'Examens')}
+                isSelected={currentView === 'home'}
+                onClick={() => handleNav(onNavigateHome)}
                 open={sidebarOpen}
               />
               <SidebarOption
@@ -388,22 +388,22 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
               {/* Main Nav Items */}
               <div className="space-y-1 mb-6">
                 <SidebarOption
-                  Icon={Home}
-                  title={t('Accueil')}
-                  isSelected={currentView === 'home'}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleNav(onNavigateHome);
-                  }}
-                  open={true}
-                />
-                <SidebarOption
                   Icon={BarChart3}
                   title={t('Tableau de bord')}
                   isSelected={currentView === 'dashboard' && !isMistakesTabActive}
                   onClick={() => {
                     setMobileMenuOpen(false);
                     handleNav(onNavigateDashboard);
+                  }}
+                  open={true}
+                />
+                <SidebarOption
+                  Icon={BookOpen}
+                  title={t('Sélecteur d\'Examens')}
+                  isSelected={currentView === 'home'}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleNav(onNavigateHome);
                   }}
                   open={true}
                 />
@@ -479,19 +479,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         <nav className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-1.5 flex items-center justify-around shadow-lg pb-[max(0.375rem,env(safe-area-inset-bottom))]">
           <button
             type="button"
-            onClick={() => handleNav(onNavigateHome)}
-            className={`flex flex-col items-center justify-center py-1 px-3 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
-              currentView === 'home'
-                ? 'text-blue-600'
-                : 'text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            <Home className="w-5 h-5 mb-0.5" />
-            <span>{t('Accueil')}</span>
-          </button>
-
-          <button
-            type="button"
             onClick={() => handleNav(onNavigateDashboard)}
             className={`flex flex-col items-center justify-center py-1 px-3 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
               currentView === 'dashboard'
@@ -501,6 +488,19 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
           >
             <BarChart3 className="w-5 h-5 mb-0.5" />
             <span>{t('Dashboard')}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleNav(onNavigateHome)}
+            className={`flex flex-col items-center justify-center py-1 px-3 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
+              currentView === 'home'
+                ? 'text-blue-600'
+                : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <BookOpen className="w-5 h-5 mb-0.5" />
+            <span>{t('Examens')}</span>
           </button>
 
           {onStartNewExam && (

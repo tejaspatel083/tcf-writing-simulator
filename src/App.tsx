@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Home } from './pages/Home';
 import { Simulator } from './pages/Simulator';
 import { Results } from './pages/Results';
@@ -7,21 +7,24 @@ import { Dashboard } from './pages/Dashboard';
 import { Feedback } from './pages/Feedback';
 import { AppLayout } from './components/AppLayout';
 import { ExamCombination, ExamResult, TaskKey } from './types/exam';
-import { saveSubmission, getStoredSubmissions } from './utils/storage';
+import { saveSubmission, getStoredSubmissions, syncStoredSubmissions, mergeSubmissions } from './utils/storage';
 import { getStoredMistakes } from './utils/mistakesStorage';
 import { MistakesRevisionModal } from './components/MistakesRevisionModal';
-import { saveSubmissionToSupabase } from './lib/supabase';
+import { saveSubmissionToSupabase, fetchSubmissionsFromSupabase } from './lib/supabase';
 import { getLocalISOString } from './utils/dateUtils';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { sendSubmissionNotification } from './services/notificationService';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 
 const MainRouter: React.FC = () => {
-  const { user, loading, isEmailVerified, signOut, isAdmin } = useAuth();
+  const { user, loading, isEmailVerified, signOut, isAdmin, isConfigured } = useAuth();
   const { t } = useLanguage();
 
   const [view, setView] = useState<'home' | 'simulator' | 'results' | 'dashboard' | 'feedback'>('home');
   const [dashboardTab, setDashboardTab] = useState<'submissions' | 'mistakes' | 'admin'>('submissions');
+
+  // Auto-redirect returning users with evaluated submissions to Dashboard on first load
+  const hasAutoRedirected = useRef(false);
   const [activeCombo, setActiveCombo] = useState<ExamCombination | null>(null);
   const [activeYear, setActiveYear] = useState<string>('2026');
   const [activeMonth, setActiveMonth] = useState<string>('Septembre');
@@ -56,6 +59,46 @@ const MainRouter: React.FC = () => {
       setMistakesCount(getStoredMistakes().length);
     } catch {}
   }, [view]);
+
+  // Auto-redirect: if user is authenticated and has past AI-evaluated submissions,
+  // send them to the Dashboard (with analytics) instead of the Exam Selector on first load.
+  useEffect(() => {
+    if (hasAutoRedirected.current) return;
+    if (loading || !user) return;
+
+    try {
+      const stored = getStoredSubmissions();
+      const hasEvaluated = stored.some(
+        (s) => s.aiEvaluation && typeof s.aiEvaluation.overall_score === 'number'
+      );
+      if (hasEvaluated) {
+        hasAutoRedirected.current = true;
+        setDashboardTab('submissions');
+        setView('dashboard');
+        return;
+      }
+
+      // If local storage is empty, also check Supabase for returning users on a new device or cleared cache
+      if (isConfigured) {
+        fetchSubmissionsFromSupabase(user.id).then(({ submissions: dbSubs }) => {
+          if (dbSubs && dbSubs.length > 0) {
+            const merged = mergeSubmissions(dbSubs, stored);
+            syncStoredSubmissions(merged);
+            const hasEvalDb = merged.some(
+              (s) => s.aiEvaluation && typeof s.aiEvaluation.overall_score === 'number'
+            );
+            if (hasEvalDb && !hasAutoRedirected.current) {
+              hasAutoRedirected.current = true;
+              setDashboardTab('submissions');
+              setView('dashboard');
+            }
+          }
+        }).catch(() => {});
+      }
+    } catch {
+      // fail silently — just stay on exam selector
+    }
+  }, [loading, user, isConfigured]);
 
   useEffect(() => {
     let t: any;
@@ -120,7 +163,10 @@ const MainRouter: React.FC = () => {
   if (!user || !isEmailVerified) {
     return (
       <Login
-        onSuccess={() => setView('home')}
+        onSuccess={() => {
+          hasAutoRedirected.current = false;
+          setView('home');
+        }}
         onFeedbackClick={() => setView('feedback')}
       />
     );

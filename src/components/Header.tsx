@@ -33,7 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const tr = (keyOrText: string): string => {
     if (forceFrench) {
-      if (keyOrText === 'header.home') return 'Accueil';
+      if (keyOrText === 'header.home') return 'Examens';
       if (keyOrText === 'header.title') return 'TCF Canada Expression Écrite';
       if (keyOrText === 'header.dashboard') return 'Tableau de bord';
       if (keyOrText === 'header.profile') return 'Profil';

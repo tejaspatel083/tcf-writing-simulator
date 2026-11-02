@@ -1,23 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { fetchSubmissionsFromSupabase, deleteSubmissionFromSupabase } from '../lib/supabase';
 import { getStoredSubmissions, deleteStoredSubmission, mergeSubmissions, syncStoredSubmissions } from '../utils/storage';
 import { ExamResult, TaskKey } from '../types/exam';
-import { SavedMistake } from '../types/aiEvaluation';
+import { SavedMistake, CefrLevel } from '../types/aiEvaluation';
 import { AdminPanel } from '../components/AdminPanel';
 import { MistakesView } from '../components/MistakesView';
+import { DashboardAnalytics } from '../components/DashboardAnalytics';
 import { getStoredMistakes, mergeMistakesFromSubmissions } from '../utils/mistakesStorage';
 import { useLanguage } from '../context/LanguageContext';
+import { mapScoreToTcfCanadaLevels } from '../services/geminiEvaluator';
 import {
   BarChart3,
   CheckCircle2,
   Calendar,
   Award,
-  Shield,
+  Target,
   Trash2,
   Eye,
   TrendingUp,
-  BookOpen
+  BookOpen,
+  Flame
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -117,84 +120,240 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   // Compute summary stats
   const totalSubmissions = submissions.length;
-  const totalTasksCompleted = submissions.reduce((acc, sub) => {
-    let tasksCount = 0;
-    if (sub.wordCounts?.task1 > 0) tasksCount++;
-    if (sub.wordCounts?.task2 > 0) tasksCount++;
-    if (sub.wordCounts?.task3 > 0) tasksCount++;
-    return acc + tasksCount;
-  }, 0);
   const lastSubmissionDate = submissions[0]?.date ? submissions[0].date.split(' ')[0] : '—';
+
+  // Compute Days of Streak functionality
+  const streakData = useMemo(() => {
+    if (!submissions || submissions.length === 0) {
+      return { currentStreak: 0, practicedToday: false };
+    }
+
+    const parseDateToMidnight = (dateStr?: string): Date | null => {
+      if (!dateStr || typeof dateStr !== 'string') return null;
+      const clean = dateStr.trim();
+      if (!clean) return null;
+
+      // Extract DD/MM/YYYY or YYYY-MM-DD
+      const datePart = clean.split(/(?: à |[ ,T]+)/)[0].trim();
+      const dmy = datePart.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if (dmy) {
+        return new Date(parseInt(dmy[3], 10), parseInt(dmy[2], 10) - 1, parseInt(dmy[1], 10));
+      }
+
+      const ymd = datePart.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+      if (ymd) {
+        return new Date(parseInt(ymd[1], 10), parseInt(ymd[2], 10) - 1, parseInt(ymd[3], 10));
+      }
+
+      const parsed = new Date(clean);
+      return isNaN(parsed.getTime()) ? null : new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+    };
+
+    const dateSet = new Set<string>();
+    submissions.forEach((s) => {
+      const d = parseDateToMidnight(s.date);
+      if (d) {
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        dateSet.add(key);
+      }
+    });
+
+    if (dateSet.size === 0) {
+      return { currentStreak: 0, practicedToday: false };
+    }
+
+    const now = new Date();
+    const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayKey = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+
+    const practicedToday = dateSet.has(todayKey);
+    let currentStreak = 0;
+
+    let checkDate: Date | null = practicedToday
+      ? new Date(now)
+      : dateSet.has(yesterdayKey)
+      ? new Date(yesterday)
+      : null;
+
+    if (checkDate) {
+      while (true) {
+        const key = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+        if (dateSet.has(key)) {
+          currentStreak++;
+          checkDate.setDate(checkDate.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+    }
+
+    return { currentStreak, practicedToday };
+  }, [submissions]);
+
+  // Target Goal State (synced with localStorage key used in DashboardAnalytics)
+  const [targetGoal, setTargetGoal] = useState<CefrLevel>(() => {
+    try {
+      const stored = localStorage.getItem('tcf_user_target_goal_v1');
+      if (stored && ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].includes(stored)) {
+        return stored as CefrLevel;
+      }
+    } catch {}
+    return 'B2';
+  });
+
+  useEffect(() => {
+    const syncGoal = () => {
+      try {
+        const stored = localStorage.getItem('tcf_user_target_goal_v1');
+        if (stored && ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].includes(stored)) {
+          setTargetGoal(stored as CefrLevel);
+        }
+      } catch {}
+    };
+    window.addEventListener('storage', syncGoal);
+    window.addEventListener('tcf_target_goal_updated', syncGoal);
+    return () => {
+      window.removeEventListener('storage', syncGoal);
+      window.removeEventListener('tcf_target_goal_updated', syncGoal);
+    };
+  }, []);
+
+  // Performance Stats from evaluated submissions (Integer scores, average & best)
+  const perfStats = useMemo(() => {
+    const scores = submissions
+      .filter((s) => s.aiEvaluation && typeof s.aiEvaluation.overall_score === 'number')
+      .map((s) => Math.max(0, Math.min(20, Math.round(s.aiEvaluation!.overall_score))));
+
+    if (scores.length === 0) {
+      return {
+        avgScore: 0,
+        avgCefr: '—' as CefrLevel | '—',
+        bestScore: 0,
+        bestCefr: '—' as CefrLevel | '—'
+      };
+    }
+
+    const sum = scores.reduce((a, b) => a + b, 0);
+    const avgScore = Math.round(sum / scores.length);
+    const bestScore = Math.max(...scores);
+
+    return {
+      avgScore,
+      avgCefr: mapScoreToTcfCanadaLevels(avgScore).cefr,
+      bestScore,
+      bestCefr: mapScoreToTcfCanadaLevels(bestScore).cefr
+    };
+  }, [submissions]);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 bg-slate-50 text-slate-900">
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-xs">
-          <div className="flex items-center justify-between mb-3">
-            <div className="p-2 bg-blue-50 rounded-lg">
-              <BarChart3 className="h-5 w-5 text-blue-600" />
+      {/* Stats Grid - Reduced by 50% */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+        {/* Card 1: Submitted Exams */}
+        <div className="p-3 sm:p-3.5 rounded-xl border border-slate-200 bg-white shadow-2xs">
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
+              <BarChart3 className="w-3.5 h-3.5 text-blue-600" />
             </div>
-            <TrendingUp className="h-4 w-4 text-emerald-500" />
+            <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
           </div>
-          <h3 className="font-semibold text-xs text-slate-500 mb-1 uppercase tracking-wide">
+          <h3 className="font-bold text-[10px] text-slate-400 uppercase tracking-wider truncate mb-0.5">
             {t('Examens Soumis')}
           </h3>
-          <p className="text-2xl font-black text-slate-900">{totalSubmissions}</p>
-          <p className="text-xs text-emerald-600 mt-1">
+          <p className="text-lg sm:text-xl font-black text-slate-900 leading-tight">{totalSubmissions}</p>
+          <p className="text-[11px] text-emerald-600 mt-0.5 truncate">
             {submissions.length > 0 ? t('Enregistrés sur votre compte') : t('Aucune soumission')}
           </p>
         </div>
 
-        <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-xs">
-          <div className="flex items-center justify-between mb-3">
-            <div className="p-2 bg-emerald-50 rounded-lg">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+        {/* Card 2: Days of Streak (Replaces Written Tasks) */}
+        <div className="p-3 sm:p-3.5 rounded-xl border border-slate-200 bg-white shadow-2xs">
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="w-7 h-7 rounded-lg bg-orange-50 flex items-center justify-center">
+              <Flame className="w-3.5 h-3.5 text-orange-500" />
             </div>
-            <TrendingUp className="h-4 w-4 text-emerald-500" />
+            {streakData.practicedToday ? (
+              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 tracking-wide">
+                🔥 ON
+              </span>
+            ) : (
+              <Flame className="w-3.5 h-3.5 text-slate-300" />
+            )}
           </div>
-          <h3 className="font-semibold text-xs text-slate-500 mb-1 uppercase tracking-wide">
-            {t('Tâches Rédigées')}
+          <h3 className="font-bold text-[10px] text-slate-400 uppercase tracking-wider truncate mb-0.5">
+            {t('Jours de Série')}
           </h3>
-          <p className="text-2xl font-black text-slate-900">{totalTasksCompleted}</p>
-          <p className="text-xs text-emerald-600 mt-1">
-            {t('Tâche 1, 2 ou 3 complétées')}
+          <div className="flex items-baseline gap-1">
+            <p className="text-lg sm:text-xl font-black text-slate-900 leading-tight">
+              {streakData.currentStreak}
+            </p>
+            <span className="text-[11px] font-bold text-slate-500">
+              {streakData.currentStreak > 1 ? t('jours') : t('jour')}
+            </span>
+          </div>
+          <p className={`text-[11px] mt-0.5 truncate ${streakData.currentStreak > 0 ? 'text-orange-600 font-semibold' : 'text-slate-400'}`}>
+            {streakData.practicedToday
+              ? t('Série active aujourd\'hui !')
+              : streakData.currentStreak > 0
+              ? t('Pratiquez aujourd\'hui pour continuer')
+              : t('Prêt à débuter une série')}
           </p>
         </div>
 
-        <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-xs">
-          <div className="flex items-center justify-between mb-3">
-            <div className="p-2 bg-indigo-50 rounded-lg">
-              <Calendar className="h-5 w-5 text-indigo-600" />
+        {/* Card 3: Last Session */}
+        <div className="p-3 sm:p-3.5 rounded-xl border border-slate-200 bg-white shadow-2xs">
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
+              <Calendar className="w-3.5 h-3.5 text-indigo-600" />
             </div>
-            <Award className="h-4 w-4 text-indigo-500" />
+            <Award className="w-3.5 h-3.5 text-indigo-500" />
           </div>
-          <h3 className="font-semibold text-xs text-slate-500 mb-1 uppercase tracking-wide">
+          <h3 className="font-bold text-[10px] text-slate-400 uppercase tracking-wider truncate mb-0.5">
             {t('Dernière Session')}
           </h3>
-          <p className="text-lg font-bold text-slate-900 truncate">{lastSubmissionDate}</p>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-sm sm:text-base font-black text-slate-900 leading-tight truncate">
+            {lastSubmissionDate}
+          </p>
+          <p className="text-[11px] text-slate-500 mt-0.5 truncate">
             {submissions.length > 0 ? t('Entraînement régulier') : t('Prêt à débuter')}
           </p>
         </div>
 
-        <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-xs">
-          <div className="flex items-center justify-between mb-3">
-            <div className="p-2 bg-amber-50 rounded-lg">
-              <Shield className="h-5 w-5 text-amber-600" />
+        {/* Card 4: Score & Target Goal (Matches pattern of 1st 3 cards) */}
+        <div className="p-3 sm:p-3.5 rounded-xl border border-slate-200 bg-white shadow-2xs">
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
+              <Target className="w-3.5 h-3.5 text-purple-600" />
             </div>
-            <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
-              {t('ACTIF')}
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
+              🎯 {targetGoal}
             </span>
           </div>
-          <h3 className="font-semibold text-xs text-slate-500 mb-1 uppercase tracking-wide">
-            {t('Statut du Compte')}
+          <h3 className="font-bold text-[10px] text-slate-400 uppercase tracking-wider truncate mb-0.5">
+            {language === 'en' ? 'Average & Goal' : 'Moyenne & Objectif'}
           </h3>
-          <p className="text-base font-bold text-slate-900 truncate">
-            {isAdmin ? t('👑 Administrateur') : t('Candidat Vérifié')}
-          </p>
-          <p className="text-xs text-slate-500 mt-1 truncate" title={user?.email || ''}>
-            {user?.email || 'Local'}
+          <div className="flex items-baseline gap-1.5">
+            <p className="text-lg sm:text-xl font-black text-slate-900 leading-tight">
+              {perfStats.avgScore}
+              <span className="text-[11px] font-normal text-slate-400 ml-0.5">/ 20</span>
+            </p>
+            {perfStats.avgScore > 0 && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-black bg-indigo-600 text-white shadow-2xs">
+                {perfStats.avgCefr}
+              </span>
+            )}
+          </div>
+          <p className="text-[11px] text-slate-500 mt-0.5 truncate">
+            {perfStats.bestScore > 0
+              ? (language === 'en'
+                  ? `Best: ${perfStats.bestScore}/20 (${perfStats.bestCefr}) • Goal: ${targetGoal}`
+                  : `Meilleur : ${perfStats.bestScore}/20 (${perfStats.bestCefr}) • Cible : ${targetGoal}`)
+              : (language === 'en'
+                  ? `Target goal: ${targetGoal}`
+                  : `Objectif cible : ${targetGoal}`)}
           </p>
         </div>
       </div>
@@ -263,7 +422,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
           onGoToExams={() => setActiveTab('submissions')}
         />
       ) : (
-        <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs">
+        <div className="space-y-6">
+          {/* Performance Analytics & Progress Visualizations */}
+          <DashboardAnalytics
+            submissions={submissions}
+            mistakes={mistakes}
+            onStartNewExam={onStartNewExam}
+            onViewSubmission={onViewSubmission}
+          />
+
+          <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-4 mb-6 gap-3">
             <div>
               <h2 className="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -473,6 +641,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </table>
             </div>
           )}
+        </div>
         </div>
       )}
 
