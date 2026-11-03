@@ -6596,6 +6596,54 @@
             "document2": "Beaucoup de villes se lancent dans des projets d’interdiction de voitures en zone urbaine sans mettre en place les outils et les infrastructures nécessaires pour réussir cette transition. Certes, en diminuant les voitures, on aura moins d’embouteillages, de stress et surtout un air beaucoup moins pollué, mais en contrepartie, il faut prévoir entre autres de gigantesques parkings pour garer les voitures, opter davantage pour le transport en commun (métros et bus) et prévoir des autorisations de circulation pour certains corps de métiers (comme la police, les urgentistes, les livreurs…)."
           }
         }
+      },
+      {
+        "combination": 814,
+        "combinationNumber": 12,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous allez bientôt déménager. Avant votre départ, vous souhaitez organiser une fête avec vos amis. Vous leur écrivez un message pour les inviter. Précisez la date, le lieu et les activités prévues.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez récemment effectué un séjour dans une autre ville ou une autre région. Sur votre blog, racontez cette expérience. Présentez les moments qui vous ont marqué(e) et expliquez ce que ce séjour vous a apporté.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Reprendre ses études à l’âge adulte",
+            "title": "Reprendre ses études à l’âge adulte",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "« J’ai repris mes études à 42 ans après avoir travaillé pendant vingt ans dans le commerce. Cette décision m’a permis d’apprendre un nouveau métier et de retrouver confiance en mes capacités. Mon expérience professionnelle m’aide à mieux comprendre certains cours et je sais pourquoi je suis là. Même si cela demande des efforts, je trouve qu’il n’est jamais trop tard pour se former et faire évoluer sa vie professionnelle. »\n\nNadia, 45 ans",
+            "document2": "« Reprendre ses études à l’âge adulte n’est pas une décision facile. Entre le travail, les enfants et les dépenses du quotidien, il reste peu de temps pour suivre des cours et préparer des examens. Réduire son activité professionnelle pour étudier peut aussi fragiliser le budget familial, sans garantie de trouver ensuite un meilleur emploi. Personnellement, je préfère suivre des formations courtes, directement liées à mes besoins, plutôt que de reprendre de longues études. »\n\nJulien, 39 ans"
+          }
+        }
+      },
+      {
+        "combination": 815,
+        "combinationNumber": 13,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous prévoyez de passer vos vacances en France. Vous écrivez un courriel à un hôtel pour réserver votre séjour. Précisez vos dates d’arrivée et de départ, le nombre de personnes et le type de chambre souhaité. Indiquez également vos préférences concernant les services de l’hôtel.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez récemment assisté à un spectacle. Vous rédigez un article sur votre blog pour raconter cette expérience. Présentez le spectacle, décrivez son déroulement et expliquez ce que vous avez particulièrement aimé.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "La lutte contre le réchauffement climatique",
+            "title": "La lutte contre le réchauffement climatique",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "« Pour lutter contre le réchauffement climatique, chacun doit modifier ses habitudes. Prendre moins souvent la voiture, réduire les voyages en avion ou acheter moins de produits neufs sont des gestes à la portée de nombreuses personnes. Même si une action individuelle semble limitée, elle peut avoir un effet lorsqu’elle est adoptée par des millions de citoyens. Nous ne pouvons pas simplement attendre que les gouvernements agissent à notre place. »\n\nÉmilie, 35 ans",
+            "document2": "« On demande beaucoup d’efforts aux citoyens, mais leurs choix dépendent aussi des solutions disponibles. Comment abandonner sa voiture lorsqu’il n’existe aucun transport en commun près de chez soi ? Selon moi, les gouvernements et les grandes entreprises doivent agir en priorité. Développer des transports accessibles, mieux isoler les bâtiments et transformer les modes de production permettrait de réduire les émissions à grande échelle. La bonne volonté individuelle ne suffit pas. »\n\nMarc, 48 ans"
+          }
+        }
       }
     ]
   },
