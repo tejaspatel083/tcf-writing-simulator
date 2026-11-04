@@ -6644,6 +6644,150 @@
             "document2": "« On demande beaucoup d’efforts aux citoyens, mais leurs choix dépendent aussi des solutions disponibles. Comment abandonner sa voiture lorsqu’il n’existe aucun transport en commun près de chez soi ? Selon moi, les gouvernements et les grandes entreprises doivent agir en priorité. Développer des transports accessibles, mieux isoler les bâtiments et transformer les modes de production permettrait de réduire les émissions à grande échelle. La bonne volonté individuelle ne suffit pas. »\n\nMarc, 48 ans"
           }
         }
+      },
+      {
+        "combination": 816,
+        "combinationNumber": 14,
+        "tasks": {
+          "task1": {
+            "instruction": "Écrivez un courriel à vos amis pour les inviter à un anniversaire surprise de votre\nmeilleur ami. (Lieu, date, heure, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez participé à une brocante (achat / vente de produits d’occasion) dans votre\nville. Sur votre blog personnel, racontez pourquoi vous avez aimé cette activité.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les Vols À Bas Prix",
+            "title": "Les Vols À Bas Prix",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Je fais souvent mes voyages avec des compagnies aériennes à bas prix. Les\ncompagnies low-cost mettent à disposition des prix inférieurs à ceux proposés par les\ncompagnies aériennes régulières. Cela me coûte des fois moins cher que de voyager\nen voiture ou en train. Avec ces tarifs-là, vous vous doutez qu’il y a un hic ; en effet, vous\nn’aurez droit à aucun service à bord (ni aliments, ni boissons). Je dirais donc que\nle low-cost n’est surtout pas fait pour les vols long-courriers.",
+            "document2": "Récemment, j’ai pris la décision de ne plus voyager avec les compagnies aériennes à\nbas prix. En effet, j’ai longuement réfléchi afin de prendre ma décision, mais ce choix\nétait évident : des sièges inconfortables, des conditions de travail pénibles et surtout\ndes avions vétustes qui remettent en cause la sécurité ! Dès lors, pour certains\nvoyages, je vais opter pour la voiture ou même le train, ce dernier permet même de\ndécouvrir de jolis paysages. Quant aux longs trajets, mieux vaut prendre un vol en\ncompagnie régulière."
+          }
+        }
+      },
+      {
+        "combination": 817,
+        "combinationNumber": 15,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous voulez changer la décoration de votre appartement (meubles, peinture, objets, etc.). Vous écrivez un message à un(e) ami(e). Vous lui décrivez votre projet et vous lui demandez de vous aider.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "\"Ecole De Musique !\nCours Gratuits, Concerts, Jeux.\nRendez-Vous Vendredi, À partir de 9 Heures\"\nVous avez participé à cet évènement. Vous écrivez à vos amis pour raconter votre\nexpérience et vous donnez votre opinion sur cette journée.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Faut-il faire ses courses dans des petits magasins ou dans des supermarchés ?",
+            "title": "Faut-il faire ses courses dans des petits magasins ou dans des supermarchés ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Le supermarché est très pratique ; on y trouve une grande variété de produits, tous à portée de main. Vous pouvez garer votre voiture dans le parking et faire le tour des rayons pour acheter tout ce dont vous avez besoin : fruits, légumes, fromages, viandes, boissons... De plus, les supermarchés offrent plusieurs marques pour un même produit, tout en proposant régulièrement des promotions et des remises.",
+            "document2": "ASSOCIATION POUR LA SAUVEGARDE DES PETITS COMMERCES\nLe défi « Février sans supermarché » a été créé pour limiter la superpuissance des supermarchés et, par conséquent, permettre aux petits commerces de survivre et de réaliser des chiffres d'affaires plus conséquents. Ce défi consiste à boycotter les supermarchés pendant une durée d'un mois, en faisant toutes ses courses dans les épiceries de quartier. Le client aura tout à gagner : il bénéficiera non seulement de produits frais de meilleure qualité, mais aura également l'opportunité de papoter avec les voisins."
+          }
+        }
+      },
+      {
+        "combination": 818,
+        "combinationNumber": 16,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous souhaitez inviter vos amis à découvrir un lieu touristique que vous appréciez particulièrement. Dans un message amical, présentez ce lieu, expliquez pourquoi vous l’aimez et proposez une date, une heure et un hébergement pour cette visite.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez assisté à un festival (de musique, de cinéma, de gastronomie…) mais vous avez été déçu. Rédigez un article sur votre blog dans lequel vous expliquez ce qui ne vous a pas plu.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "La vie à la campagne : pour ou contre ?",
+            "title": "La vie à la campagne : pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "De mon point de vue, vivre en ville a l’avantage de donner accès à de nombreux loisirs, comme aller au cinéma ou au théâtre, déjeuner au restaurant et faire du shopping. Car en ville tout est plus proche, pas besoin de faire des dizaines de kilomètres pour trouver une boutique ou un restaurant. Mais d’autres activités sont aussi plus accessibles en ville qu’à la campagne. Les activités culturelles y sont particulièrement nombreuses. Musées, opéras, salles de concert ou encore théâtres, vous trouverez ce que vous voulez. Et c’est en ville que se tiennent la plupart des concerts, événements sportifs, expositions ou festivals.\nTiffany, 28 ans",
+            "document2": "J’ai décidé de m’installer à la campagne parce que je voulais profiter du calme et de la nature. Au lieu d’aller dans un bar, j’invite mes amis à boire un verre sur la terrasse de ma maison. Les sorties au restaurant sont remplacées par des barbecues dans le jardin en été. De plus, se loger à la campagne est beaucoup plus facile qu’en ville, les loyers sont moins élevés. Pour le prix d’un appartement en centre-ville, j’ai une jolie maison avec jardin, bien plus agréable pour élever mes enfants.\nYoussef, 34 ans"
+          }
+        }
+      },
+      {
+        "combination": 819,
+        "combinationNumber": 17,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous allez déménager à Nice, en France. Vous écrivez un message sur le site\nd’une agence immobilière. Vous donnez les informations nécessaires\n(superficie, budget, nombre de pièces, etc).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez commencé à prendre des cours dans une école de langues. Vous\nenvoyez un message à vos amis pour leur raconter comment s’est passée\nvotre première semaine. Parlez de votre impression sur l’école et sur vos\ncours.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Caméras de surveillance : pour ou contre ?",
+            "title": "Caméras de surveillance : pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "De nos jours, il y a de plus en plus de caméras de surveillance dans les villes. La vidéosurveillance est\nappréciée par les Français car cela leur donne un sentiment de sécurité. D’après un sondage, 75 %\nd’entre eux sont pour le développement de la vidéosurveillance. Ils seraient d’accord pour être filmés,\nmais seulement dans l’espace public : la rue, les magasins ou encore les transports. Cependant, ils\nrefusent d’être surveillés par leur employeur. En France, peu de caméras de vidéosurveillance sont\ninstallées sur le lieu de travail.",
+            "document2": "Certaines enquêtes montrent que la vidéosurveillance coûte cher et que ses résultats sont insuffisants.\nD’une part, la présence des caméras est facile à remarquer. Par conséquent, la vidéosurveillance est\ninutile pour éviter les vols, la consommation de drogue et la violence dans les villes. D’autre part,\nl’utilisation de la vidéosurveillance demande beaucoup de personnel. Une étude allemande montre que\nsept personnes par caméra sont nécessaires pour analyser les informations."
+          }
+        }
+      },
+      {
+        "combination": 820,
+        "combinationNumber": 18,
+        "tasks": {
+          "task1": {
+            "instruction": "Rédigez un message pour inviter votre ami(e) à passer ses vacances dans votre ville en précisant les lieux et les endroits à visiter.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez participé à un concours pour gagner un séjour de deux semaines dans votre ville préférée. Le thème de ce concours est “Mon artiste préféré“. Écrivez un article de blog pour parler de votre artiste préféré.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "La Chasse aux Animaux : Pour ou Contre ?",
+            "title": "La Chasse aux Animaux : Pour ou Contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "“Je suis de ceux qui n’arrivent pas à comprendre comment l’on peut prendre du plaisir à tuer\ndes animaux. Je suis de ceux qui n’arrivent pas à comprendre comment on peut prétendre aimer\nla nature alors qu’on la détruit”\nGala 29 ans",
+            "document2": "“Les gens chassent pour différentes raisons : la subsistance, le commerce, la conservation et\nl’aménagement de la faune, la protection de la propriété, l’exercice, le loisir et le prestige.”\nDavid, Journaliste de la FRM"
+          }
+        }
+      },
+      {
+        "combination": 821,
+        "combinationNumber": 19,
+        "tasks": {
+          "task1": {
+            "instruction": "« Salut,\n\nComment ça va ?\n\nAlors, comment est la nouvelle université ? Est-ce que les étudiants sont sympas ? Comment sont les profs ?\n\nÀ bientôt.\n\nAlex »\n\nVous répondez à Alex dans un message où vous décrivez votre université (professeurs, étudiants, activités, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez décidé de ne plus utiliser votre réseau social préféré (Instagram, Facebook, etc.). Vous écrivez à vos amis pour leur raconter cette expérience et expliquer pourquoi vous avez pris cette décision.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Photo sur le CV : pour ou contre ?",
+            "title": "Photo sur le CV : pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Aujourd’hui, certains candidats mettent une photo sur leur CV, d’autres non. Il faudrait interdire les photos sur les CV pour éviter les discriminations et les injustices. Selon une étude menée par des spécialistes de l’emploi, cette pratique est inutile. L’étude révèle que les employeurs prêtent plus attention à l’expérience professionnelle (32%) et aux diplômes (15%) qu’à l’apparence physique. Seulement 2% des employeurs commencent la lecture d’un CV par la photo. C’est une statistique surprenante, surtout quand on connaît l’importance que certaines personnes accordent à leur apparence physique.",
+            "document2": "La question de la photo sur le CV divise les employeurs. Pour certains, la photo permet de mieux se représenter la personne avant de la rencontrer. De plus, une photo peut aider à se souvenir d’un candidat lorsqu’un grand nombre de CV sont reçus. Pour d’autres, cela dépend du poste : pour des métiers d’accueil, par exemple, il peut être pertinent d’inclure une photo. Cependant, elle doit toujours être professionnelle pour donner une impression positive."
+          }
+        }
       }
     ]
   },
