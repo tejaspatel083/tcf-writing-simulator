@@ -6788,6 +6788,126 @@
             "document2": "La question de la photo sur le CV divise les employeurs. Pour certains, la photo permet de mieux se représenter la personne avant de la rencontrer. De plus, une photo peut aider à se souvenir d’un candidat lorsqu’un grand nombre de CV sont reçus. Pour d’autres, cela dépend du poste : pour des métiers d’accueil, par exemple, il peut être pertinent d’inclure une photo. Cependant, elle doit toujours être professionnelle pour donner une impression positive."
           }
         }
+      },
+      {
+        "combination": 822,
+        "combinationNumber": 20,
+        "tasks": {
+          "task1": {
+            "instruction": "« Salut, j’ai entendu dire que tu vas dans une super salle de sport. Tu peux\nm’en parler ? »\nVous lui répondez dans un message et vous donnez des détails sur cette\nsalle (ambiance, équipements, prix, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez lu un débat sur un forum au sujet des formations en ligne. Écrivez\nun message pour raconter votre propre expérience (cours de langue,\nformation professionnelle, etc.). Dites ce que vous avez apprécié et ce que\nvous avez moins aimé.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les Produits Faits Maison : Pour Ou Contre ?",
+            "title": "Les Produits Faits Maison : Pour Ou Contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Préparer soi-même des produits bio à la maison permet de maîtriser\ntotalement les ingrédients utilisés, ce qui assure des solutions plus adaptées\net meilleures pour la santé. Cela aide aussi à limiter les déchets plastiques\nen utilisant des contenants réutilisables. Par ailleurs, cela permet\nd’économiser sur le long terme et d’apprendre des savoir-faire créatifs, tout\nen adoptant un mode de vie plus responsable.",
+            "document2": "Faire des produits bio chez soi présente certains inconvénients. Des erreurs\ndans les recettes peuvent rendre les produits inefficaces ou causer des\nréactions. De plus, chercher et préparer les ingrédients demande du temps\net de l’énergie. Ces produits n’ont pas toujours de garanties de sécurité ou\nde conservation, ce qui peut favoriser les bactéries. Enfin, les ingrédients de\nqualité coûtent cher au départ, ce qui peut décourager certaines personnes."
+          }
+        }
+      },
+      {
+        "combination": 823,
+        "combinationNumber": 21,
+        "tasks": {
+          "task1": {
+            "instruction": "Votre ami(e) souhaite découvrir la région où vous habitez. Rédigez-lui un\nmessage dans lequel vous lui recommandez quelques endroits\nintéressants à visiter.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez récemment suivi un cours de sport dans une salle de votre\nville. Rédigez un article pour votre blog personnel afin de raconter cette\nexpérience et donner votre avis sur cette salle.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Livraison Des Repas Au Bureau : Pour Ou Contre ?",
+            "title": "Livraison Des Repas Au Bureau : Pour Ou Contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Commander un repas livré au bureau fait gagner du temps. En effet, on peut\nrester sur place pendant la pause déjeuner, ce qui permet de finir plus tôt sa\njournée. Ce service permet aussi à chacun de choisir le repas qui lui plaît :\nsi l’un veut un plat italien et l’autre des sushis, chacun peut commander\nséparément sans problème. Un autre avantage est la disponibilité : certains\nrestaurants fonctionnent 24 heures sur 24, ce qui rend ce service accessible\nà tout moment.",
+            "document2": "Mais ce mode de consommation présente aussi des limites. Quand il y a trop\nde commandes, les livreurs peuvent être débordés, ce qui entraîne des\nretards et du stress. Pour les employés, rester assis à son bureau sans faire\nde vraie pause peut provoquer de la fatigue. Il est donc conseillé de faire une\nvraie coupure, même courte, pour rester efficace dans son travail."
+          }
+        }
+      },
+      {
+        "combination": 824,
+        "combinationNumber": 22,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous souhaitez proposer à un(e) ami(e) de faire du sport avec vous. Vous lui\nécrivez un message pour décrire votre projet (type d'activités, lieu,\néquipement, etc.)",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez étudié dans une université à l'étranger pendant six mois. Vous écrivez un message à vos amis pour raconter votre expérience et vous expliquez ce que vous avez aimé (120 mots minimum/150 mots maximum).",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "L'uniforme à l'école : Pour ou contre ?",
+            "title": "L'uniforme à l'école : Pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Aujourd'hui, les goûts des enfants sont influencés par la mode et les parents doivent souvent leur acheter de nouveaux vêtements. L'uniforme est une solution à ce problème et permet aux parents d'économiser de l'argent. De plus, les jeunes qui portent un uniforme ont un sentiment fort d'appartenance à leur école et ressentent une certaine fierté. Par ailleurs, une tenue identique pour tous les élèves permet de masquer les différences de classe sociale et la discrimination basée sur le style. Le port de l'uniforme est donc positif pour tout le monde !",
+            "document2": "Au Québec, l'uniforme scolaire n'est plus réservé uniquement aux écoles privées: de plus en plus d'écoles publiques font ce choix pour leurs élèves. Mais il représente un problème pour les adolescents qui ne sont pas toujours d'accord avec ce choix. Ils disent souvent que ces uniformes ne sont pas confortables, qu'ils ne sont pas beaux car ils manquent de couleurs et qu'ils tiennent trop chaud en été. De plus, comme tous les élèves de l'école sont habillés de la même manière, les jeunes trouvent que cela ne leur permet pas d'exprimer leur personnalité."
+          }
+        }
+      },
+      {
+        "combination": 825,
+        "combinationNumber": 23,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous avez déménagé dans une nouvelle ville il y a un mois. Rédigez un courriel à votre ami Léo pour lui donner de vos nouvelles. Dans votre message, décrivez votre appartement, le quartier, la ville, ainsi que les activités que vous avez découvertes.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez assisté à une fête traditionnelle, dans votre pays ou à l’étranger. Rédigez un article pour votre blog dans lequel vous décrirez cette fête. Expliquez également pourquoi vous avez apprécié cet événement.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les Parcs Zoologiques : Pour Ou Contre ?",
+            "title": "Les Parcs Zoologiques : Pour Ou Contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Les zoos présentent de nombreux avantages, y compris pour les espèces en voie de disparition. Les animaux y sont bien soignés. Les études démontrent que les taux de reproduction ont augmenté grâce aux programmes menés dans les zoos, contribuant ainsi à la sauvegarde de certaines espèces.",
+            "document2": "Les animaux sauvages ne devraient pas être confinés dans des zoos, car cela ne correspond pas à leur habitat naturel. Il décrit les zoos comme des prisons pour les animaux, citant l’exemple d’ours polaires maintenus dans des environnements où la température atteint 15 degrés. Enfin, les animaux nécessitent un environnement naturel et la liberté."
+          }
+        }
+      },
+      {
+        "combination": 826,
+        "combinationNumber": 24,
+        "tasks": {
+          "task1": {
+            "instruction": "Tu as pris des cours au centre de langues-cultures pour tous ? Comment est cette école ?\n\nBises,\nPaul\n\nVous répondez à votre ami Paul. Vous décrivez l'école de langues (salle de cours, matériel, professeur, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez participé à un pique-nique avec vos collègues.  Vous écrivez un article dans le journal de l'entreprise.  Vous racontez comment s'est passé ce pique-nique (lieu, nourriture, météo, etc).",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "La consommation de viande : Pour ou contre ?",
+            "title": "La consommation de viande : Pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Quentin, 45 ans :\nEst-ce bien nécessaire de consommer de la viande tous les jours ? Je me suis longtemps posé la question et, finalement, j'ai décidé de limiter ma consommation de viande et de poisson. J'en mange donc occasionnellement, quand je suis invité chez des amis ou quand je vais au restaurant. Je n'en cuisine jamais à la maison. Je pense que c'est une bonne solution : j'ai une alimentation plus équilibrée qu'avant, c'est donc bon pour ma santé car je mange moins gras. J'imagine que c'est aussi mieux pour la planète.",
+            "document2": "Vanessa, 24 ans :\nManger moins de viande, c'est un débat d'actualité ! En ce qui me concerne, je ne pourrais pas me passer de viande. J'ai des amis végétariens et quand je mange chez eux, j'apprécie beaucoup leur cuisine. Chez moi, je trouve quand même que c'est compliqué de préparer des menus sans viande... Et puis, peut-on vraiment arrêter de manger de la viande sans risques pour sa santé ? J'ai déjà essayé de moins en consommer et je me sentais fatiguée. Je pense que nous devons manger de tout pour être en bonne santé."
+          }
+        }
       }
     ]
   },
