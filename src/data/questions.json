@@ -6886,8 +6886,32 @@
         }
       },
       {
-        "combination": 826,
+        "combination": 832,
         "combinationNumber": 24,
+        "tasks": {
+          "task1": {
+            "instruction": "Votre ami Mehdi vient d’emménager dans votre ville et cherche des\nrenseignements sur les moyens de transport. Écrivez un message en lui\ndonnant les informations nécessaires (types de transport, abonnement, tarif,\netc.)",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Exprimez votre admiration pour une personnalité, célèbre ou non, en vous\nappuyant sur ses actions spécifiques. Rédigez un article de blog en détaillant\nles actions remarquables de cette personne et expliquez pourquoi vous l’aimez.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Vivre En Colocation",
+            "title": "Vivre En Colocation",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "La vie en colocation offre de nombreux avantages. Partager un logement avec\nd’autres personnes permet de réduire les dépenses, que ce soit le loyer, les factures ou les frais généraux. De plus, cela favorise les interactions sociales et les échanges culturels. Vivre avec des colocataires permet de rencontrer des individus de différents horizons, de nouer des amitiés et de partager des expériences enrichissantes.",
+            "document2": "La colocation peut cependant présenter des défis. Les différences de personnalité et\nde mode de vie entre les colocataires peuvent entraîner des tensions. La gestion des\nresponsabilités et des tâches ménagères peut également être source de conflits. De\nplus, la colocation peut limiter l’intimité et l’espace personnel. Il est important d’établir une communication ouverte et respectueuse, ainsi que des règles de vie commune, pour favoriser une cohabitation harmonieuse."
+          }
+        }
+      },
+      {
+        "combination": 826,
+        "combinationNumber": 25,
         "tasks": {
           "task1": {
             "instruction": "Tu as pris des cours au centre de langues-cultures pour tous ? Comment est cette école ?\n\nBises,\nPaul\n\nVous répondez à votre ami Paul. Vous décrivez l'école de langues (salle de cours, matériel, professeur, etc.).",
@@ -6906,6 +6930,126 @@
             "maxWords": 180,
             "document1": "Quentin, 45 ans :\nEst-ce bien nécessaire de consommer de la viande tous les jours ? Je me suis longtemps posé la question et, finalement, j'ai décidé de limiter ma consommation de viande et de poisson. J'en mange donc occasionnellement, quand je suis invité chez des amis ou quand je vais au restaurant. Je n'en cuisine jamais à la maison. Je pense que c'est une bonne solution : j'ai une alimentation plus équilibrée qu'avant, c'est donc bon pour ma santé car je mange moins gras. J'imagine que c'est aussi mieux pour la planète.",
             "document2": "Vanessa, 24 ans :\nManger moins de viande, c'est un débat d'actualité ! En ce qui me concerne, je ne pourrais pas me passer de viande. J'ai des amis végétariens et quand je mange chez eux, j'apprécie beaucoup leur cuisine. Chez moi, je trouve quand même que c'est compliqué de préparer des menus sans viande... Et puis, peut-on vraiment arrêter de manger de la viande sans risques pour sa santé ? J'ai déjà essayé de moins en consommer et je me sentais fatiguée. Je pense que nous devons manger de tout pour être en bonne santé."
+          }
+        }
+      },
+      {
+        "combination": 831,
+        "combinationNumber": 26,
+        "tasks": {
+          "task1": {
+            "instruction": "Votre ami Mehdi vient d’emménager dans votre ville et cherche des\nrenseignements sur les moyens de transport. Écrivez un message en lui\ndonnant les informations nécessaires (types de transport, abonnement, tarif,\netc.)",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Exprimez votre admiration pour une personnalité, célèbre ou non, en vous\nappuyant sur ses actions spécifiques. Rédigez un article de blog en détaillant\nles actions remarquables de cette personne et expliquez pourquoi vous l’aimez.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Vivre En Colocation",
+            "title": "Vivre En Colocation",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "La vie en colocation offre de nombreux avantages. Partager un logement avec\nd’autres personnes permet de réduire les dépenses, que ce soit le loyer, les factures ou les frais généraux. De plus, cela favorise les interactions sociales et les échanges culturels. Vivre avec des colocataires permet de rencontrer des individus de différents horizons, de nouer des amitiés et de partager des expériences enrichissantes.",
+            "document2": "La colocation peut cependant présenter des défis. Les différences de personnalité et\nde mode de vie entre les colocataires peuvent entraîner des tensions. La gestion des\nresponsabilités et des tâches ménagères peut également être source de conflits. De\nplus, la colocation peut limiter l’intimité et l’espace personnel. Il est important d’établir une communication ouverte et respectueuse, ainsi que des règles de vie commune, pour favoriser une cohabitation harmonieuse."
+          }
+        }
+      },
+      {
+        "combination": 827,
+        "combinationNumber": 27,
+        "tasks": {
+          "task1": {
+            "instruction": "Répondez au courriel de votre ami Lucas pour lui donner des informations sur\nles nouveaux locaux de votre entreprise (lieu, disposition des pièces,\néquipements, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez assisté à un événement intitulé “Une semaine sans voiture”.\nRacontez votre expérience et donnez votre impression sur cette initiative.\nDécrivez le déroulement de l’événement (dates, lieu, activités proposées).",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les Vêtements de Grandes Marques",
+            "title": "Les Vêtements de Grandes Marques",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Les vêtements de marques sont très importants pour les enfants et les adolescents.\nC’est un moyen de s’exprimer et de se rattacher à un groupe social. Cette attirance\npour les marques est très présente chez les adolescents qui se cherchent et\nmontrent leur personnalité. Les enfants aiment également porter des vêtements de\nmarques avec des images des dessins animés qu’ils regardent ou des logos qu’ils\napprécient.",
+            "document2": "Les enfants grandissent très vite et les vêtements sont portés pendant une courte\npériode. Ainsi, les vêtements deviennent rapidement trop petits. Mais il y a aussi le\nfait que les enfants usent assez rapidement les vêtements en jouant à l’extérieur\navec les copains, en s’amusant dans l’herbe ou à l’aire de jeux. Les habits sont très\nvite sales ou troués."
+          }
+        }
+      },
+      {
+        "combination": 828,
+        "combinationNumber": 28,
+        "tasks": {
+          "task1": {
+            "instruction": "Un nouveau restaurant vient d’ouvrir près de chez vous. Vous écrivez à un(e) ami(e) pour lui proposer d’y aller avec vous. Vous décrivez le restaurant (cuisine, prix, décoration, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez visité une ville que vous ne connaissiez pas. Vous avez envie de partager votre découverte. Vous postez un message sur un site Internet dédié aux voyages. Racontez votre expérience et expliquez ce qui vous a plu et ce qui vous a déplu dans la ville.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Vie en colocation entre adultes.",
+            "title": "Vie en colocation entre adultes.",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Vivre avec d’autres personnes demande d’avoir une bonne entente et de respecter certaines règles. Il n’est pas toujours possible d’écouter sa musique préférée à volume élevé, d’inviter tous ses amis pour faire la fête ou de laisser de la vaisselle sale dans la cuisine. Chaque individu a des habitudes susceptibles d’irriter les autres.\nC’est pourquoi il est essentiel d’établir des règles de vie en communauté et de les respecter mutuellement. Il est important de communiquer avec ses colocataires chaque fois qu’un problème survient. L’organisation et la discussion sont les clés d’une colocation réussie ou non.",
+            "document2": "Être adulte et vivre en colocation ? C’est un choix qui permet d’accéder facilement à un logement plus spacieux et économique. Il est vrai que vous n’aurez qu’une chambre pour vous et que vous devrez partager la cuisine, le salon et la salle de bain. Toutefois, une colocation peut inclure une maison avec jardin ou un grand appartement en centre-ville ! De plus, en partageant le loyer et les charges avec vos colocataires, vous réduirez considérablement vos dépenses par rapport à un appartement individuel. Alors que vous n’aurez qu’une chambre pour vous et que\nvous devrez partager les espaces communs, une colocation offre des opportunités de logements bien plus abordables."
+          }
+        }
+      },
+      {
+        "combination": 829,
+        "combinationNumber": 29,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous envisagez de déménager et avez trouvé un appartement. Vous souhaitez en informer un ami en lui fournissant les détails concernant le bien en question : nombre de pièces, emplacement et prix.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Une annonce de festival de musique gratuit a été publiée dans votre ville, et vous avez profité de cette occasion pour y assister avec votre ami. Écrivez un article de blog pour raconter l’expérience que vous avez vécue lors de cet événement musical.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "L'emploi des jeunes : diplôme ou expérience ?",
+            "title": "L'emploi des jeunes : diplôme ou expérience ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "De nombreux jeunes diplômés de l'université se retrouvent au chômage. La reconnaissance des formations universitaires sur le marché du travail soulève des questions. En effet, les jeunes rencontrent souvent des difficultés pour trouver un emploi : les recruteurs leur reprochent d'avoir trop de diplômes et pas assez d'expérience, ou bien leur jeunesse constitue un obstacle. Plus de 60 % des jeunes diplômés n'ont toujours pas trouvé de travail un an après la fin de leurs études. Dans ce contexte, il semble urgent de revaloriser les diplômes et de favoriser l'emploi et la croissance.",
+            "document2": "On entend souvent parler de célèbres chefs d’entreprise qui ont réussi sans aller à l’université. L’exemple de ces personnalités riches et admirées pourrait laisser croire qu’il suffit d’être brillant pour diriger une entreprise. Certains dirigeants estiment même que les études universitaires peuvent être un frein. Selon eux, l’université enseigne le conformisme et limite la créativité en incitant les étudiants à suivre des parcours classiques. Pour les futurs créateurs d’entreprise, rien ne vaudrait l’autoformation et l’expérience, sans l’aide d’aucune structure académique."
+          }
+        }
+      },
+      {
+        "combination": 830,
+        "combinationNumber": 30,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous souhaitez louer un appartement pour vos vacances du 15 au 22 juillet. Vous écrivez au propriétaire pour vous présenter, lui préciser les dates et le nombre de personnes, lui demander des informations (prix, équipements, situation du logement) et savoir si l’appartement est disponible.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous tenez un blog sur la vie professionnelle. Vous rédigez un article pour présenter le métier que vous aimez : vous expliquez en quoi il consiste, pourquoi il vous plaît, les qualités qu’il demande et vous donnez des conseils à ceux qui voudraient l’exercer.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "L’agriculture en ville : pour ou contre ?",
+            "title": "L’agriculture en ville : pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Nadia, 34 ans, membre d’un jardin communautaire : « Depuis trois ans, je cultive des tomates, des herbes et des courgettes sur un terrain partagé au cœur de mon quartier. Pour moi, l’agriculture en ville est une vraie solution d’avenir. D’abord, elle permet de manger des légumes frais, cultivés à quelques mètres de chez soi, sans transport ni emballage. Ensuite, elle rapproche les gens : au jardin, je rencontre des voisins de tous les âges et de toutes les origines, et nous échangeons nos conseils et nos récoltes. Enfin, les potagers et les toits verts rafraîchissent les villes, attirent les insectes et les oiseaux et rendent nos quartiers plus agréables. Les villes doivent encourager ces projets au lieu de tout bétonner. »",
+            "document2": "Marc, 52 ans, agriculteur : « Je comprends l’enthousiasme pour les jardins urbains, mais soyons réalistes : la ville n’est pas faite pour produire de la nourriture. Les sols y sont souvent pollués, l’air est chargé de gaz d’échappement et l’espace coûte cher. Un potager sur un toit ne nourrira jamais une famille toute l’année ; c’est un loisir, pas une véritable agriculture. Pendant ce temps, les terrains disponibles en ville manquent pour construire des logements, dont les habitants ont réellement besoin. Produire des aliments, c’est notre métier, en campagne, avec de vraies terres et de vraies machines. Plutôt que d’investir dans des fermes de quartier, il vaudrait mieux soutenir les agriculteurs locaux et améliorer les marchés de producteurs en ville. »"
           }
         }
       }
