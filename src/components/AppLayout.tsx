@@ -7,6 +7,7 @@ import {
   Home,
   BarChart3,
   BookOpen,
+  AlertCircle,
   FileEdit,
   Shield,
   User,
@@ -173,7 +174,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                 open={sidebarOpen}
               />
               <SidebarOption
-                Icon={BookOpen}
+                Icon={AlertCircle}
                 title={language === 'en' ? 'My Mistakes' : 'Mes Fautes'}
                 isSelected={isMistakesTabActive}
                 onClick={() => handleNav(onNavigateMistakes || onNavigateDashboard)}
@@ -408,7 +409,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                   open={true}
                 />
                 <SidebarOption
-                  Icon={BookOpen}
+                  Icon={AlertCircle}
                   title={language === 'en' ? 'My Mistakes' : 'Mes Fautes'}
                   isSelected={isMistakesTabActive}
                   onClick={() => {
