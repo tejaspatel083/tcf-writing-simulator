@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { UserProfileModal } from './UserProfileModal';
@@ -60,18 +61,20 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   const [showProfileModal, setShowProfileModal] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
-  // Persist sidebar open state
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
+  // Persist sidebar locked open state and support smooth hover expansion
+  const [sidebarLockedOpen, setSidebarLockedOpen] = useState<boolean>(() => {
     if (typeof window === 'undefined') return true;
     if (currentView === 'simulator') return false;
     const saved = localStorage.getItem('tcf_sidebar_open');
     if (saved !== null) return saved === 'true';
     return window.innerWidth >= 1024;
   });
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const sidebarOpen = sidebarLockedOpen || isHovered;
 
   useEffect(() => {
-    localStorage.setItem('tcf_sidebar_open', String(sidebarOpen));
-  }, [sidebarOpen]);
+    localStorage.setItem('tcf_sidebar_open', String(sidebarLockedOpen));
+  }, [sidebarLockedOpen]);
 
   // Ensure day theme only: clear any previous dark mode settings
   useEffect(() => {
@@ -120,11 +123,18 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   return (
     <div className="flex min-h-screen w-full bg-slate-50 text-slate-900">
       <div className="flex w-full bg-slate-50 text-slate-900 min-h-screen">
-        {/* Collapsible Sidebar (Desktop) */}
-        <nav
-          className={`hidden lg:flex sticky top-0 h-screen shrink-0 border-r transition-all duration-300 ease-in-out ${
-            sidebarOpen ? 'w-64' : 'w-16'
-          } border-slate-200 bg-white p-2 shadow-xs flex flex-col justify-between z-30 select-none`}
+        {/* Collapsible Sidebar (Desktop) - Animated with Framer Motion */}
+        <motion.nav
+          className="hidden lg:flex sticky top-0 h-screen shrink-0 border-r border-slate-200 bg-white p-2 shadow-xs flex-col justify-between z-30 select-none overflow-hidden"
+          animate={{
+            width: sidebarOpen ? 256 : 64,
+          }}
+          transition={{
+            duration: 0.25,
+            ease: "easeInOut",
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
           <div>
             {/* Title / User Brand Section */}
@@ -140,16 +150,21 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                   <div className="grid size-10 shrink-0 place-content-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold text-sm shadow-xs mx-auto">
                     {isAdmin ? '👑' : displayName.charAt(0).toUpperCase()}
                   </div>
-                  {sidebarOpen && (
-                    <div className="min-w-0 truncate">
-                      <span className="block text-sm font-bold text-slate-800 truncate">
-                        {t(displayName)}
-                      </span>
-                      <span className="block text-xs text-slate-500 truncate">
-                        {isAdmin ? t('👑 Administrateur') : t('Candidat TCF')}
-                      </span>
-                    </div>
-                  )}
+                  <motion.div
+                    animate={{
+                      display: sidebarOpen ? "block" : "none",
+                      opacity: sidebarOpen ? 1 : 0,
+                    }}
+                    transition={{ duration: 0.15 }}
+                    className="min-w-0 truncate"
+                  >
+                    <span className="block text-sm font-bold text-slate-800 truncate">
+                      {t(displayName)}
+                    </span>
+                    <span className="block text-xs text-slate-500 truncate">
+                      {isAdmin ? t('👑 Administrateur') : t('Candidat TCF')}
+                    </span>
+                  </motion.div>
                 </div>
                 {sidebarOpen && (
                   <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" />
@@ -194,11 +209,16 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 
             {/* Account & Tools Section */}
             <div className="border-t border-slate-200 pt-3 space-y-1">
-              {sidebarOpen && (
-                <div className="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                  {t('Compte & Aide')}
-                </div>
-              )}
+              <motion.div
+                animate={{
+                  display: sidebarOpen ? "block" : "none",
+                  opacity: sidebarOpen ? 1 : 0,
+                }}
+                transition={{ duration: 0.15 }}
+                className="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider"
+              >
+                {t('Compte & Aide')}
+              </motion.div>
               <SidebarOption
                 Icon={User}
                 title={t('Mon Profil')}
@@ -228,25 +248,30 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
           <div className="border-t border-slate-200 pt-2">
             <button
               type="button"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="flex w-full items-center p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-colors cursor-pointer"
-              title={sidebarOpen ? t('Réduire le menu') : t('Agrandir le menu')}
+              onClick={() => setSidebarLockedOpen(!sidebarLockedOpen)}
+              className="flex w-full items-center p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-colors cursor-pointer group/toggle"
+              title={sidebarLockedOpen ? t('Réduire le menu') : t('Agrandir le menu')}
             >
-              <div className="grid size-8 place-content-center">
+              <div className="grid size-8 place-content-center shrink-0">
                 <ChevronsRight
                   className={`h-4 w-4 transition-transform duration-300 ${
                     sidebarOpen ? "rotate-180" : ""
                   }`}
                 />
               </div>
-              {sidebarOpen && (
-                <span className="text-xs font-semibold ml-2">
-                  {t('Réduire le menu')}
-                </span>
-              )}
+              <motion.span
+                animate={{
+                  display: sidebarOpen ? "inline-block" : "none",
+                  opacity: sidebarOpen ? 1 : 0,
+                }}
+                transition={{ duration: 0.15 }}
+                className="text-xs font-semibold ml-2 group-hover/toggle:translate-x-1 transition-transform duration-150 whitespace-pre"
+              >
+                {t('Réduire le menu')}
+              </motion.span>
             </button>
           </div>
-        </nav>
+        </motion.nav>
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0 overflow-auto">
@@ -342,138 +367,153 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         </div>
       </div>
 
-      {/* Mobile Slide-Over Drawer */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flex">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity animate-fadeIn"
-            onClick={() => setMobileMenuOpen(false)}
-          />
+      {/* Mobile Slide-Over Drawer - Animated with Framer Motion */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden flex">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
+              onClick={() => setMobileMenuOpen(false)}
+            />
 
-          {/* Drawer Menu */}
-          <div className="relative w-72 max-w-[82vw] bg-white h-full shadow-2xl flex flex-col justify-between p-4 z-10 select-none animate-slideInLeft border-r border-slate-200">
-            <div>
-              {/* Drawer User Header */}
-              <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-200">
-                <div
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setShowProfileModal(true);
-                  }}
-                  className="flex items-center gap-2.5 min-w-0 cursor-pointer"
-                >
-                  <div className="grid size-10 shrink-0 place-content-center rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold text-sm shadow-xs">
-                    {isAdmin ? '👑' : displayName.charAt(0).toUpperCase()}
+            {/* Drawer Menu */}
+            <motion.div
+              initial={{ x: "-100%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: "-100%", opacity: 0 }}
+              transition={{
+                duration: 0.3,
+                ease: "easeInOut",
+              }}
+              className="relative w-72 max-w-[82vw] bg-white h-full shadow-2xl flex flex-col justify-between p-4 z-10 select-none border-r border-slate-200"
+            >
+              <div>
+                {/* Drawer User Header */}
+                <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-200">
+                  <div
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setShowProfileModal(true);
+                    }}
+                    className="flex items-center gap-2.5 min-w-0 cursor-pointer"
+                  >
+                    <div className="grid size-10 shrink-0 place-content-center rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold text-sm shadow-xs">
+                      {isAdmin ? '👑' : displayName.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0 truncate">
+                      <span className="block text-sm font-bold text-slate-800 truncate">
+                        {t(displayName)}
+                      </span>
+                      <span className="block text-[11px] text-slate-500 truncate">
+                        {isAdmin ? t('👑 Administrateur') : t('Candidat TCF')}
+                      </span>
+                    </div>
                   </div>
-                  <div className="min-w-0 truncate">
-                    <span className="block text-sm font-bold text-slate-800 truncate">
-                      {t(displayName)}
-                    </span>
-                    <span className="block text-[11px] text-slate-500 truncate">
-                      {isAdmin ? t('👑 Administrateur') : t('Candidat TCF')}
-                    </span>
-                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
+                    title={t('Fermer')}
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
-                  title={t('Fermer')}
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Main Nav Items */}
-              <div className="space-y-1 mb-6">
-                <SidebarOption
-                  Icon={BarChart3}
-                  title={t('Tableau de bord')}
-                  isSelected={currentView === 'dashboard' && !isMistakesTabActive}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleNav(onNavigateDashboard);
-                  }}
-                  open={true}
-                />
-                <SidebarOption
-                  Icon={BookOpen}
-                  title={t('Sélecteur d\'Examens')}
-                  isSelected={currentView === 'home'}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleNav(onNavigateHome);
-                  }}
-                  open={true}
-                />
-                <SidebarOption
-                  Icon={AlertCircle}
-                  title={language === 'en' ? 'My Mistakes' : 'Mes Fautes'}
-                  isSelected={isMistakesTabActive}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleNav(onNavigateMistakes || onNavigateDashboard);
-                  }}
-                  open={true}
-                />
-                {isAdmin && (
+                {/* Main Nav Items */}
+                <div className="space-y-1 mb-6">
                   <SidebarOption
-                    Icon={Shield}
-                    title={t('Administration')}
+                    Icon={BarChart3}
+                    title={t('Tableau de bord')}
                     isSelected={currentView === 'dashboard' && !isMistakesTabActive}
                     onClick={() => {
                       setMobileMenuOpen(false);
                       handleNav(onNavigateDashboard);
                     }}
                     open={true}
-                    badge="👑"
                   />
-                )}
-              </div>
-
-              {/* Account & Tools Section */}
-              <div className="border-t border-slate-200 pt-3 space-y-1">
-                <div className="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                  {t('Compte & Aide')}
+                  <SidebarOption
+                    Icon={BookOpen}
+                    title={t('Sélecteur d\'Examens')}
+                    isSelected={currentView === 'home'}
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleNav(onNavigateHome);
+                    }}
+                    open={true}
+                  />
+                  <SidebarOption
+                    Icon={AlertCircle}
+                    title={language === 'en' ? 'My Mistakes' : 'Mes Fautes'}
+                    isSelected={isMistakesTabActive}
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleNav(onNavigateMistakes || onNavigateDashboard);
+                    }}
+                    open={true}
+                  />
+                  {isAdmin && (
+                    <SidebarOption
+                      Icon={Shield}
+                      title={t('Administration')}
+                      isSelected={currentView === 'dashboard' && !isMistakesTabActive}
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        handleNav(onNavigateDashboard);
+                      }}
+                      open={true}
+                      badge="👑"
+                    />
+                  )}
                 </div>
-                <SidebarOption
-                  Icon={User}
-                  title={t('Mon Profil')}
-                  isSelected={false}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setShowProfileModal(true);
-                  }}
-                  open={true}
-                />
-                <SidebarOption
-                  Icon={MessageSquare}
-                  title={t('Feedback')}
-                  isSelected={currentView === 'feedback'}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleNav(onNavigateFeedback);
-                  }}
-                  open={true}
-                />
-                <SidebarOption
-                  Icon={LogOut}
-                  title={t('Déconnexion')}
-                  isSelected={false}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleNav(onSignOut);
-                  }}
-                  open={true}
-                  isDestructive
-                />
+
+                {/* Account & Tools Section */}
+                <div className="border-t border-slate-200 pt-3 space-y-1">
+                  <div className="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    {t('Compte & Aide')}
+                  </div>
+                  <SidebarOption
+                    Icon={User}
+                    title={t('Mon Profil')}
+                    isSelected={false}
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setShowProfileModal(true);
+                    }}
+                    open={true}
+                  />
+                  <SidebarOption
+                    Icon={MessageSquare}
+                    title={t('Feedback')}
+                    isSelected={currentView === 'feedback'}
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleNav(onNavigateFeedback);
+                    }}
+                    open={true}
+                  />
+                  <SidebarOption
+                    Icon={LogOut}
+                    title={t('Déconnexion')}
+                    isSelected={false}
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleNav(onSignOut);
+                    }}
+                    open={true}
+                    isDestructive
+                  />
+                </div>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* Mobile Bottom Navigation Bar (Hidden in Simulator to prioritize writing space) */}
       {currentView !== 'simulator' && (
@@ -572,8 +612,8 @@ const SidebarOption: React.FC<SidebarOptionProps> = ({
     <button
       type="button"
       onClick={onClick}
-      className={`relative flex h-11 w-full items-center rounded-xl transition-all duration-200 cursor-pointer ${
-        open ? 'px-2 justify-start' : 'justify-center px-0'
+      className={`group/sidebar relative flex h-11 w-full items-center rounded-xl transition-all duration-150 cursor-pointer ${
+        open ? 'px-2.5 justify-start' : 'justify-center px-0'
       } ${
         isSelected
           ? open
@@ -585,24 +625,33 @@ const SidebarOption: React.FC<SidebarOptionProps> = ({
       }`}
       title={open ? undefined : title}
     >
-      <div className={`grid h-full place-content-center shrink-0 ${open ? 'w-10' : 'w-full'}`}>
+      <div className={`grid h-full place-content-center shrink-0 ${open ? 'w-8' : 'w-full'} transition-transform duration-150 group-hover/sidebar:scale-105`}>
         <Icon className="h-5 w-5" />
       </div>
 
-      {open && (
-        <span className="text-xs truncate transition-opacity duration-200 pr-2">
-          {title}
-        </span>
-      )}
+      <motion.span
+        animate={{
+          display: open ? 'inline-block' : 'none',
+          opacity: open ? 1 : 0,
+        }}
+        transition={{ duration: 0.15 }}
+        className="text-xs truncate transition-transform duration-150 group-hover/sidebar:translate-x-1 whitespace-pre inline-block pr-2"
+      >
+        {title}
+      </motion.span>
 
       {notifs !== undefined && open && (
-        <span className="ml-auto mr-3 flex h-5 min-w-[20px] px-1 items-center justify-center rounded-full bg-blue-600 text-[10px] text-white font-bold">
+        <motion.span
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="ml-auto mr-2 flex h-5 min-w-[20px] px-1 items-center justify-center rounded-full bg-blue-600 text-[10px] text-white font-bold"
+        >
           {notifs}
-        </span>
+        </motion.span>
       )}
 
       {badge && open && (
-        <span className="ml-auto mr-3 text-xs">
+        <span className="ml-auto mr-2 text-xs">
           {badge}
         </span>
       )}
