@@ -6886,7 +6886,7 @@
         }
       },
       {
-        "combination": 832,
+        "combination": 831,
         "combinationNumber": 24,
         "tasks": {
           "task1": {
@@ -6934,7 +6934,7 @@
         }
       },
       {
-        "combination": 831,
+        "combination": 832,
         "combinationNumber": 26,
         "tasks": {
           "task1": {
@@ -7050,6 +7050,102 @@
             "maxWords": 180,
             "document1": "Nadia, 34 ans, membre d’un jardin communautaire : « Depuis trois ans, je cultive des tomates, des herbes et des courgettes sur un terrain partagé au cœur de mon quartier. Pour moi, l’agriculture en ville est une vraie solution d’avenir. D’abord, elle permet de manger des légumes frais, cultivés à quelques mètres de chez soi, sans transport ni emballage. Ensuite, elle rapproche les gens : au jardin, je rencontre des voisins de tous les âges et de toutes les origines, et nous échangeons nos conseils et nos récoltes. Enfin, les potagers et les toits verts rafraîchissent les villes, attirent les insectes et les oiseaux et rendent nos quartiers plus agréables. Les villes doivent encourager ces projets au lieu de tout bétonner. »",
             "document2": "Marc, 52 ans, agriculteur : « Je comprends l’enthousiasme pour les jardins urbains, mais soyons réalistes : la ville n’est pas faite pour produire de la nourriture. Les sols y sont souvent pollués, l’air est chargé de gaz d’échappement et l’espace coûte cher. Un potager sur un toit ne nourrira jamais une famille toute l’année ; c’est un loisir, pas une véritable agriculture. Pendant ce temps, les terrains disponibles en ville manquent pour construire des logements, dont les habitants ont réellement besoin. Produire des aliments, c’est notre métier, en campagne, avec de vraies terres et de vraies machines. Plutôt que d’investir dans des fermes de quartier, il vaudrait mieux soutenir les agriculteurs locaux et améliorer les marchés de producteurs en ville. »"
+          }
+        }
+      },
+      {
+        "combination": 833,
+        "combinationNumber": 31,
+        "tasks": {
+          "task1": {
+            "instruction": "Écrivez un message à votre ami(e) qui souhaite suivre des cours de langue dans votre école. Donnez les détails spécifiques pour aider votre ami(e) à faire son choix. (lieu, tarifs, types de cours disponibles, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous travaillez dans une association qui aide les personnes âgées. Rédigez un article de blog pour raconter vos expériences et convaincre d'autres personnes de rejoindre l'association.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les animaux de compagnie pour les enfants, pour ou contre ?",
+            "title": "Les animaux de compagnie pour les enfants, pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Offrir un animal de compagnie à un enfant présente de nombreux avantages, comme le soulignent beaucoup de psychologues. Pour des enfants qui n’ont pas des frères et/ou des sœurs, l’animal est un compagnon qui leur évitera la solitude. Grâce à lui, un enfant prendra confiance en lui et il apprendra vite qu’un animal est un être vivant\nqui a besoin d’attention et de respect. En sa présence, l’enfant se sentira en sécurité et pourra agir de manière autonome, sans l’aide de ses parents.",
+            "document2": "Beaucoup d’enfants demandent, un jour ou l’autre, un animal à leurs parents, le plus souvent un chien ou un chat. Mais même si vous avez envie de faire plaisir à votre enfant, il vaut mieux réfléchir sérieusement avant d’acheter un animal domestique. L’animal devient un nouveau membre de la famille et représente un engagement sur\nde nombreuses années. Or, avoir un animal coûte souvent très cher, et c’est une grande responsabilité. On ne peut pas le traiter comme un jouet que l’on met à la poubelle quand l’enfant s’en désintéresse."
+          }
+        }
+      },
+      {
+        "combination": 834,
+        "combinationNumber": 32,
+        "tasks": {
+          "task1": {
+            "instruction": "Écrivez un message dans le journal de votre université pour rechercher un partenaire\navec qui faire du sport.\n(60 mots minimum/120 mots maximum)",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Écrivez dans un article de blog pour raconter votre arrivée dans un pays étranger en\ndonnant vos impressions.\n(120 mots minimum/150 mots maximum)",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Rôle de la télévision dans l’éducation des enfants.",
+            "title": "Rôle de la télévision dans l’éducation des enfants.",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "La télévision est un outil de communication et de divertissement largement répandu\ndans notre société moderne. Son influence est incontestable, tant sur les individus\nque sur la culture en général. Elle permet de diffuser des informations, d’offrir des\ndivertissements variés et de favoriser la diffusion de la culture. La télévision est\nprésente dans de nombreux foyers et constitue une source d’information et de\ndivertissement accessibles à tous. Grâce à sa portée et à sa capacité à toucher un\nlarge public, la télévision joue un rôle important dans la transmission des\nconnaissances et la sensibilisation aux enjeux sociaux.",
+            "document2": "La télévision peut également présenter certains inconvénients. Les émissions\ntélévisées peuvent parfois véhiculer des stéréotypes, des préjugés et des valeurs\ndiscutables. De plus, le temps passé devant la télévision peut réduire le temps\nconsacré à d’autres activités plus enrichissantes, telles que la lecture, les interactions\nsociales ou la pratique d’un sport. Il est important de faire preuve de discernement et\nde réguler l’exposition à la télévision, en particulier pour les enfants, afin de préserver\nun équilibre sain entre les différentes formes d’apprentissage et de divertissement."
+          }
+        }
+      },
+      {
+        "combination": 835,
+        "combinationNumber": 33,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous souhaitez aller au concert de votre artiste préféré(e). Vous proposez à votre ami(e) de vous accompagner. Vous lui écrivez un courriel avec les informations utiles (date, prix, lieu, artiste, durée).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Les professeurs de l'école de votre quartier souhaitent présenter différents métiers aux élèves. Vous voulez participer à ce projet pour parler de votre expérience. Vous leur écrivez. Vous décrivez votre profession (activités, collègues, etc.). Vous expliquez pourquoi vous trouvez votre métier intéressant.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Location de courte durée : Pour ou contre ?",
+            "title": "Location de courte durée : Pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "De plus en plus de gens louent leur logement ou une chambre à des voyageurs, pour gagner un revenu supplémentaire ou pour rencontrer de nouvelles personnes. Ce système, basé sur la confiance, permet aux visiteurs de se loger en payant moins cher que dans un hôtel. De plus, si le propriétaire est d'accord, ils peuvent même utiliser la cuisine et éviter d'aller au restaurant! La personne qui les accueille peut leur servir de guide et les conseiller sur les visites à faire. C'est un échange précieux pour tout le monde!",
+            "document2": "L'année dernière, j'ai loué mon appartement à un couple de touristes pour leurs vacances d'une semaine à Marseille. C'était une très mauvaise expérience qui m'a fait changer d'avis sur ce mode de location ! Ils sont arrivés en retard et j'ai dû les attendre pour leur donner la clé. Ils ont fait beaucoup de bruit et dérangé mes\nvoisins. En plus, ils ont quitté mon appartement sans faire la vaisselle et en laissant leurs déchets. J'ai passé trois heures à nettoyer.\nJulien, 38 ans"
+          }
+        }
+      },
+      {
+        "combination": 836,
+        "combinationNumber": 34,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous voulez visiter Paris. Vous écrivez à votre ami(e) qui y habite. Vous lui expliquez votre projet, votre logement sur place et les moyens de transport que vous allez utiliser.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez assisté à une émission de télévision qui vous intéresse. Vous publiez un message sur un forum pour raconter cette expérience : vous décrivez l’émission, l’ambiance sur le plateau et ce que vous avez ressenti.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Le logement intergénérationnel : pour ou contre ?",
+            "title": "Le logement intergénérationnel : pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Avis 1 : « J’habite chez une femme âgée depuis un an. J’ai une chambre avec sanitaires privés pour 200 euros par mois seulement, en centre-ville. En échange, je la conduis en voiture à ses activités (chorale, aquagym…), je l’aide pour les courses et j’entretiens le jardin. Sur le plan humain, c’est une très belle expérience : nous partageons nos repas et je ne me sens jamais seul. »",
+            "document2": "Avis 2 : « Ça fait 3 mois que j’habite un logement intergénérationnel. Au début, j’ai été ravie, c’est vrai qu’il y a des avantages (le logement n’est pas cher et souvent de bonne qualité). Mais très vite j’ai eu du mal à le supporter. J’habite avec une femme âgée qui perd la mémoire et qui n’est plus capable de tenir la maison propre. Sa famille, qui n’habite pas dans la région, me demande beaucoup de services comme faire le ménage ou la cuisine. Et je n’ai plus assez de temps pour mes études. »"
           }
         }
       }
