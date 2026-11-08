@@ -7148,6 +7148,102 @@
             "document2": "Avis 2 : « Ça fait 3 mois que j’habite un logement intergénérationnel. Au début, j’ai été ravie, c’est vrai qu’il y a des avantages (le logement n’est pas cher et souvent de bonne qualité). Mais très vite j’ai eu du mal à le supporter. J’habite avec une femme âgée qui perd la mémoire et qui n’est plus capable de tenir la maison propre. Sa famille, qui n’habite pas dans la région, me demande beaucoup de services comme faire le ménage ou la cuisine. Et je n’ai plus assez de temps pour mes études. »"
           }
         }
+      },
+      {
+        "combination": 837,
+        "combinationNumber": 35,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous souhaitez assister à un festival de cinéma dans votre ville. Vous écrivez un message à votre ami(e) pour lui proposer de venir avec vous. Vous lui donnez toutes les informations nécessaires sur l’événement (films, dates et horaires, tarifs, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez accueilli un(e) étudiant(e) étranger(e) pendant une semaine chez vous. Sur votre blog, vous écrivez un article pour raconter cette semaine. Vous expliquez pourquoi vous avez aimé cette expérience.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "La Restauration Rapide.",
+            "title": "La Restauration Rapide.",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Les restaurants rapides se distinguent par leur engagement à proposer une variété de plats équilibrés, respectant strictement les normes d’hygiène. En laissant aux clients la liberté de composer leur propre menu, ces établissements les responsabilisent dans leurs choix alimentaires, tout en satisfaisant leurs préférences gustatives.",
+            "document2": "Les spécialistes affirment que manger régulièrement dans des restaurants de fast-food, qui proposent de la restauration rapide, est dangereux pour la santé. La nourriture servie est souvent la même : frites, hamburgers et boissons sucrées. Ces aliments contiennent une grande quantité de calories, bien trop pour un seul repas. De plus, la plupart des produits dans ces restaurants sont emballés dans du plastique. Par conséquent, manger dans un fast-food augmente la production de déchets plastiques, ce qui est nuisible pour l’environnement."
+          }
+        }
+      },
+      {
+        "combination": 838,
+        "combinationNumber": 36,
+        "tasks": {
+          "task1": {
+            "instruction": "Je vais bientôt vivre dans ton quartier. Je cherche un endroit sympathique pour faire mes courses. Est-ce que tu connais un marché intéressant ?\nMerci d’avance et à bientôt !\nBernard\n\nVous répondez à votre ami Bernard. Dans votre message, vous décrivez un marché de votre quartier que vous aimez bien (lieu, horaires, produits, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous faites partie d’une association de quartier qui propose des activités aux enfants (aide aux devoirs, sorties, jeux, etc.). Sur votre site internet, vous racontez votre expérience et vous expliquez pourquoi ce type d’association est utile.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Le Livre Papier ou Le Livre Numérique ?",
+            "title": "Le Livre Papier ou Le Livre Numérique ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Depuis plusieurs années maintenant, de nombreux lecteurs ont décidé de remplacer la bibliothèque traditionnelle par des livres numériques. Selon eux, l’avantage est avant tout économique. D’une part, le livre numérique permet d’économiser du papier, d’autre part la version numérique d’un livre est généralement moins chère que la version papier. Les livres numériques ont un autre avantage : ils permettent une ouverture sur le monde pour les personnes en situation de handicap. Certaines options, comme la possibilité d’augmenter la taille des lettres, facilitent la lecture pour les personnes malvoyantes.",
+            "document2": "Le livre numérique remplacera-t-il le livre papier ? « Non », répondront la plupart des lecteurs. Le livre papier est un beau support. Quel plaisir de le prêter aux gens qu’on aime ou de l’offrir en glissant un petit mot dedans ! Le livre papier a une histoire, l’odeur du neuf ou de l’ancien… Il transmet beaucoup d’émotions alors que le livre numérique a un côté un peu impersonnel. De plus, les livres numériques demandent de posséder un minimum de connaissances en informatique, ce qui peut être une difficulté pour certaines personnes."
+          }
+        }
+      },
+      {
+        "combination": 839,
+        "combinationNumber": 37,
+        "tasks": {
+          "task1": {
+            "instruction": "France Télévision prépare un reportage sur le sport amateur. Et vous, quel sportif êtes-vous ?\nEnvoyez-nous vos témoignages sur francetélévision.fr.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez passé des vacances dans une belle région de votre pays. Vous écrivez un message à vos amis dans lequel vous décrivez votre expérience, vous expliquez pourquoi vous avez beaucoup aimé ce séjour.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les Écoles Privées Ou Publiques ?",
+            "title": "Les Écoles Privées Ou Publiques ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "À la rentrée, le nombre d’élèves inscrits dans des écoles privées a augmenté en France. Le succès des établissements privés n’est pas directement lié aux bons résultats scolaires de leurs élèves. C’est la réputation de ces lieux qui explique un tel enthousiasme. Aux yeux de nombreux parents, les élèves y sont mieux encadrés, mieux surveillés et les professeurs sont plus présents. Les parents sont aussi rassurés parce que les classes sont homogènes : elles accueillent généralement des élèves de milieux sociaux favorisés. En effet, les études dans ces établissements sont payantes, ce qui n’est pas le cas dans les écoles publiques.",
+            "document2": "Dans les collèges privés, il y a peu d’élèves de milieux sociaux défavorisés. Comme les études dans ces établissements sont payantes, certaines catégories de population en sont exclues. Ce système qui oppose écoles publiques et écoles privées ne facilite pas la mixité sociale. Ainsi, les élèves du privé ont rarement l’occasion de rencontrer d’autres jeunes issus de milieux sociaux moins favorisés qu’eux et inversement. Ce modèle scolaire reproduit les inégalités sociales et renforce le sentiment d’exclusion de certains jeunes."
+          }
+        }
+      },
+      {
+        "combination": 840,
+        "combinationNumber": 38,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous avez trouvé un nouveau travail. Vous écrivez à votre amie Francophone pour lui\nannoncer la bonne nouvelle. Vous décrivez votre poste, vos collègues et votre lieu de\ntravail.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Une étudiante qui à 19 ans veut aller à l’étranger pour les études. Elle demande aux internautes du forum de partager leurs expériences et vous avez fait un an à l’étranger. Parlez- lui de votre expérience (décrire le séjour à l’étranger, les activités…).",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "L’aide Aux Personnes Pauvres",
+            "title": "L’aide Aux Personnes Pauvres",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Marie, 58 ans :J’ai pris l’habitude, depuis des années maintenant, de donner un peu de mon temps et de mon argent afin d’aider les personnes vivant dans la précarité extrême, surtout ceux qui vivent sans abri en période hivernale. Pour our moi, c’est un devoir d’aider et de contribuer afin que ces personnes puissent vivre le ou des normalement possible. En assistant des pauvres ou des associations, on se sent utile au sein d’une société qui devient de plus en plus impitoyable.",
+            "document2": "Paul 63, ans :Pour aider les personnes vivant dans la précarité, on doit s’investir davantage dans des associations caritatives. Personnellement, c’est ce que je fais, je suis bénévole dans une association située dans mon quartier. Elle a pour principal but, aider les sans-abris à trouver un logement et un travail afin qu’ils vivent le plus normalement possible. Cette action est plus bénéfique à long terme car elle permet de les rendre autonomes."
+          }
+        }
       }
     ]
   },
