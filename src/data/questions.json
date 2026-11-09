@@ -7244,6 +7244,78 @@
             "document2": "Paul 63, ans :Pour aider les personnes vivant dans la précarité, on doit s’investir davantage dans des associations caritatives. Personnellement, c’est ce que je fais, je suis bénévole dans une association située dans mon quartier. Elle a pour principal but, aider les sans-abris à trouver un logement et un travail afin qu’ils vivent le plus normalement possible. Cette action est plus bénéfique à long terme car elle permet de les rendre autonomes."
           }
         }
+      },
+      {
+        "combination": 841,
+        "combinationNumber": 39,
+        "tasks": {
+          "task1": {
+            "instruction": "“Bonjour, ça y est, j’ai obtenu mon visa pour le Canada. Je vais arriver le 3 mars. Est-ce que tu pourras m’aider à trouver un hôtel pour la première semaine ? Merci d’avance pour ton aide.”\nMatthias.\nVous avez trouvé un hôtel pour Matthias. Vous lui écrivez un courriel. Dans ce message vous décrivez l’hôtel et vous lui donnez toutes les informations utiles (situation, tarif…).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous êtes allés voir un spectacle (film, pièce de théâtre, concert, etc.) avec des amis. Vous l’avez aimé. Sur votre blog, vous racontez votre soirée et vous expliquez pourquoi vous avez aimé le spectacle.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les relations amicales au travail",
+            "title": "Les relations amicales au travail",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Les amitiés entre collègues au travail peuvent être extrêmement bénéfiques. Elles favorisent un climat de travail agréable et une ambiance positive au sein de l’équipe. Avoir des amis parmi ses collègues permet de renforcer les liens professionnels et de créer un sentiment de camaraderie. Cela peut contribuer à une meilleure communication, une collaboration plus étroite et une résolution plus efficace des problèmes. De plus, partager des moments de convivialité en dehors du travail, comme des déjeuners ou des activités après le bureau, peut renforcer les liens et créer une dynamique de groupe solide.",
+            "document2": "Il est important de trouver un équilibre entre amitié et professionnalisme au travail. Les amitiés excessivement proches peuvent parfois créer des tensions ou des conflits lorsque des décisions professionnelles doivent être prises. De plus, les amitiés exclusives entre certains collègues peuvent exclure les autres membres de l’équipe, ce qui peut nuire à la cohésion et à la collaboration. Il est essentiel de maintenir des limites claires et de veiller à ce que les amitiés ne compromettent pas le professionnalisme, la hiérarchie ou la productivité au sein de l’organisation."
+          }
+        }
+      },
+      {
+        "combination": 842,
+        "combinationNumber": 40,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous avez invité votre ami Cédric à votre mariage au Château de Chombony et il vous a répondu qu’il ne connait pas ce château. Décrivez à votre ami (lieu, localisation, transports, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Dans votre blog, Racontez votre expérience de l’apprentissage d’une langue étrangère (vous écrivez sur un forum internet en racontant votre expérience en apprenant une langue étrangère).",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Cuisinier Amateur Ou Cuisinier Professionnel ?",
+            "title": "Cuisinier Amateur Ou Cuisinier Professionnel ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Les amateurs ont fait des recettes réussies, mais ils manquent toujours des compétences et des technique, c’est pourquoi la formations et l’expérience sont nécessaires pour être un vrai cuisinier.",
+            "document2": "Il parle des cuisiniers qui ont appris le métier de cuisiniers sur internet et qui ont le buzz sur les réseaux sociaux il raconte aussi l’histoire d’une amatrice qui est devenue professionnelle et qui a rédigé plusieurs livres sur la cuisine pour les amateurs de cuisine à la maison."
+          }
+        }
+      },
+      {
+        "combination": 843,
+        "combinationNumber": 41,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous avez récemment déménagé dans une nouvelle ville. Invitez votre ami(e) à venir passer les vacances chez vous.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "\"Que pensez-vous de l’installation d’une télévision dans la chambre ?\"\n\nPartagez votre avis dans un article de blog.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "L'organisation des événements sportifs",
+            "title": "L'organisation des événements sportifs",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "L’État devrait organiser de grands événements sportifs comme les Jeux Olympiques, la Coupe du Monde ou la Coupe d’Afrique. Ces compétitions sont des occasions uniques de mettre en valeur notre culture et d’attirer l’attention du monde entier. Elles favorisent aussi l’économie en créant des emplois et en modernisant les infrastructures, ce qui profite à long terme à toute la population.",
+            "document2": "Il faut dire que ces grands événements sportifs représentent des dépenses considérables pour l’État. Au lieu d’investir dans des compétitions coûteuses, je pense que les fonds publics devraient être prioritairement alloués à des secteurs essentiels comme la santé et l’éducation. De plus, de nombreux pays ayant accueilli ces événements se sont retrouvés endettés, sans bénéfices réels pour leurs citoyens."
+          }
+        }
       }
     ]
   },
