@@ -7316,6 +7316,78 @@
             "document2": "Il faut dire que ces grands événements sportifs représentent des dépenses considérables pour l’État. Au lieu d’investir dans des compétitions coûteuses, je pense que les fonds publics devraient être prioritairement alloués à des secteurs essentiels comme la santé et l’éducation. De plus, de nombreux pays ayant accueilli ces événements se sont retrouvés endettés, sans bénéfices réels pour leurs citoyens."
           }
         }
+      },
+      {
+        "combination": 844,
+        "combinationNumber": 42,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous avez passé un week-end à la campagne. Écrivez un message à votre ami(e) pour lui décrire ce qui s’est passé.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Votre direction est à la recherche d’une salle pour la fête de fin d’année, capable d’accueillir 100 invités. Rédigez un message à la direction pour leur dire que vous avez trouvé un local idéal. (lieu, tarifs, services, etc.).",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Utilisation des nouvelles technologies dans les écoles : pour ou contre ?",
+            "title": "Utilisation des nouvelles technologies dans les écoles : pour ou contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Jean : Je suis fermement convaincu que l’intégration des nouvelles technologies dans les écoles est cruciale pour préparer les élèves à un avenir numérique. Je pense que l’usage des tablettes et des ordinateurs stimule non seulement l’engagement des élèves mais enrichit également leur expérience éducative en leur offrant un accès facile à une variété de ressources, encourageant ainsi leur créativité et leur autonomie.",
+            "document2": "Sara : Je suis sceptique quant à l’usage intensif des technologies dans l’enseignement. Je crois que cela peut réduire les interactions humaines essentielles et favoriser une dépendance préoccupante aux écrans. À mon avis, les méthodes d’enseignement traditionnelles et le contact direct entre enseignants et élèves restent indispensables pour un développement équilibré et complet des compétences des jeunes."
+          }
+        }
+      },
+      {
+        "combination": 845,
+        "combinationNumber": 43,
+        "tasks": {
+          "task1": {
+            "instruction": "Vous venez de vous installer dans une nouvelle ville. Vous écrivez un message à un(e) ami(e) pour décrire votre nouvel environnement (quartier, voisins, magasins, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Vous avez participé à une action pour la « Journée mondiale du nettoyage de notre planète ». Vous avez ramassé des déchets dans un lieu public (plage, forêt, rue, etc.) avec d’autres personnes. Vous racontez cette expérience à vos amis, vous expliquez pourquoi il est important de participer à ce type d’action.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les Publicités, Pour Ou Contre ?",
+            "title": "Les Publicités, Pour Ou Contre ?",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Certaines personnes trouvent la publicité ennuyeuse, mais, à mon avis, elle est indispensable pour le commerce et les entreprises. Grâce à la publicité, on fait connaître un produit ou un service. Et puis, parfois, elles sont drôles ! J’aime bien les écouter quand je suis en voiture. Cela me permet aussi d’être informé des nouveautés et des promotions. Personnellement, j’adore comparer les articles : je peux ainsi faire beaucoup d’économies sur mes achats. Enfin, beaucoup de personnes jouent à des jeux gratuits sur leur téléphone : sans publicité, ces jeux seraient tous payants.\nQuentin, 28 ans.",
+            "document2": "La publicité est présente partout dans notre vie de tous les jours : journaux, radios, télévision, téléphone, Internet… Par exemple, sur certaines chaînes de télévision, les émissions sont coupées par la publicité et c’est agaçant. Puis, recevoir des dizaines de kilos de papier de publicité par an dans la boîte aux lettres, ce n’est pas très respectueux de l’environnement ! Je pense qu’il est nécessaire de faire voter une loi pour réduire les publicités par courrier et à la télévision. Si la publicité était plus discrète, elle serait plus appréciée.\nEstelle, 35 ans."
+          }
+        }
+      },
+      {
+        "combination": 846,
+        "combinationNumber": 44,
+        "tasks": {
+          "task1": {
+            "instruction": "L’anniversaire de votre ami approche à grands pas et vous avez décidé de lui offrir un voyage comme cadeau. Rédigez un message pour l’informer des préparations que vous avez faites (destination, dates, préparatifs, etc).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "Un internaute a publié le message suivant : « Je vais partir étudier un an à l’étranger et j’ai peur ». Rédigez une réponse pour partager votre expérience personnelle. Parlez des défis que vous avez rencontrés, des solutions que vous avez trouvées, et des bénéfices que vous avez tirés de cette expérience.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "La Réduction Du Temps De Travail",
+            "title": "La Réduction Du Temps De Travail",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "La réduction du temps de travail permet aux employés de mieux équilibrer leur vie professionnelle et personnelle. En travaillant moins, ils peuvent consacrer plus de temps à leur famille, à leurs loisirs et à leur santé. Cela peut également augmenter leur satisfaction au travail et réduire le stress, améliorant ainsi leur productivité globale.",
+            "document2": "La réduction du temps de travail peut bénéficier aux entreprises en diminuant l’absentéisme et en améliorant la rétention des employés. Avec des horaires plus flexibles, les employés sont souvent plus motivés et engagés. Cependant, cela nécessite une bonne organisation et une adaptation des processus pour maintenir l’efficacité et répondre aux besoins de l’entreprise."
+          }
+        }
       }
     ]
   },
