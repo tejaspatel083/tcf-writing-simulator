@@ -7388,6 +7388,54 @@
             "document2": "La réduction du temps de travail peut bénéficier aux entreprises en diminuant l’absentéisme et en améliorant la rétention des employés. Avec des horaires plus flexibles, les employés sont souvent plus motivés et engagés. Cependant, cela nécessite une bonne organisation et une adaptation des processus pour maintenir l’efficacité et répondre aux besoins de l’entreprise."
           }
         }
+      },
+      {
+        "combination": 847,
+        "combinationNumber": 45,
+        "tasks": {
+          "task1": {
+            "instruction": "Salut,\n\nTu as commencé ton nouveau travail ! C’est comment ? Tu es content(e) ?\n\nAli\n\nVous répondez à votre ami Ali. Dans votre message, vous décrivez votre nouveau travail (lieu, collègues, etc.) et vous donnez vos impressions.",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "INFOS FAMILLES\n\nVivre avec une personne\nâgée : comment faire ?\n\nNotre site cherche des témoignages.\n\nVous avez vécu avec une personne âgée. Vous racontez votre expérience.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Les cours de langues en ligne",
+            "title": "Les cours de langues en ligne",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Apprendre une langue en ligne grâce à Internet, c'est possible et cela donne de bons résultats ! Contrairement aux cours classiques, on peut apprendre quand on veut : les cours sont disponibles tout le temps. Cela permet de mieux organiser sa journée. On n'a pas non plus besoin de faire des kilomètres pour aller dans une école de langues. On peut apprendre de son salon, de son bureau ou même d'un café près de chez soi ! Cela permet aussi de faire des économies.",
+            "document2": "Cela semble facile d'apprendre une langue en ligne, mais ce n'est pas possible pour tout\nle monde. En effet, il faut avoir une bonne connexion à Internet et un outil numérique adapté (ordinateur, smartphone, tablette) pour apprendre en ligne. De plus, il faut être très\nautonome pour être capable d'apprendre seul : il est difficile de se mettre au travail chez soi et de rester motivé quand on n'a pas l'aide d'un professeur et de collègues. Dans ces conditions, on peut se décourager et abandonner très vite."
+          }
+        }
+      },
+      {
+        "combination": 848,
+        "combinationNumber": 46,
+        "tasks": {
+          "task1": {
+            "instruction": "« Salut ! Je sais que tu fais du sport depuis le mois dernier. Ça m’intéresse beaucoup et\nj’aimerais bien venir avec toi. Tu peux m’en dire plus ? A bientôt ! Camille »\nVous répondez à votre ami Camille. Dans votre message, vous décrivez votre activité\nsportive et vous donnez des informations utiles (lieu, durée, prix, etc.).",
+            "minWords": 60,
+            "maxWords": 120
+          },
+          "task2": {
+            "instruction": "« Tout quitter pour changer de vie ? Il y a deux ans, nous avons décidé de changer de vie.\nPaul a quitté son poste de banquier à Paris et nous avons ouvert une boulangerie à Calgary\n! Que pensez-vous de cette décision ? Avez-vous déjà vécu un grand changement,\nprofessionnel ou personnel ? Paul et Naïma »\nVous avez lu ce message sur un forum internet. Vous répondez à Paul et Naïma. Dans votre\nmessage, vous donnez votre opinion sur le choix de Paul et de Naïma et vous racontez\ncomment vous feriez si vous étiez à leur place.",
+            "minWords": 120,
+            "maxWords": 150
+          },
+          "task3": {
+            "instruction": "Le Bien-être au Travail.",
+            "title": "Le Bien-être au Travail.",
+            "minWords": 120,
+            "maxWords": 180,
+            "document1": "Nous avons installé, dans votre entreprise, des bureaux réglables qui montent et\ndescendent, ceci pour permettre aux employés de choisir la position qui leur convient le\nmieux pour travailler. Les employés sont satisfaits et disent qu’ils sont plus productifs et plus\nefficaces lors des négociations au téléphone, par exemple. Même le climat social est plus\nconvivial et la communication verbale entre collègues s’est renforcée. « Lorie, responsable ».",
+            "document2": "De nos jours, les entreprises veulent toujours plus de productivité et d’efficacité, et les\nemployés passent plus de temps sur les lieux de travail. Les entreprises cherchent toujours\ndes moyens ou astuces pour convaincre leurs employés qu’elles pensent à leur santé. Moi, ce qui m’importe, c’est de faire mon job sur mon temps de travail réel sans\nêtre obligé de faire des rallonges en heures supplémentaires. « Florian, ingénieur »."
+          }
+        }
       }
     ]
   },
