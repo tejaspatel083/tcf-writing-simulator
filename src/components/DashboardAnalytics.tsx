@@ -627,806 +627,765 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
   return (
     <div className="space-y-6 mb-8">
       {/* Neomorphic Outer Container with soft 3D elevation */}
-      <div className="bg-[#f0f4f9] border border-white/80 rounded-3xl p-4 sm:p-6 shadow-[10px_10px_25px_rgba(166,178,198,0.45),-10px_-10px_25px_rgba(255,255,255,0.9)]">
-        {/* Filter Toolbar: Throughout Year, Months, and Overall */}
-        <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-[#eaf0f7] border border-white/60 shadow-[inset_2px_2px_5px_rgba(166,178,198,0.3),inset_-2px_-2px_5px_rgba(255,255,255,0.8)]">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Filter className="w-3.5 h-3.5 text-indigo-600" />
-                  <span className="text-xs font-extrabold text-slate-700 mr-1">
-                    {language === 'en' ? 'Filter:' : 'Filtrer :'}
-                  </span>
-                  
-                  {/* Option 1: All History */}
+      <div className="bg-[#e8edf5] border border-white/85 rounded-[28px] p-4 sm:p-6 shadow-[8px_8px_20px_#c2cee0,-8px_-8px_20px_#ffffff]">
+        {/* Filter Toolbar: Throughout Year, Months, and Overall with 3D inset well */}
+        <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#e8edf5] border border-white/70 shadow-[inset_3px_3px_7px_#c2cee0,inset_-3px_-3px_7px_#ffffff]">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="px-3.5 py-1.5 rounded-full bg-[#e8edf5] shadow-[2px_2px_5px_#c2cee0,-2px_-2px_5px_#ffffff] border border-white/80 inline-flex items-center gap-1.5 text-xs font-black text-slate-700 mr-1">
+              <Filter className="w-3.5 h-3.5 text-blue-600" />
+              <span>{language === 'en' ? 'Filter:' : 'Filtrer :'}</span>
+            </div>
+
+            {/* Option 1: All History */}
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedYear('all');
+                setSelectedMonth('all');
+                setYearDropdownOpen(false);
+                setMonthDropdownOpen(false);
+              }}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer ${
+                selectedYear === 'all' && selectedMonth === 'all'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[2px_2px_6px_rgba(37,99,235,0.4),-1px_-1px_3px_rgba(255,255,255,0.9)] scale-105'
+                  : 'bg-[#e8edf5] text-slate-700 shadow-[3px_3px_6px_#c2cee0,-3px_-3px_6px_#ffffff] border border-white/80 hover:shadow-[1px_1px_3px_#c2cee0,-1px_-1px_3px_#ffffff]'
+              }`}
+            >
+              {language === 'en' ? 'All History' : 'Tout l’historique'}
+            </button>
+
+            {/* Option 2: Year Dropdown Menu */}
+            <div className="relative" ref={yearDropdownRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  setYearDropdownOpen((prev) => !prev);
+                  setMonthDropdownOpen(false);
+                }}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                  selectedYear !== 'all'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[2px_2px_6px_rgba(37,99,235,0.4)] scale-105'
+                    : 'bg-[#e8edf5] text-slate-700 shadow-[3px_3px_6px_#c2cee0,-3px_-3px_6px_#ffffff] border border-white/80 hover:shadow-[1px_1px_3px_#c2cee0,-1px_-1px_3px_#ffffff]'
+                }`}
+              >
+                <Calendar className="w-3.5 h-3.5" />
+                <span>
+                  {selectedYear !== 'all'
+                    ? `${language === 'en' ? 'Year' : 'Année'} : ${selectedYear}`
+                    : (language === 'en' ? 'By Year' : 'Par Année')}
+                </span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${yearDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {yearDropdownOpen && (
+                <div className="absolute left-0 mt-2 w-48 bg-[#e8edf5] shadow-[6px_6px_16px_#c2cee0,-6px_-6px_16px_#ffffff] rounded-2xl border border-white/80 py-1.5 z-50 text-xs font-semibold">
+                  <div className="px-3 py-1.5 text-[10px] uppercase font-black text-slate-400 tracking-wider border-b border-slate-200/60">
+                    {language === 'en' ? 'Select Year' : 'Sélectionner l’année'}
+                  </div>
                   <button
                     type="button"
                     onClick={() => {
                       setSelectedYear('all');
-                      setSelectedMonth('all');
                       setYearDropdownOpen(false);
-                      setMonthDropdownOpen(false);
                     }}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                      selectedYear === 'all' && selectedMonth === 'all'
-                        ? 'bg-blue-600 text-white shadow-[0_2px_8px_rgba(37,99,235,0.4)]'
-                        : 'bg-[#f0f4f9] text-slate-700 border border-white/80 shadow-[2px_2px_6px_rgba(166,178,198,0.3),-2px_-2px_6px_rgba(255,255,255,0.9)] hover:text-slate-900'
+                    className={`w-full px-3 py-2 text-left hover:bg-blue-50/70 flex items-center justify-between transition-colors cursor-pointer ${
+                      selectedYear === 'all' ? 'text-blue-600 font-black bg-blue-50/50' : 'text-slate-700 font-bold'
                     }`}
                   >
-                    {language === 'en' ? 'All History' : 'Tout l’historique'}
+                    <span>{language === 'en' ? 'All Years' : 'Toutes les années'}</span>
+                    {selectedYear === 'all' && <CheckCircle className="w-3.5 h-3.5 text-blue-600" />}
                   </button>
-
-                  {/* Option 2: Year Dropdown Menu */}
-                  <div className="relative" ref={yearDropdownRef}>
+                  {availableYears.map((yr) => (
                     <button
+                      key={yr}
                       type="button"
                       onClick={() => {
-                        setYearDropdownOpen((prev) => !prev);
-                        setMonthDropdownOpen(false);
-                      }}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                        selectedYear !== 'all'
-                          ? 'bg-blue-600 text-white shadow-[0_2px_8px_rgba(37,99,235,0.4)]'
-                          : 'bg-[#f0f4f9] text-slate-700 border border-white/80 shadow-[2px_2px_6px_rgba(166,178,198,0.3),-2px_-2px_6px_rgba(255,255,255,0.9)] hover:text-slate-900'
-                      }`}
-                    >
-                      <Calendar className="w-3.5 h-3.5" />
-                      <span>
-                        {selectedYear !== 'all'
-                          ? `${language === 'en' ? 'Year' : 'Année'} : ${selectedYear}`
-                          : (language === 'en' ? 'By Year' : 'Par Année')}
-                      </span>
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${yearDropdownOpen ? 'rotate-180' : ''}`} />
-                    </button>
-
-                    {yearDropdownOpen && (
-                      <div className="absolute left-0 mt-2 w-48 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200 shadow-2xl py-1.5 z-50 text-xs font-semibold">
-                        <div className="px-3 py-1.5 text-[10px] uppercase font-bold text-slate-400 tracking-wider border-b border-slate-100">
-                          {language === 'en' ? 'Select Year' : 'Sélectionner l’année'}
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedYear('all');
-                            setYearDropdownOpen(false);
-                          }}
-                          className={`w-full px-3 py-2 text-left hover:bg-blue-50 flex items-center justify-between transition-colors cursor-pointer ${
-                            selectedYear === 'all' ? 'text-blue-600 font-bold bg-blue-50/50' : 'text-slate-700'
-                          }`}
-                        >
-                          <span>{language === 'en' ? 'All Years' : 'Toutes les années'}</span>
-                          {selectedYear === 'all' && <CheckCircle className="w-3.5 h-3.5 text-blue-600" />}
-                        </button>
-                        {availableYears.map((yr) => (
-                          <button
-                            key={yr}
-                            type="button"
-                            onClick={() => {
-                              setSelectedYear(yr);
-                              setYearDropdownOpen(false);
-                            }}
-                            className={`w-full px-3 py-2 text-left hover:bg-blue-50 flex items-center justify-between transition-colors cursor-pointer ${
-                              selectedYear === yr ? 'text-blue-600 font-bold bg-blue-50/50' : 'text-slate-700'
-                            }`}
-                          >
-                            <span>{yr}</span>
-                            {selectedYear === yr && <CheckCircle className="w-3.5 h-3.5 text-blue-600" />}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Option 3: Month Dropdown Menu */}
-                  <div className="relative" ref={monthDropdownRef}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMonthDropdownOpen((prev) => !prev);
+                        setSelectedYear(yr);
                         setYearDropdownOpen(false);
                       }}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                        selectedMonth !== 'all'
-                          ? 'bg-blue-600 text-white shadow-[0_2px_8px_rgba(37,99,235,0.4)]'
-                          : 'bg-[#f0f4f9] text-slate-700 border border-white/80 shadow-[2px_2px_6px_rgba(166,178,198,0.3),-2px_-2px_6px_rgba(255,255,255,0.9)] hover:text-slate-900'
+                      className={`w-full px-3 py-2 text-left hover:bg-blue-50/70 flex items-center justify-between transition-colors cursor-pointer ${
+                        selectedYear === yr ? 'text-blue-600 font-black bg-blue-50/50' : 'text-slate-700 font-bold'
                       }`}
                     >
-                      <Filter className="w-3.5 h-3.5" />
-                      <span>
-                        {selectedMonth !== 'all'
-                          ? `${language === 'en' ? 'Month' : 'Mois'} : ${t(selectedMonth)}`
-                          : (language === 'en' ? 'By Month' : 'Par Mois')}
-                      </span>
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${monthDropdownOpen ? 'rotate-180' : ''}`} />
+                      <span>{yr}</span>
+                      {selectedYear === yr && <CheckCircle className="w-3.5 h-3.5 text-blue-600" />}
                     </button>
-
-                    {monthDropdownOpen && (
-                      <div className="absolute left-0 mt-2 w-52 max-h-64 overflow-y-auto bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200 shadow-2xl py-1.5 z-50 text-xs font-semibold custom-scrollbar">
-                        <div className="px-3 py-1.5 text-[10px] uppercase font-bold text-slate-400 tracking-wider border-b border-slate-100 sticky top-0 bg-white/95 backdrop-blur-xs">
-                          {language === 'en' ? 'Select Month' : 'Sélectionner le mois'}
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedMonth('all');
-                            setMonthDropdownOpen(false);
-                          }}
-                          className={`w-full px-3 py-2 text-left hover:bg-blue-50 flex items-center justify-between transition-colors cursor-pointer ${
-                            selectedMonth === 'all' ? 'text-blue-600 font-bold bg-blue-50/50' : 'text-slate-700'
-                          }`}
-                        >
-                          <span>{language === 'en' ? 'All Months' : 'Tous les mois'}</span>
-                          {selectedMonth === 'all' && <CheckCircle className="w-3.5 h-3.5 text-blue-600" />}
-                        </button>
-                        {availableMonths.map((m) => (
-                          <button
-                            key={m}
-                            type="button"
-                            onClick={() => {
-                              setSelectedMonth(m);
-                              setMonthDropdownOpen(false);
-                            }}
-                            className={`w-full px-3 py-2 text-left hover:bg-blue-50 flex items-center justify-between transition-colors cursor-pointer ${
-                              selectedMonth === m ? 'text-blue-600 font-bold bg-blue-50/50' : 'text-slate-700'
-                            }`}
-                          >
-                            <span>{t(m)}</span>
-                            {selectedMonth === m && <CheckCircle className="w-3.5 h-3.5 text-blue-600" />}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  ))}
                 </div>
+              )}
+            </div>
 
-                {/* Right side info & Reset button */}
-                <div className="flex items-center gap-2">
-                  {(!hasEvaluatedData || showDemoPreview) && (
+            {/* Option 3: Month Dropdown Menu */}
+            <div className="relative" ref={monthDropdownRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  setMonthDropdownOpen((prev) => !prev);
+                  setYearDropdownOpen(false);
+                }}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                  selectedMonth !== 'all'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[2px_2px_6px_rgba(37,99,235,0.4)] scale-105'
+                    : 'bg-[#e8edf5] text-slate-700 shadow-[3px_3px_6px_#c2cee0,-3px_-3px_6px_#ffffff] border border-white/80 hover:shadow-[1px_1px_3px_#c2cee0,-1px_-1px_3px_#ffffff]'
+                }`}
+              >
+                <Filter className="w-3.5 h-3.5" />
+                <span>
+                  {selectedMonth !== 'all'
+                    ? `${language === 'en' ? 'Month' : 'Mois'} : ${t(selectedMonth)}`
+                    : (language === 'en' ? 'By Month' : 'Par Mois')}
+                </span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${monthDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {monthDropdownOpen && (
+                <div className="absolute left-0 mt-2 w-52 max-h-64 overflow-y-auto bg-[#e8edf5] shadow-[6px_6px_16px_#c2cee0,-6px_-6px_16px_#ffffff] rounded-2xl border border-white/80 py-1.5 z-50 text-xs font-semibold custom-scrollbar">
+                  <div className="px-3 py-1.5 text-[10px] uppercase font-black text-slate-400 tracking-wider border-b border-slate-200/60 sticky top-0 bg-[#e8edf5]">
+                    {language === 'en' ? 'Select Month' : 'Sélectionner le mois'}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedMonth('all');
+                      setMonthDropdownOpen(false);
+                    }}
+                    className={`w-full px-3 py-2 text-left hover:bg-blue-50/70 flex items-center justify-between transition-colors cursor-pointer ${
+                      selectedMonth === 'all' ? 'text-blue-600 font-black bg-blue-50/50' : 'text-slate-700 font-bold'
+                    }`}
+                  >
+                    <span>{language === 'en' ? 'All Months' : 'Tous les mois'}</span>
+                    {selectedMonth === 'all' && <CheckCircle className="w-3.5 h-3.5 text-blue-600" />}
+                  </button>
+                  {availableMonths.map((m) => (
                     <button
-                      type="button"
-                      onClick={() => setShowDemoPreview(!showDemoPreview)}
-                      className="px-2.5 py-1 rounded-xl bg-white/90 border border-indigo-200 text-indigo-700 text-[11px] font-bold hover:bg-white transition-all cursor-pointer flex items-center gap-1 shadow-2xs mr-1"
-                    >
-                      <Sparkles className="w-3 h-3 text-indigo-600" />
-                      <span>{showDemoPreview ? (language === 'en' ? 'Hide Demo' : 'Masquer démo') : (language === 'en' ? 'Sample Preview' : 'Aperçu démo')}</span>
-                    </button>
-                  )}
-                  <span className="text-[11px] font-bold text-slate-600">
-                    ({activeProgressData.length} {activeProgressData.length > 1 ? (language === 'en' ? 'sessions' : 'examens') : (language === 'en' ? 'session' : 'examen')})
-                  </span>
-                  {(selectedYear !== 'all' || selectedMonth !== 'all') && (
-                    <button
+                      key={m}
                       type="button"
                       onClick={() => {
-                        setSelectedYear('all');
-                        setSelectedMonth('all');
+                        setSelectedMonth(m);
+                        setMonthDropdownOpen(false);
                       }}
-                      className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline cursor-pointer"
+                      className={`w-full px-3 py-2 text-left hover:bg-blue-50/70 flex items-center justify-between transition-colors cursor-pointer ${
+                        selectedMonth === m ? 'text-blue-600 font-black bg-blue-50/50' : 'text-slate-700 font-bold'
+                      }`}
                     >
-                      {language === 'en' ? 'Reset' : 'Effacer'}
+                      <span>{t(m)}</span>
+                      {selectedMonth === m && <CheckCircle className="w-3.5 h-3.5 text-blue-600" />}
                     </button>
-                  )}
+                  ))}
                 </div>
-              </div>
+              )}
+            </div>
+          </div>
 
-              {/* Both Graphs Grid with Neomorphic Popping-Out Blue Theme Cards — always visible */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          {/* Right side info & Reset button */}
+          <div className="flex items-center gap-2">
+            {(!hasEvaluatedData || showDemoPreview) && (
+              <button
+                type="button"
+                onClick={() => setShowDemoPreview(!showDemoPreview)}
+                className="px-3 py-1.5 rounded-full bg-[#e8edf5] shadow-[2px_2px_5px_#c2cee0,-2px_-2px_5px_#ffffff] border border-white/80 text-indigo-700 text-[11px] font-black hover:shadow-[1px_1px_3px_#c2cee0,-1px_-1px_3px_#ffffff] transition-all cursor-pointer flex items-center gap-1.5 mr-1"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                <span>{showDemoPreview ? (language === 'en' ? 'Hide Demo' : 'Masquer démo') : (language === 'en' ? 'Sample Preview' : 'Aperçu démo')}</span>
+              </button>
+            )}
+            <span className="text-[11px] font-black text-slate-700 px-3 py-1.5 rounded-full bg-[#e8edf5] shadow-[inset_1px_1px_3px_#c2cee0,inset_-1px_-1px_3px_#ffffff] border border-white/70">
+              {activeProgressData.length} {activeProgressData.length > 1 ? (language === 'en' ? 'sessions' : 'examens') : (language === 'en' ? 'session' : 'examen')}
+            </span>
+            {(selectedYear !== 'all' || selectedMonth !== 'all') && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedYear('all');
+                  setSelectedMonth('all');
+                }}
+                className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline cursor-pointer ml-1"
+              >
+                {language === 'en' ? 'Reset' : 'Effacer'}
+              </button>
+            )}
+          </div>
+        </div>
 
-                
-                {/* ----------------- GRAPH 1: SCORE PROGRESS OVER TIME (THEME BLUE CARD) ----------------- */}
-                <div className="flex flex-col justify-between p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#ebf3fc] via-[#e6f0fa] to-[#e0ecf8] border border-blue-200/80 shadow-[8px_8px_22px_rgba(165,190,222,0.48),-8px_-8px_22px_rgba(255,255,255,0.95)] transition-all">
-                  <div>
-                    {/* Graph 1 Header */}
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                      <div>
-                        <h3 className="font-black text-sm text-slate-800 flex items-center gap-2">
-                          <TrendingUp className="w-4 h-4 text-blue-600" />
-                          <span>{language === 'en' ? 'Score Progress & CEFR Band Levels' : 'Évolution des Scores & Niveaux CECRL'}</span>
-                        </h3>
-                        <p className="text-[11px] text-slate-500 mt-0.5">
-                          {language === 'en'
-                            ? 'Scaled out of 20 (integer 0-20), with CEFR thresholds and user target line.'
-                            : 'Échelle sur 20 (entiers positifs 0 à 20) avec paliers CECRL et ligne d’objectif.'}
-                        </p>
-                      </div>
-
-                      {/* Average Pill (Strict Integer No Decimals) */}
-                      {progressStats.avgScore > 0 && (
-                        <div className="text-right">
-                          <span className="text-[10px] uppercase font-black text-slate-400 block tracking-wider">
-                            {language === 'en' ? 'Average' : 'Moyenne'}
-                          </span>
-                          <span className="text-xs font-black text-blue-700 bg-white/95 border border-blue-200 shadow-[2px_2px_6px_rgba(165,190,222,0.35),-2px_-2px_6px_rgba(255,255,255,0.95)] px-3 py-1 rounded-2xl inline-block mt-0.5">
-                            {progressStats.avgScore}/20 • {progressStats.avgCefr}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Axis Labels Guide Info Banner */}
-                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-600 bg-white/80 px-3 py-1.5 rounded-xl border border-blue-200/70 shadow-2xs mb-2">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-blue-600"></span>
-                        <span><strong>Axe Y (Vertical) :</strong> Note sur 20 & Paliers CECRL</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-slate-400"></span>
-                        <span><strong>Axe X (Horizontal) :</strong> Date des Sessions</span>
-                      </div>
-                    </div>
-
-                    {/* Progress Chart Container */}
-                    {activeProgressData.length === 0 && !hasEvaluatedData && selectedYear === 'all' && selectedMonth === 'all' ? (
-                      /* New user: show empty chart structure with grid/axes but no data */
-                      <div className="h-64 sm:h-72 w-full mt-2">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart
-                            data={[]}
-                            margin={{ top: 15, right: 35, left: 0, bottom: 24 }}
-                          >
-                          <defs>
-                            <linearGradient id="scoreGradientNeomorphEmpty" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
-                              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.03} />
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" opacity={0.6} vertical={false} />
-                          <YAxis
-                            domain={[0, 20]}
-                            ticks={[0, 4, 7, 10, 14, 18, 20]}
-                            stroke="#64748b"
-                            fontSize={11}
-                            tickLine={false}
-                            axisLine={{ stroke: '#cbd5e1' }}
-                            tickFormatter={(val) => `${Math.round(val)}`}
-                            label={{
-                              value: language === 'en' ? 'Score (/20)' : 'Note (/20)',
-                              angle: -90,
-                              position: 'insideLeft',
-                              offset: 12,
-                              fill: '#475569',
-                              fontSize: 10,
-                              fontWeight: 700
-                            }}
-                          />
-                          <YAxis
-                            yAxisId="cefr"
-                            orientation="right"
-                            domain={[0, 20]}
-                            ticks={[2, 5, 8.5, 12, 16, 19]}
-                            stroke="#64748b"
-                            fontSize={10}
-                            fontWeight="bold"
-                            tickLine={false}
-                            axisLine={false}
-                            tickFormatter={(val) => {
-                              if (val >= 18) return 'C2';
-                              if (val >= 14) return 'C1';
-                              if (val >= 10) return 'B2';
-                              if (val >= 7) return 'B1';
-                              if (val >= 4) return 'A2';
-                              return 'A1';
-                            }}
-                            label={{
-                              value: language === 'en' ? 'CEFR Level' : 'Niveau CECRL',
-                              angle: 90,
-                              position: 'insideRight',
-                              offset: 12,
-                              fill: '#475569',
-                              fontSize: 10,
-                              fontWeight: 700
-                            }}
-                          />
-                          <XAxis
-                            dataKey="shortDate"
-                            stroke="#64748b"
-                            fontSize={11}
-                            tickLine={false}
-                            axisLine={{ stroke: '#cbd5e1' }}
-                            label={{
-                              value: language === 'en' ? 'Exam Sessions (Date)' : 'Sessions d\'examen (Date)',
-                              position: 'insideBottom',
-                              offset: -14,
-                              fill: '#475569',
-                              fontSize: 10,
-                              fontWeight: 700
-                            }}
-                          />
-                          <ReferenceArea y1={currentTargetInfo.targetThreshold} y2={20} fill="#3b82f6" fillOpacity={0.04} />
-                          <ReferenceLine
-                            y={currentTargetInfo.targetThreshold}
-                            stroke="#10b981"
-                            strokeDasharray="3 3"
-                            strokeWidth={1.8}
-                            label={{
-                              value: `\uD83C\uDFAF Cible ${currentTargetInfo.level} (${currentTargetInfo.clb})`,
-                              position: 'insideBottomRight',
-                              fill: '#059669',
-                              fontSize: 10,
-                              fontWeight: '700'
-                            }}
-                          />
-                          <Area type="monotone" dataKey="score" stroke="#2563eb" strokeWidth={2.8} fill="url(#scoreGradientNeomorphEmpty)" />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                        {/* Subtle overlay hint for new users */}
-                        <div className="text-center -mt-32 relative z-10">
-                          <p className="text-xs font-bold text-slate-400">
-                            {language === 'en' ? 'Your score progress will appear here' : 'Votre progression apparaîtra ici'}
-                          </p>
-                          <p className="text-[10px] text-slate-400 mt-0.5">
-                            {language === 'en' ? 'Submit & evaluate an exam to start tracking' : 'Soumettez et évaluez un examen pour commencer'}
-                          </p>
-                        </div>
-                      </div>
-                    ) : activeProgressData.length === 0 ? (
-                      /* Filtered to zero: show filter message */
-                      <div className="h-64 sm:h-72 w-full mt-2 flex flex-col items-center justify-center p-6 text-center rounded-2xl bg-white/70 border border-blue-200/60 shadow-inner">
-                        <Calendar className="w-8 h-8 text-blue-500 mb-2" />
-                        <p className="text-xs font-bold text-slate-800 mb-1">
-                          {language === 'en'
-                            ? 'No sessions found for the selected period.'
-                            : 'Aucun examen trouvé pour la période sélectionnée.'}
-                        </p>
-                        <p className="text-[11px] text-slate-500 mb-3 max-w-xs">
-                          {language === 'en'
-                            ? 'Try picking a different year or month, or reset to view all.'
-                            : 'Choisissez une autre année ou un autre mois, ou réinitialisez le filtre.'}
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedYear('all');
-                            setSelectedMonth('all');
-                          }}
-                          className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
-                        >
-                          {language === 'en' ? 'Show All History' : 'Afficher tout l’historique'}
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="h-64 sm:h-72 w-full mt-2">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart
-                            data={activeProgressData}
-                            margin={{ top: 15, right: 35, left: 0, bottom: 24 }}
-                          >
-                          <defs>
-                            <linearGradient id="scoreGradientNeomorph" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
-                              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.03} />
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" opacity={0.6} vertical={false} />
-                          
-                          {/* Left Y-Axis: Score / 20 (Strict Integer positive 0 to 20) with Explicit Axis Label */}
-                          <YAxis
-                            domain={[0, 20]}
-                            ticks={[0, 4, 7, 10, 14, 18, 20]}
-                            stroke="#64748b"
-                            fontSize={11}
-                            tickLine={false}
-                            axisLine={{ stroke: '#cbd5e1' }}
-                            tickFormatter={(val) => `${Math.round(val)}`}
-                            label={{
-                              value: language === 'en' ? 'Score (/20)' : 'Note (/20)',
-                              angle: -90,
-                              position: 'insideLeft',
-                              offset: 12,
-                              fill: '#475569',
-                              fontSize: 10,
-                              fontWeight: 700
-                            }}
-                          />
-
-                          {/* Right Y-Axis: CEFR Band Levels corresponding to scores */}
-                          <YAxis
-                            yAxisId="cefr"
-                            orientation="right"
-                            domain={[0, 20]}
-                            ticks={[2, 5, 8.5, 12, 16, 19]}
-                            stroke="#64748b"
-                            fontSize={10}
-                            fontWeight="bold"
-                            tickLine={false}
-                            axisLine={false}
-                            tickFormatter={(val) => {
-                              if (val >= 18) return 'C2';
-                              if (val >= 14) return 'C1';
-                              if (val >= 10) return 'B2';
-                              if (val >= 7) return 'B1';
-                              if (val >= 4) return 'A2';
-                              return 'A1';
-                            }}
-                            label={{
-                              value: language === 'en' ? 'CEFR Level' : 'Niveau CECRL',
-                              angle: 90,
-                              position: 'insideRight',
-                              offset: 12,
-                              fill: '#475569',
-                              fontSize: 10,
-                              fontWeight: 700
-                            }}
-                          />
-
-                          {/* X-Axis: Exam Sessions with Explicit Axis Label */}
-                          <XAxis
-                            dataKey="shortDate"
-                            stroke="#64748b"
-                            fontSize={11}
-                            tickLine={false}
-                            axisLine={{ stroke: '#cbd5e1' }}
-                            label={{
-                              value: language === 'en' ? 'Exam Sessions (Date)' : 'Sessions d’examen (Date)',
-                              position: 'insideBottom',
-                              offset: -14,
-                              fill: '#475569',
-                              fontSize: 10,
-                              fontWeight: 700
-                            }}
-                          />
-
-                          {/* Highlighted Target Zone from target threshold up to 20 */}
-                          <ReferenceArea
-                            y1={currentTargetInfo.targetThreshold}
-                            y2={20}
-                            fill="#3b82f6"
-                            fillOpacity={0.04}
-                          />
-
-                          {/* Horizontal Reference Line for User's Average Score (INTEGER) */}
-                          {progressStats.avgScore > 0 && (
-                            <ReferenceLine
-                              y={progressStats.avgScore}
-                              stroke="#6366f1"
-                              strokeDasharray="4 4"
-                              strokeWidth={2}
-                              label={{
-                                value: `${language === 'en' ? 'Avg' : 'Moy'}: ${progressStats.avgScore}/20 (${progressStats.avgCefr})`,
-                                position: 'insideTopLeft',
-                                fill: '#4338ca',
-                                fontSize: 10,
-                                fontWeight: 'bold'
-                              }}
-                            />
-                          )}
-
-                          {/* Dynamic Target Goal Line set by the user */}
-                          <ReferenceLine
-                            y={currentTargetInfo.targetThreshold}
-                            stroke="#10b981"
-                            strokeDasharray="3 3"
-                            strokeWidth={1.8}
-                            label={{
-                              value: `🎯 Cible ${currentTargetInfo.level} (${currentTargetInfo.clb})`,
-                              position: 'insideBottomRight',
-                              fill: '#059669',
-                              fontSize: 10,
-                              fontWeight: '700'
-                            }}
-                          />
-
-                          {/* Custom Tooltip showing INTEGER scores */}
-                          <RechartsTooltip
-                            content={({ active, payload }) => {
-                              if (active && payload && payload.length) {
-                                const data = payload[0].payload as ProgressDataPoint;
-                                return (
-                                  <div className="bg-slate-900 text-white p-3.5 rounded-2xl shadow-2xl text-xs border border-slate-700 space-y-1.5 max-w-xs">
-                                    <div className="flex items-center justify-between border-b border-slate-700 pb-1.5 gap-2">
-                                      <span className="font-bold text-slate-200 truncate">{data.title}</span>
-                                      <span className="text-[10px] text-slate-400 font-mono">{data.date}</span>
-                                    </div>
-                                    <div className="flex items-baseline justify-between pt-0.5">
-                                      <span className="text-slate-300">{language === 'en' ? 'Score' : 'Note'} :</span>
-                                      <span className="text-base font-black text-blue-400">
-                                        {Math.round(data.score)} <span className="text-xs font-normal text-slate-400">/ 20</span>
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-slate-300">{language === 'en' ? 'CEFR Level' : 'Palier CECRL'} :</span>
-                                      <span className="px-2 py-0.5 rounded-xl font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                                        {data.cefr} ({data.clb})
-                                      </span>
-                                    </div>
-                                    {(data.task1Level || data.task2Level || data.task3Level) && (
-                                      <div className="pt-2 border-t border-slate-700/80">
-                                        <div className="text-[10px] text-slate-400 font-bold mb-1 uppercase tracking-wider">
-                                          {language === 'en' ? 'Tasks CEFR Level:' : 'Niveau CECRL par tâche :'}
-                                        </div>
-                                        <div className="grid grid-cols-3 gap-1.5 text-center text-[11px]">
-                                          <div className="bg-slate-800/90 px-2 py-1 rounded-xl border border-slate-700">
-                                            <span className="text-slate-400 text-[10px] font-semibold block">T1</span>
-                                            <span className="font-black text-blue-400">{data.task1Level ?? '—'}</span>
-                                          </div>
-                                          <div className="bg-slate-800/90 px-2 py-1 rounded-xl border border-slate-700">
-                                            <span className="text-slate-400 text-[10px] font-semibold block">T2</span>
-                                            <span className="font-black text-blue-400">{data.task2Level ?? '—'}</span>
-                                          </div>
-                                          <div className="bg-slate-800/90 px-2 py-1 rounded-xl border border-slate-700">
-                                            <span className="text-slate-400 text-[10px] font-semibold block">T3</span>
-                                            <span className="font-black text-blue-400">{data.task3Level ?? '—'}</span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              }
-                              return null;
-                            }}
-                          />
-
-                          <Area
-                            type="monotone"
-                            dataKey="score"
-                            stroke="#2563eb"
-                            strokeWidth={2.8}
-                            fill="url(#scoreGradientNeomorph)"
-                            activeDot={{ r: 7, fill: '#1d4ed8', stroke: '#fff', strokeWidth: 2.5 }}
-                            dot={{ r: 4, fill: '#2563eb', strokeWidth: 2, stroke: '#ffffff' }}
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </div>
-                    )}
-                  </div>
-
-                  {/* CEFR Level Bands Guide Bar: ALL CLICKABLE TO SET TARGET GOAL, FULLY ROUNDED SHAPES */}
-                  <div className="mt-4 pt-3.5 border-t border-slate-200/80">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1.5">
-                        <Target className="w-3.5 h-3.5 text-indigo-600" />
-                        <span className="text-[10px] uppercase font-black text-slate-500 tracking-wider">
-                          {language === 'en' ? 'Choose Your Target Goal (Click Level):' : 'Choisissez Votre Objectif (Cliquez un niveau) :'}
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-emerald-700 font-extrabold flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" />
-                        <span>{language === 'en' ? `Target: ${targetGoal} (${currentTargetInfo.clb})` : `Objectif actif : ${targetGoal} (${currentTargetInfo.clb})`}</span>
-                      </span>
-                    </div>
-
-                    {/* 6 Clickable, Rounded Neomorphic Pills */}
-                    <div className="grid grid-cols-6 gap-2 text-center">
-                      {CEFR_BANDS.slice().reverse().map((band) => {
-                        const isTarget = targetGoal === band.level;
-                        const isUserAverage = progressStats.avgCefr === band.level;
-
-                        return (
-                          <button
-                            key={band.level}
-                            type="button"
-                            onClick={() => handleSelectTargetGoal(band.level)}
-                            className={`py-2 px-1 rounded-2xl transition-all cursor-pointer flex flex-col items-center justify-center relative ${
-                              isTarget
-                                ? 'bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black border border-blue-400 shadow-[0_4px_14px_rgba(37,99,235,0.5),inset_1px_1px_2px_rgba(255,255,255,0.4)] scale-105'
-                                : 'bg-white/95 text-slate-700 border border-blue-200/80 shadow-[3px_3px_8px_rgba(165,190,222,0.35),-3px_-3px_8px_rgba(255,255,255,0.95)] hover:shadow-[4px_4px_10px_rgba(165,190,222,0.45),-4px_-4px_10px_rgba(255,255,255,1)] hover:scale-[1.02] hover:border-blue-300'
-                            }`}
-                            title={`Cliquez pour définir votre objectif sur ${band.level} (${band.clb}) : ${band.minScore}-${band.maxScore}/20`}
-                          >
-                            {/* Current user average indicator dot */}
-                            {isUserAverage && !isTarget && (
-                              <span
-                                className="absolute -top-1.5 -right-1 w-2.5 h-2.5 rounded-full bg-blue-600 border border-white shadow-xs"
-                                title="Votre niveau moyen actuel"
-                              />
-                            )}
-                            <div className="text-xs font-black leading-tight flex items-center gap-0.5">
-                              <span>{band.level}</span>
-                              {isTarget && <span className="text-[10px]">🎯</span>}
-                            </div>
-                            <div className={`text-[9px] font-semibold mt-0.5 ${isTarget ? 'text-indigo-100' : 'text-slate-400'}`}>
-                              {band.minScore}-{band.maxScore}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+        {/* Both Graphs Grid with 3D Neomorphic Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          {/* ----------------- GRAPH 1: SCORE PROGRESS OVER TIME (3D NEOMORPHIC) ----------------- */}
+          <div className="flex flex-col justify-between p-5 sm:p-6 rounded-[28px] bg-[#e8edf5] border border-white/85 shadow-[8px_8px_20px_#c2cee0,-8px_-8px_20px_#ffffff] transition-all">
+            <div>
+              {/* Graph 1 Header with rounded-full title & badge */}
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                <div className="px-3.5 py-1.5 rounded-full bg-[#e8edf5] shadow-[2px_2px_5px_#c2cee0,-2px_-2px_5px_#ffffff] border border-white/85 inline-flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-blue-600" />
+                  <h3 className="font-black text-xs sm:text-sm text-slate-800">
+                    {language === 'en' ? 'Score Progress & CEFR Band Levels' : 'Évolution des Scores & Niveaux CECRL'}
+                  </h3>
                 </div>
 
-                {/* ----------------- GRAPH 2: STRENGTH & WEAKNESS RADAR CHART (THEME BLUE CARD) ----------------- */}
-                {radarData && (
-                  <div className="flex flex-col justify-between p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#ebf3fc] via-[#e6f0fa] to-[#e0ecf8] border border-blue-200/80 shadow-[8px_8px_22px_rgba(165,190,222,0.48),-8px_-8px_22px_rgba(255,255,255,0.95)] transition-all">
-                    <div>
-                      {/* Graph 2 Header */}
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <div>
-                          <h3 className="font-black text-sm text-slate-800 flex items-center gap-2">
-                            <Target className="w-4 h-4 text-blue-600" />
-                            <span>{language === 'en' ? 'Competency Profile: Strengths & Weaknesses' : 'Profil de Compétences : Forces & Faiblesses'}</span>
-                          </h3>
-                          <p className="text-[11px] text-slate-500 mt-0.5">
-                            {language === 'en'
-                              ? 'Spider radar based on mistake frequency across 6 criteria.'
-                              : 'Radar hexagonal basé sur vos fautes par rapport à votre objectif.'}
-                          </p>
-                        </div>
-
-                        {/* Top-Right Legend matching user's image */}
-                        <div className="flex items-center gap-3 text-xs font-bold bg-white/95 px-3 py-1.5 rounded-2xl border border-blue-200 shadow-[2px_2px_6px_rgba(165,190,222,0.35),-2px_-2px_6px_rgba(255,255,255,0.95)]">
-                          <div className="flex items-center gap-1.5 text-blue-600">
-                            <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block shadow-xs"></span>
-                            <span className="text-[11px] font-extrabold">
-                              {radarMode === 'latest'
-                                ? (language === 'en' ? 'Latest' : 'Dernier')
-                                : (language === 'en' ? 'Your Level' : 'Votre Niveau')}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1.5 text-amber-500">
-                            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block shadow-xs"></span>
-                            <span className="text-[11px] font-extrabold">
-                              {radarMode === 'latest'
-                                ? (language === 'en' ? 'Average' : 'Moyenne')
-                                : (language === 'en' ? `Target ${targetGoal}` : `Objectif ${targetGoal}`)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Goal Selector directly beside/above strength & weakness */}
-                      <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-2xl bg-white/80 border border-blue-200/80 shadow-2xs my-2">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[11px] font-bold text-slate-700">
-                            {language === 'en' ? 'Target Goal Benchmark:' : 'Palier de référence cible :'}
-                          </span>
-                        </div>
-                        {/* Target Selection Pills */}
-                        <div className="flex items-center gap-1">
-                          {(['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as CefrLevel[]).map((lvl) => {
-                            const isSelected = targetGoal === lvl;
-                            return (
-                              <button
-                                key={lvl}
-                                type="button"
-                                onClick={() => handleSelectTargetGoal(lvl)}
-                                className={`px-2.5 py-1 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
-                                  isSelected
-                                    ? 'bg-amber-500 text-white shadow-[0_2px_8px_rgba(245,158,11,0.45)] scale-105'
-                                    : 'bg-white/95 text-slate-700 border border-blue-200/70 hover:border-blue-400 hover:text-slate-900 shadow-[1px_1px_4px_rgba(165,190,222,0.25)]'
-                                }`}
-                              >
-                                {lvl}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Radar Chart Container */}
-                      <div className="h-64 sm:h-72 w-full mt-1">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <RadarChart
-                            cx="50%"
-                            cy="50%"
-                            outerRadius="75%"
-                            data={radarData.chartData}
-                          >
-                            {/* Concentric hexagonal grid lines */}
-                            <PolarGrid stroke="#cbd5e1" strokeDasharray="3 3" />
-                            
-                            {/* Axes Labels */}
-                            <PolarAngleAxis
-                              dataKey="axis"
-                              tick={{ fill: '#334155', fontSize: 11, fontWeight: 700 }}
-                            />
-                            
-                            {/* Concentric radius axis (0% to 100%) */}
-                            <PolarRadiusAxis
-                              angle={30}
-                              domain={[0, 100]}
-                              tick={{ fill: '#64748b', fontSize: 9 }}
-                              tickFormatter={(val) => `${Math.round(val)}%`}
-                              stroke="#94a3b8"
-                            />
-
-                            {/* Series 1: Blue Radar (User Current / Latest) */}
-                            <Radar
-                              name={radarMode === 'latest' ? (language === 'en' ? 'Latest' : 'Dernier') : (language === 'en' ? 'Your Level' : 'Votre Niveau')}
-                              dataKey={radarMode === 'latest' ? 'latest' : 'current'}
-                              stroke="#2563eb"
-                              fill="#3b82f6"
-                              fillOpacity={0.28}
-                              strokeWidth={2.5}
-                              dot={{ r: 4, fill: '#2563eb', strokeWidth: 1.5, stroke: '#ffffff' }}
-                            />
-
-                            {/* Series 2: Orange Radar (Target Goal Benchmark or Average) */}
-                            <Radar
-                              name={radarMode === 'latest' ? (language === 'en' ? 'Average' : 'Moyenne') : (language === 'en' ? `Target ${targetGoal}` : `Objectif ${targetGoal}`)}
-                              dataKey={radarMode === 'latest' ? 'current' : 'target'}
-                              stroke="#f59e0b"
-                              fill="#f59e0b"
-                              fillOpacity={0.18}
-                              strokeWidth={2.5}
-                              dot={{ r: 3.5, fill: '#f59e0b', strokeWidth: 1.5, stroke: '#ffffff' }}
-                            />
-
-                            {/* Radar Tooltip */}
-                            <RechartsTooltip
-                              content={({ active, payload }) => {
-                                if (active && payload && payload.length) {
-                                  const data = payload[0].payload;
-                                  const isStrong = data.current >= (currentTargetInfo.targetMasteryPct - 10);
-                                  return (
-                                    <div className="bg-slate-900 text-white p-3 rounded-2xl shadow-2xl text-xs border border-slate-700 space-y-1 max-w-xs">
-                                      <div className="flex items-center justify-between border-b border-slate-700 pb-1 font-bold text-slate-200">
-                                        <span>{data.axis}</span>
-                                        <span className={isStrong ? 'text-emerald-400' : 'text-amber-400'}>
-                                          {isStrong ? '💪 Force' : '⚠️ Point à travailler'}
-                                        </span>
-                                      </div>
-                                      <div className="flex items-center justify-between pt-0.5">
-                                        <span className="text-slate-300">{language === 'en' ? 'Mastery' : 'Maîtrise'} :</span>
-                                        <span className="font-black text-blue-400">{Math.round(data.current)}% ({Math.round(data.scoreOutOf20)}/20)</span>
-                                      </div>
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-slate-300">{language === 'en' ? `Target ${targetGoal}` : `Cible ${targetGoal}`} :</span>
-                                        <span className="font-black text-amber-400">{Math.round(data.target)}%</span>
-                                      </div>
-                                      {data.axis !== (language === 'en' ? 'Coherence' : 'Cohérence') && (
-                                        <div className="flex items-center justify-between text-[11px] text-slate-400 pt-0.5">
-                                          <span>{language === 'en' ? 'Total mistakes' : 'Fautes enregistrées'} :</span>
-                                          <span className="font-mono text-slate-200">{data.mistakesCount}</span>
-                                        </div>
-                                      )}
-                                    </div>
-                                  );
-                                }
-                                return null;
-                              }}
-                            />
-                          </RadarChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-
-                    {/* Strengths & Weaknesses Key Insights Breakdown with Neomorphic Inset Cards */}
-                    <div className="mt-4 pt-3.5 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {/* Top Strengths */}
-                      <div className="p-3 rounded-2xl bg-[#eef8f2] border border-white/80 shadow-[inset_1px_1px_3px_rgba(16,185,129,0.15)]">
-                        <div className="flex items-center gap-1.5 text-xs font-black text-emerald-800 mb-1.5">
-                          <span>💪</span>
-                          <span>{language === 'en' ? 'Key Strengths' : 'Vos Points Forts'}</span>
-                        </div>
-                        <div className="space-y-1">
-                          {radarData.strengths.length > 0 ? radarData.strengths.map((str) => (
-                            <div key={str.name} className="flex items-center justify-between text-[11px] text-emerald-900">
-                              <span className="truncate font-semibold">{str.name}</span>
-                              <span className="font-mono font-black">{Math.round(str.score)}/20 ({Math.round(str.pct)}%)</span>
-                            </div>
-                          )) : (
-                            <p className="text-[11px] text-emerald-600 italic">
-                              {language === 'en' ? 'Evaluate exams to discover your strengths' : 'Évaluez des examens pour découvrir vos forces'}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Priority Weaknesses */}
-                      <div className="p-3 rounded-2xl bg-[#fff8eb] border border-white/80 shadow-[inset_1px_1px_3px_rgba(245,158,11,0.15)]">
-                        <div className="flex items-center gap-1.5 text-xs font-black text-amber-800 mb-1.5">
-                          <span>⚠️</span>
-                          <span>{language === 'en' ? 'Areas to Improve' : 'Points à Travailler'}</span>
-                        </div>
-                        <div className="space-y-1">
-                          {radarData.weaknesses.length > 0 ? radarData.weaknesses.map((w) => (
-                            <div key={w.name} className="flex items-center justify-between text-[11px] text-amber-900">
-                              <span className="truncate font-semibold">{w.name}</span>
-                              <span className="font-mono font-black">
-                                {Math.round(w.score)}/20 {w.mistakesCount !== undefined && w.mistakesCount > 0 ? `(${w.mistakesCount} err.)` : `(${Math.round(w.pct)}%)`}
-                              </span>
-                            </div>
-                          )) : (
-                            <p className="text-[11px] text-amber-600 italic">
-                              {language === 'en' ? 'Evaluate exams to identify areas to improve' : 'Évaluez des examens pour identifier les points à travailler'}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                {/* Average Pill */}
+                {progressStats.avgScore > 0 && (
+                  <div className="px-3.5 py-1.5 rounded-full bg-[#e8edf5] shadow-[2px_2px_5px_#c2cee0,-2px_-2px_5px_#ffffff] border border-white/85 inline-flex items-center gap-1.5 text-xs font-black text-blue-700">
+                    <span className="text-[10px] uppercase text-slate-400 font-bold">{language === 'en' ? 'Avg' : 'Moy'}:</span>
+                    <span>{progressStats.avgScore}/20 • {progressStats.avgCefr}</span>
                   </div>
                 )}
               </div>
+
+              <p className="text-[11px] text-slate-500 mb-3 px-1 font-medium">
+                {language === 'en'
+                  ? 'Scaled out of 20 (integer 0-20), with CEFR thresholds and user target line.'
+                  : 'Échelle sur 20 (entiers positifs 0 à 20) avec paliers CECRL et ligne d’objectif.'}
+              </p>
+
+              {/* Axis Labels Guide Info Banner with rounded-2xl 3D well */}
+              <div className="flex items-center justify-between text-[11px] font-bold text-slate-600 bg-[#e8edf5] shadow-[inset_2px_2px_4px_#c2cee0,inset_-2px_-2px_4px_#ffffff] px-3.5 py-2 rounded-2xl border border-white/70 mb-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600 shadow-xs"></span>
+                  <span><strong>Axe Y (Vertical) :</strong> Note sur 20 & Paliers CECRL</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-slate-400 shadow-xs"></span>
+                  <span><strong>Axe X (Horizontal) :</strong> Date des Sessions</span>
+                </div>
+              </div>
+
+              {/* 3D Recessed Well Chart Area */}
+              <div className="bg-[#e8edf5] shadow-[inset_3px_3px_8px_#c2cee0,inset_-3px_-3px_8px_#ffffff] rounded-2xl p-3 sm:p-4 border border-white/70 mt-1">
+                {activeProgressData.length === 0 && !hasEvaluatedData && selectedYear === 'all' && selectedMonth === 'all' ? (
+                  /* New user: show empty chart structure with grid/axes but no data */
+                  <div className="h-64 sm:h-72 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart
+                        data={[]}
+                        margin={{ top: 15, right: 35, left: 0, bottom: 24 }}
+                      >
+                      <defs>
+                        <linearGradient id="scoreGradientNeomorphEmpty" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.03} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" opacity={0.6} vertical={false} />
+                      <YAxis
+                        domain={[0, 20]}
+                        ticks={[0, 4, 7, 10, 14, 18, 20]}
+                        stroke="#64748b"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={{ stroke: '#cbd5e1' }}
+                        tickFormatter={(val) => `${Math.round(val)}`}
+                        label={{
+                          value: language === 'en' ? 'Score (/20)' : 'Note (/20)',
+                          angle: -90,
+                          position: 'insideLeft',
+                          offset: 12,
+                          fill: '#475569',
+                          fontSize: 10,
+                          fontWeight: 700
+                        }}
+                      />
+                      <YAxis
+                        yAxisId="cefr"
+                        orientation="right"
+                        domain={[0, 20]}
+                        ticks={[2, 5, 8.5, 12, 16, 19]}
+                        stroke="#64748b"
+                        fontSize={10}
+                        fontWeight="bold"
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(val) => {
+                          if (val >= 18) return 'C2';
+                          if (val >= 14) return 'C1';
+                          if (val >= 10) return 'B2';
+                          if (val >= 7) return 'B1';
+                          if (val >= 4) return 'A2';
+                          return 'A1';
+                        }}
+                        label={{
+                          value: language === 'en' ? 'CEFR Level' : 'Niveau CECRL',
+                          angle: 90,
+                          position: 'insideRight',
+                          offset: 12,
+                          fill: '#475569',
+                          fontSize: 10,
+                          fontWeight: 700
+                        }}
+                      />
+                      <XAxis
+                        dataKey="shortDate"
+                        stroke="#64748b"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={{ stroke: '#cbd5e1' }}
+                        label={{
+                          value: language === 'en' ? 'Exam Sessions (Date)' : "Sessions d'examen (Date)",
+                          position: 'insideBottom',
+                          offset: -14,
+                          fill: '#475569',
+                          fontSize: 10,
+                          fontWeight: 700
+                        }}
+                      />
+                      <ReferenceArea y1={currentTargetInfo.targetThreshold} y2={20} fill="#3b82f6" fillOpacity={0.04} />
+                      <ReferenceLine
+                        y={currentTargetInfo.targetThreshold}
+                        stroke="#10b981"
+                        strokeDasharray="3 3"
+                        strokeWidth={1.8}
+                        label={{
+                          value: `🎯 Cible ${currentTargetInfo.level} (${currentTargetInfo.clb})`,
+                          position: 'insideBottomRight',
+                          fill: '#059669',
+                          fontSize: 10,
+                          fontWeight: '700'
+                        }}
+                      />
+                      <Area type="monotone" dataKey="score" stroke="#2563eb" strokeWidth={2.8} fill="url(#scoreGradientNeomorphEmpty)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                    <div className="text-center py-2 text-xs font-semibold text-slate-400">
+                      {language === 'en' ? 'Your future exam scores will appear along this trajectory.' : 'Vos futures notes d’examens apparaîtront sur cette trajectoire.'}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="h-64 sm:h-72 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart
+                        data={activeProgressData}
+                        margin={{ top: 15, right: 35, left: 0, bottom: 24 }}
+                      >
+                        <defs>
+                          <linearGradient id="scoreGradientNeomorph" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.45} />
+                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.02} />
+                          </linearGradient>
+                        </defs>
+
+                        <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" opacity={0.6} vertical={false} />
+
+                        {/* Left Y-Axis: Integer Scores 0 to 20 */}
+                        <YAxis
+                          domain={[0, 20]}
+                          ticks={[0, 4, 7, 10, 14, 18, 20]}
+                          stroke="#64748b"
+                          fontSize={11}
+                          tickLine={false}
+                          axisLine={{ stroke: '#cbd5e1' }}
+                          tickFormatter={(val) => `${Math.round(val)}`}
+                          label={{
+                            value: language === 'en' ? 'Score (/20)' : 'Note (/20)',
+                            angle: -90,
+                            position: 'insideLeft',
+                            offset: 12,
+                            fill: '#475569',
+                            fontSize: 10,
+                            fontWeight: 700
+                          }}
+                        />
+
+                        {/* Right Y-Axis: Official CEFR Band Milestones */}
+                        <YAxis
+                          yAxisId="cefr"
+                          orientation="right"
+                          domain={[0, 20]}
+                          ticks={[2, 5, 8.5, 12, 16, 19]}
+                          stroke="#64748b"
+                          fontSize={10}
+                          fontWeight="bold"
+                          tickLine={false}
+                          axisLine={false}
+                          tickFormatter={(val) => {
+                            if (val >= 18) return 'C2';
+                            if (val >= 14) return 'C1';
+                            if (val >= 10) return 'B2';
+                            if (val >= 7) return 'B1';
+                            if (val >= 4) return 'A2';
+                            return 'A1';
+                          }}
+                          label={{
+                            value: language === 'en' ? 'CEFR Level' : 'Niveau CECRL',
+                            angle: 90,
+                            position: 'insideRight',
+                            offset: 12,
+                            fill: '#475569',
+                            fontSize: 10,
+                            fontWeight: 700
+                          }}
+                        />
+
+                        {/* X-Axis: Exam Sessions with Explicit Axis Label */}
+                        <XAxis
+                          dataKey="shortDate"
+                          stroke="#64748b"
+                          fontSize={11}
+                          tickLine={false}
+                          axisLine={{ stroke: '#cbd5e1' }}
+                          label={{
+                            value: language === 'en' ? 'Exam Sessions (Date)' : 'Sessions d’examen (Date)',
+                            position: 'insideBottom',
+                            offset: -14,
+                            fill: '#475569',
+                            fontSize: 10,
+                            fontWeight: 700
+                          }}
+                        />
+
+                        {/* Highlighted Target Zone from target threshold up to 20 */}
+                        <ReferenceArea
+                          y1={currentTargetInfo.targetThreshold}
+                          y2={20}
+                          fill="#3b82f6"
+                          fillOpacity={0.04}
+                        />
+
+                        {/* Horizontal Reference Line for User's Average Score (INTEGER) */}
+                        {progressStats.avgScore > 0 && (
+                          <ReferenceLine
+                            y={progressStats.avgScore}
+                            stroke="#6366f1"
+                            strokeDasharray="4 4"
+                            strokeWidth={2}
+                            label={{
+                              value: `${language === 'en' ? 'Avg' : 'Moy'}: ${progressStats.avgScore}/20 (${progressStats.avgCefr})`,
+                              position: 'insideTopLeft',
+                              fill: '#4338ca',
+                              fontSize: 10,
+                              fontWeight: 'bold'
+                            }}
+                          />
+                        )}
+
+                        {/* Dynamic Target Goal Line set by the user */}
+                        <ReferenceLine
+                          y={currentTargetInfo.targetThreshold}
+                          stroke="#10b981"
+                          strokeDasharray="3 3"
+                          strokeWidth={1.8}
+                          label={{
+                            value: `🎯 Cible ${currentTargetInfo.level} (${currentTargetInfo.clb})`,
+                            position: 'insideBottomRight',
+                            fill: '#059669',
+                            fontSize: 10,
+                            fontWeight: '700'
+                          }}
+                        />
+
+                        {/* Custom Tooltip showing INTEGER scores */}
+                        <RechartsTooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload as ProgressDataPoint;
+                              return (
+                                <div className="bg-slate-900 text-white p-3.5 rounded-2xl shadow-2xl text-xs border border-slate-700 space-y-1.5 max-w-xs">
+                                  <div className="flex items-center justify-between border-b border-slate-700 pb-1.5 gap-2">
+                                    <span className="font-bold text-slate-200 truncate">{data.title}</span>
+                                    <span className="text-[10px] text-slate-400 font-mono">{data.date}</span>
+                                  </div>
+                                  <div className="flex items-baseline justify-between pt-0.5">
+                                    <span className="text-slate-300">{language === 'en' ? 'Score' : 'Note'} :</span>
+                                    <span className="text-base font-black text-blue-400">
+                                      {Math.round(data.score)} <span className="text-xs font-normal text-slate-400">/ 20</span>
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-slate-300">{language === 'en' ? 'CEFR Level' : 'Palier CECRL'} :</span>
+                                    <span className="px-2 py-0.5 rounded-xl font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                      {data.cefr} ({data.clb})
+                                    </span>
+                                  </div>
+                                  {(data.task1Level || data.task2Level || data.task3Level) && (
+                                    <div className="pt-1.5 border-t border-slate-800 text-[10px] text-slate-300 grid grid-cols-3 gap-1 text-center">
+                                      {data.task1Level && <div className="bg-slate-800/80 p-1 rounded">T1: <strong>{data.task1Level}</strong></div>}
+                                      {data.task2Level && <div className="bg-slate-800/80 p-1 rounded">T2: <strong>{data.task2Level}</strong></div>}
+                                      {data.task3Level && <div className="bg-slate-800/80 p-1 rounded">T3: <strong>{data.task3Level}</strong></div>}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+
+                        {/* Main Smooth Area Curve */}
+                        <Area
+                          type="monotone"
+                          dataKey="score"
+                          stroke="#2563eb"
+                          strokeWidth={2.8}
+                          fill="url(#scoreGradientNeomorph)"
+                          dot={{
+                            r: 4.5,
+                            fill: '#2563eb',
+                            stroke: '#ffffff',
+                            strokeWidth: 2,
+                            cursor: 'pointer'
+                          }}
+                          activeDot={{
+                            r: 7,
+                            fill: '#1d4ed8',
+                            stroke: '#ffffff',
+                            strokeWidth: 2.5
+                          }}
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* CEFR Level Bands Guide Bar with rounded-full header & 3D pills */}
+            <div className="mt-4 pt-3.5 border-t border-slate-200/50">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <div className="px-3 py-1 rounded-full bg-[#e8edf5] shadow-[2px_2px_5px_#c2cee0,-2px_-2px_5px_#ffffff] border border-white/85 inline-flex items-center gap-1.5">
+                  <Target className="w-3.5 h-3.5 text-blue-600" />
+                  <span className="text-[10px] uppercase font-black text-slate-600 tracking-wider">
+                    {language === 'en' ? 'Choose Your Target Goal (Click Level):' : 'Choisissez Votre Objectif (Cliquez un niveau) :'}
+                  </span>
+                </div>
+                <span className="text-[10px] text-emerald-700 font-black px-3 py-1 rounded-full bg-[#e8edf5] shadow-[2px_2px_5px_#c2cee0,-2px_-2px_5px_#ffffff] border border-white/85 flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3" />
+                  <span>{language === 'en' ? `Target: ${targetGoal} (${currentTargetInfo.clb})` : `Objectif : ${targetGoal} (${currentTargetInfo.clb})`}</span>
+                </span>
+              </div>
+
+              {/* 6 Clickable, Rounded Neomorphic Pills */}
+              <div className="grid grid-cols-6 gap-2 text-center">
+                {CEFR_BANDS.slice().reverse().map((band) => {
+                  const isTarget = targetGoal === band.level;
+                  const isUserAverage = progressStats.avgCefr === band.level;
+
+                  return (
+                    <button
+                      key={band.level}
+                      type="button"
+                      onClick={() => handleSelectTargetGoal(band.level)}
+                      className={`py-2 px-1 rounded-2xl transition-all cursor-pointer flex flex-col items-center justify-center relative ${
+                        isTarget
+                          ? 'bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black shadow-[3px_3px_8px_rgba(37,99,235,0.45),-2px_-2px_6px_rgba(255,255,255,0.9)] scale-105 border border-blue-400'
+                          : 'bg-[#e8edf5] text-slate-700 shadow-[3px_3px_7px_#c2cee0,-3px_-3px_7px_#ffffff] border border-white/85 hover:shadow-[1px_1px_3px_#c2cee0,-1px_-1px_3px_#ffffff] hover:scale-[1.02]'
+                      }`}
+                      title={`Cliquez pour définir votre objectif sur ${band.level} (${band.clb}) : ${band.minScore}-${band.maxScore}/20`}
+                    >
+                      {/* Current user average indicator dot */}
+                      {isUserAverage && !isTarget && (
+                        <span
+                          className="absolute -top-1.5 -right-1 w-2.5 h-2.5 rounded-full bg-blue-600 border border-white shadow-xs"
+                          title="Votre niveau moyen actuel"
+                        />
+                      )}
+                      <div className="text-xs font-black leading-tight flex items-center gap-0.5">
+                        <span>{band.level}</span>
+                        {isTarget && <span className="text-[10px]">🎯</span>}
+                      </div>
+                      <div className={`text-[9px] font-bold mt-0.5 ${isTarget ? 'text-indigo-100' : 'text-slate-400'}`}>
+                        {band.minScore}-{band.maxScore}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* ----------------- GRAPH 2: STRENGTH & WEAKNESS RADAR CHART (3D NEOMORPHIC) ----------------- */}
+          {radarData && (
+            <div className="flex flex-col justify-between p-5 sm:p-6 rounded-[28px] bg-[#e8edf5] border border-white/85 shadow-[8px_8px_20px_#c2cee0,-8px_-8px_20px_#ffffff] transition-all">
+              <div>
+                {/* Graph 2 Header with rounded-full title & legend */}
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                  <div className="px-3.5 py-1.5 rounded-full bg-[#e8edf5] shadow-[2px_2px_5px_#c2cee0,-2px_-2px_5px_#ffffff] border border-white/85 inline-flex items-center gap-2">
+                    <Target className="w-4 h-4 text-blue-600" />
+                    <h3 className="font-black text-xs sm:text-sm text-slate-800">
+                      {language === 'en' ? 'Competency Profile: Strengths & Weaknesses' : 'Profil de Compétences : Forces & Faiblesses'}
+                    </h3>
+                  </div>
+
+                  {/* Top-Right Legend in 3D pill */}
+                  <div className="flex items-center gap-3 text-xs font-bold bg-[#e8edf5] px-3.5 py-1.5 rounded-full border border-white/85 shadow-[2px_2px_5px_#c2cee0,-2px_-2px_5px_#ffffff]">
+                    <div className="flex items-center gap-1.5 text-blue-600">
+                      <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block shadow-xs"></span>
+                      <span className="text-[11px] font-extrabold">
+                        {radarMode === 'latest'
+                          ? (language === 'en' ? 'Latest' : 'Dernier')
+                          : (language === 'en' ? 'Your Level' : 'Votre Niveau')}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-amber-500">
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block shadow-xs"></span>
+                      <span className="text-[11px] font-extrabold">
+                        {radarMode === 'latest'
+                          ? (language === 'en' ? 'Average' : 'Moyenne')
+                          : (language === 'en' ? `Target ${targetGoal}` : `Objectif ${targetGoal}`)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-slate-500 mb-2 px-1 font-medium">
+                  {language === 'en'
+                    ? 'Spider radar based on mistake frequency across 6 criteria.'
+                    : 'Radar hexagonal basé sur vos fautes par rapport à votre objectif.'}
+                </p>
+
+                {/* Goal Selector Bar with 3D inset channel */}
+                <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-2xl bg-[#e8edf5] shadow-[inset_2px_2px_5px_#c2cee0,inset_-2px_-2px_5px_#ffffff] border border-white/60 my-2">
+                  <div className="px-3 py-1 rounded-full bg-[#e8edf5] shadow-[2px_2px_4px_#c2cee0,-2px_-2px_4px_#ffffff] border border-white/80 inline-flex items-center gap-1.5">
+                    <span className="text-[11px] font-black text-slate-700">
+                      {language === 'en' ? 'Target Goal Benchmark:' : 'Palier de référence cible :'}
+                    </span>
+                  </div>
+                  {/* Target Selection Pills */}
+                  <div className="flex items-center gap-1">
+                    {(['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as CefrLevel[]).map((lvl) => {
+                      const isSelected = targetGoal === lvl;
+                      return (
+                        <button
+                          key={lvl}
+                          type="button"
+                          onClick={() => handleSelectTargetGoal(lvl)}
+                          className={`px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-amber-500 text-white shadow-[2px_2px_6px_rgba(245,158,11,0.45)] scale-105'
+                              : 'bg-[#e8edf5] text-slate-700 shadow-[2px_2px_5px_#c2cee0,-2px_-2px_5px_#ffffff] border border-white/80 hover:shadow-[1px_1px_3px_#c2cee0,-1px_-1px_3px_#ffffff]'
+                          }`}
+                        >
+                          {lvl}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 3D Recessed Well Radar Container */}
+                <div className="bg-[#e8edf5] shadow-[inset_3px_3px_8px_#c2cee0,inset_-3px_-3px_8px_#ffffff] rounded-2xl p-3 sm:p-4 border border-white/70 mt-1">
+                  <div className="h-64 sm:h-72 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart
+                        cx="50%"
+                        cy="50%"
+                        outerRadius="75%"
+                        data={radarData.chartData}
+                      >
+                        <PolarGrid stroke="#cbd5e1" strokeDasharray="3 3" />
+                        <PolarAngleAxis
+                          dataKey="axis"
+                          tick={{ fill: '#334155', fontSize: 11, fontWeight: 700 }}
+                        />
+                        <PolarRadiusAxis
+                          angle={30}
+                          domain={[0, 100]}
+                          tick={{ fill: '#64748b', fontSize: 9 }}
+                          tickFormatter={(val) => `${Math.round(val)}%`}
+                          stroke="#94a3b8"
+                        />
+                        <Radar
+                          name={radarMode === 'latest' ? (language === 'en' ? 'Latest' : 'Dernier') : (language === 'en' ? 'Your Level' : 'Votre Niveau')}
+                          dataKey={radarMode === 'latest' ? 'latest' : 'current'}
+                          stroke="#2563eb"
+                          fill="#3b82f6"
+                          fillOpacity={0.28}
+                          strokeWidth={2.5}
+                          dot={{ r: 4, fill: '#2563eb', strokeWidth: 1.5, stroke: '#ffffff' }}
+                        />
+                        <Radar
+                          name={radarMode === 'latest' ? (language === 'en' ? 'Average' : 'Moyenne') : (language === 'en' ? `Target ${targetGoal}` : `Objectif ${targetGoal}`)}
+                          dataKey={radarMode === 'latest' ? 'current' : 'target'}
+                          stroke="#f59e0b"
+                          fill="#f59e0b"
+                          fillOpacity={0.18}
+                          strokeWidth={2.5}
+                          dot={{ r: 3.5, fill: '#f59e0b', strokeWidth: 1.5, stroke: '#ffffff' }}
+                        />
+                        <RechartsTooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload;
+                              const isStrong = data.current >= (currentTargetInfo.targetMasteryPct - 10);
+                              return (
+                                <div className="bg-slate-900 text-white p-3 rounded-2xl shadow-2xl text-xs border border-slate-700 space-y-1 max-w-xs">
+                                  <div className="flex items-center justify-between border-b border-slate-700 pb-1 font-bold text-slate-200">
+                                    <span>{data.axis}</span>
+                                    <span className={isStrong ? 'text-emerald-400' : 'text-amber-400'}>
+                                      {isStrong ? '💪 Force' : '⚠️ Point à travailler'}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center justify-between pt-0.5">
+                                    <span className="text-slate-300">{language === 'en' ? 'Mastery' : 'Maîtrise'} :</span>
+                                    <span className="font-black text-blue-400">{Math.round(data.current)}% ({Math.round(data.scoreOutOf20)}/20)</span>
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-slate-300">{language === 'en' ? `Target ${targetGoal}` : `Cible ${targetGoal}`} :</span>
+                                    <span className="font-black text-amber-400">{Math.round(data.target)}%</span>
+                                  </div>
+                                  {data.axis !== (language === 'en' ? 'Coherence' : 'Cohérence') && (
+                                    <div className="flex items-center justify-between text-[11px] text-slate-400 pt-0.5">
+                                      <span>{language === 'en' ? 'Total mistakes' : 'Fautes enregistrées'} :</span>
+                                      <span className="font-mono text-slate-200">{data.mistakesCount}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+
+              {/* Strengths & Weaknesses Key Insights Breakdown with 3D Inset Cards */}
+              <div className="mt-4 pt-3.5 border-t border-slate-200/50 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Top Strengths */}
+                <div className="p-3.5 rounded-2xl bg-[#e8edf5] border border-emerald-300/60 shadow-[4px_4px_10px_#c2cee0,-4px_-4px_10px_#ffffff]">
+                  <div className="px-3 py-1 rounded-full bg-[#e8edf5] shadow-[2px_2px_4px_#c2cee0,-2px_-2px_4px_#ffffff] border border-white/80 inline-flex items-center gap-1.5 text-xs font-black text-emerald-800 mb-2">
+                    <span>💪</span>
+                    <span>{language === 'en' ? 'Key Strengths' : 'Vos Points Forts'}</span>
+                  </div>
+                  <div className="space-y-1.5 px-0.5">
+                    {radarData.strengths.length > 0 ? radarData.strengths.map((str) => (
+                      <div key={str.name} className="flex items-center justify-between text-[11px] text-emerald-950 font-medium">
+                        <span className="truncate">{str.name}</span>
+                        <span className="font-mono font-black text-emerald-700 bg-[#e8edf5] shadow-[1px_1px_3px_#c2cee0,-1px_-1px_3px_#ffffff] px-2 py-0.5 rounded-md">
+                          {Math.round(str.score)}/20 ({Math.round(str.pct)}%)
+                        </span>
+                      </div>
+                    )) : (
+                      <p className="text-[11px] text-emerald-600 italic">
+                        {language === 'en' ? 'Evaluate exams to discover your strengths' : 'Évaluez des examens pour découvrir vos forces'}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Priority Weaknesses */}
+                <div className="p-3.5 rounded-2xl bg-[#e8edf5] border border-amber-300/60 shadow-[4px_4px_10px_#c2cee0,-4px_-4px_10px_#ffffff]">
+                  <div className="px-3 py-1 rounded-full bg-[#e8edf5] shadow-[2px_2px_4px_#c2cee0,-2px_-2px_4px_#ffffff] border border-white/80 inline-flex items-center gap-1.5 text-xs font-black text-amber-800 mb-2">
+                    <span>⚠️</span>
+                    <span>{language === 'en' ? 'Areas to Improve' : 'Points à Travailler'}</span>
+                  </div>
+                  <div className="space-y-1.5 px-0.5">
+                    {radarData.weaknesses.length > 0 ? radarData.weaknesses.map((w) => (
+                      <div key={w.name} className="flex items-center justify-between text-[11px] text-amber-950 font-medium">
+                        <span className="truncate">{w.name}</span>
+                        <span className="font-mono font-black text-amber-700 bg-[#e8edf5] shadow-[1px_1px_3px_#c2cee0,-1px_-1px_3px_#ffffff] px-2 py-0.5 rounded-md">
+                          {Math.round(w.score)}/20 {w.mistakesCount !== undefined && w.mistakesCount > 0 ? `(${w.mistakesCount} err.)` : `(${Math.round(w.pct)}%)`}
+                        </span>
+                      </div>
+                    )) : (
+                      <p className="text-[11px] text-amber-600 italic">
+                        {language === 'en' ? 'Evaluate exams to identify areas to improve' : 'Évaluez des examens pour identifier les points à travailler'}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

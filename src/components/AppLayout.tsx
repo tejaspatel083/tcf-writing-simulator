@@ -18,10 +18,11 @@ import {
   ChevronDown,
   Menu,
   X,
-  LucideIcon
+  LucideIcon,
+  ClipboardList
 } from 'lucide-react';
 
-export type AppView = 'home' | 'dashboard' | 'simulator' | 'results' | 'feedback';
+export type AppView = 'home' | 'dashboard' | 'simulator' | 'results' | 'feedback' | 'submissions';
 
 interface AppLayoutProps {
   currentView: AppView;
@@ -30,6 +31,8 @@ interface AppLayoutProps {
   combinationTitle?: string;
   onNavigateHome: () => void;
   onNavigateDashboard: () => void;
+  onNavigateSubmissions?: (tab?: 'exams' | 'mistakes') => void;
+  submissionsTab?: 'exams' | 'mistakes';
   onNavigateMistakes?: () => void;
   mistakesCount?: number;
   isMistakesTabActive?: boolean;
@@ -47,6 +50,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   combinationTitle,
   onNavigateHome,
   onNavigateDashboard,
+  onNavigateSubmissions,
+  submissionsTab,
   onNavigateMistakes,
   mistakesCount,
   isMistakesTabActive,
@@ -109,6 +114,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         return t('Sélecteur d\'Examens');
       case 'dashboard':
         return t('Tableau de bord');
+      case 'submissions':
+        return language === 'en' ? 'My Submissions' : 'Mes Soumissions';
       case 'simulator':
         return t('Simulateur TCF Canada');
       case 'results':
@@ -177,7 +184,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
               <SidebarOption
                 Icon={BarChart3}
                 title={t('Tableau de bord')}
-                isSelected={currentView === 'dashboard' && !isMistakesTabActive}
+                isSelected={currentView === 'dashboard'}
                 onClick={() => handleNav(onNavigateDashboard)}
                 open={sidebarOpen}
               />
@@ -189,11 +196,20 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                 open={sidebarOpen}
               />
               <SidebarOption
+                Icon={ClipboardList}
+                title={language === 'en' ? 'My Submissions' : 'Mes Soumissions'}
+                isSelected={currentView === 'submissions' && submissionsTab !== 'mistakes'}
+                onClick={() => handleNav(() => (onNavigateSubmissions ? onNavigateSubmissions('exams') : onNavigateDashboard()))}
+                open={sidebarOpen}
+                badge={submissionsCount > 0 ? String(submissionsCount) : undefined}
+              />
+              <SidebarOption
                 Icon={AlertCircle}
                 title={language === 'en' ? 'My Mistakes' : 'Mes Fautes'}
-                isSelected={isMistakesTabActive}
-                onClick={() => handleNav(onNavigateMistakes || onNavigateDashboard)}
+                isSelected={(currentView === 'dashboard' && isMistakesTabActive) || (currentView === 'submissions' && submissionsTab === 'mistakes')}
+                onClick={() => handleNav(() => (onNavigateSubmissions ? onNavigateSubmissions('mistakes') : (onNavigateMistakes ? onNavigateMistakes() : onNavigateDashboard())))}
                 open={sidebarOpen}
+                badge={mistakesCount && mistakesCount > 0 ? String(mistakesCount) : undefined}
               />
               {isAdmin && (
                 <SidebarOption
@@ -430,7 +446,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                   <SidebarOption
                     Icon={BarChart3}
                     title={t('Tableau de bord')}
-                    isSelected={currentView === 'dashboard' && !isMistakesTabActive}
+                    isSelected={currentView === 'dashboard'}
                     onClick={() => {
                       setMobileMenuOpen(false);
                       handleNav(onNavigateDashboard);
@@ -448,14 +464,26 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                     open={true}
                   />
                   <SidebarOption
-                    Icon={AlertCircle}
-                    title={language === 'en' ? 'My Mistakes' : 'Mes Fautes'}
-                    isSelected={isMistakesTabActive}
+                    Icon={ClipboardList}
+                    title={language === 'en' ? 'My Submissions' : 'Mes Soumissions'}
+                    isSelected={currentView === 'submissions' && submissionsTab !== 'mistakes'}
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      handleNav(onNavigateMistakes || onNavigateDashboard);
+                      handleNav(() => (onNavigateSubmissions ? onNavigateSubmissions('exams') : onNavigateDashboard()));
                     }}
                     open={true}
+                    badge={submissionsCount > 0 ? String(submissionsCount) : undefined}
+                  />
+                  <SidebarOption
+                    Icon={AlertCircle}
+                    title={language === 'en' ? 'My Mistakes' : 'Mes Fautes'}
+                    isSelected={(currentView === 'dashboard' && isMistakesTabActive) || (currentView === 'submissions' && submissionsTab === 'mistakes')}
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleNav(() => (onNavigateSubmissions ? onNavigateSubmissions('mistakes') : (onNavigateMistakes ? onNavigateMistakes() : onNavigateDashboard())));
+                    }}
+                    open={true}
+                    badge={mistakesCount && mistakesCount > 0 ? String(mistakesCount) : undefined}
                   />
                   {isAdmin && (
                     <SidebarOption

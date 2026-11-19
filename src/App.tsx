@@ -5,6 +5,7 @@ import { Results } from './pages/Results';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Feedback } from './pages/Feedback';
+import { MySubmissions } from './pages/MySubmissions';
 import { AppLayout } from './components/AppLayout';
 import { ExamCombination, ExamResult, TaskKey } from './types/exam';
 import { saveSubmission, getStoredSubmissions, syncStoredSubmissions, mergeSubmissions } from './utils/storage';
@@ -18,10 +19,11 @@ import { LanguageProvider, useLanguage } from './context/LanguageContext';
 
 const MainRouter: React.FC = () => {
   const { user, loading, isEmailVerified, signOut, isAdmin, isConfigured } = useAuth();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
 
-  const [view, setView] = useState<'home' | 'simulator' | 'results' | 'dashboard' | 'feedback'>('home');
+  const [view, setView] = useState<'home' | 'simulator' | 'results' | 'dashboard' | 'feedback' | 'submissions'>('home');
   const [dashboardTab, setDashboardTab] = useState<'submissions' | 'mistakes' | 'admin'>('submissions');
+  const [submissionsTab, setSubmissionsTab] = useState<'exams' | 'mistakes'>('exams');
 
   // Auto-redirect returning users with evaluated submissions to Dashboard on first load
   const hasAutoRedirected = useRef(false);
@@ -246,10 +248,14 @@ const MainRouter: React.FC = () => {
     setView('results');
   };
 
-  const handleNavigateToMistakes = () => {
+  const handleNavigateSubmissions = (tab: 'exams' | 'mistakes' = 'exams') => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    setDashboardTab('mistakes');
-    setView('dashboard');
+    setSubmissionsTab(tab);
+    setView('submissions');
+  };
+
+  const handleNavigateToMistakes = () => {
+    handleNavigateSubmissions('mistakes');
   };
 
   const handleRetakeCombination = (combo: ExamCombination, year: string, month: string) => {
@@ -285,6 +291,11 @@ const MainRouter: React.FC = () => {
     if (view === 'dashboard') {
       return isAdmin ? t("Espace Administrateur avec gestion des alertes.") : t("Bienvenue sur votre tableau de bord personnel.");
     }
+    if (view === 'submissions') {
+      return submissionsTab === 'mistakes'
+        ? (language === 'en' ? "Your categorized mistake bank with targeted revision tips." : "Votre banque d'erreurs répertoriées avec conseils de révision.")
+        : (language === 'en' ? "Complete history of all your past exams and writing submissions." : "Historique complet de vos examens et suivi de vos rédactions.");
+    }
     if (view === 'simulator') {
       return isPracticeMode ? t("Entraînement chronométré") : t("Examen en cours (60 minutes)");
     }
@@ -318,6 +329,8 @@ const MainRouter: React.FC = () => {
         setDashboardTab('submissions');
         setView('dashboard');
       }}
+      onNavigateSubmissions={handleNavigateSubmissions}
+      submissionsTab={submissionsTab}
       onNavigateMistakes={handleNavigateToMistakes}
       mistakesCount={mistakesCount}
       isMistakesTabActive={view === 'dashboard' && dashboardTab === 'mistakes'}
@@ -351,6 +364,17 @@ const MainRouter: React.FC = () => {
           onRetakeCombination={handleRetakeCombination}
           onHomeClick={handleGoHome}
           onFeedbackClick={() => setView('feedback')}
+          onNavigateToSubmissions={handleNavigateSubmissions}
+        />
+      )}
+
+      {view === 'submissions' && (
+        <MySubmissions
+          initialTab={submissionsTab}
+          onStartNewExam={handleGoHome}
+          onViewSubmission={handleViewPastSubmission}
+          onRetakeCombination={handleRetakeCombination}
+          onHomeClick={handleGoHome}
         />
       )}
 
