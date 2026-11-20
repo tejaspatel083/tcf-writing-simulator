@@ -134,7 +134,22 @@ export async function fetchSubmissionsFromSupabase(
     query = query.eq('email', userEmail.trim().toLowerCase());
   }
 
-  const { data, error } = await query;
+  let data: any[] | null = null;
+  let error: any = null;
+
+  try {
+    const res = await Promise.race([
+      query,
+      new Promise<any>((_, reject) =>
+        setTimeout(() => reject(new Error('Supabase fetch timed out after 4000ms')), 4000)
+      )
+    ]);
+    data = res.data;
+    error = res.error;
+  } catch (err: any) {
+    console.warn('Supabase submissions query timed out or failed:', err);
+    return { submissions: [], error: err };
+  }
 
   if (error) {
     console.error('Error fetching submissions from Supabase:', error);

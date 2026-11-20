@@ -60,11 +60,17 @@ export const MySubmissions: React.FC<MySubmissionsProps> = ({
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     let isMounted = true;
 
-    async function loadData() {
-      setLoading(true);
+    // Safety timeout: never let loading remain true for more than 1.5s
+    const safetyTimeout = setTimeout(() => {
+      if (isMounted) {
+        setLoading(false);
+      }
+    }, 1500);
 
+    async function loadData() {
       // 1. If in Admin Inspection Mode for a candidate
       if (inspectedUser) {
+        setLoading(true);
         try {
           const candData = await getCandidateSubmissionsAndMistakes(inspectedUser.email, inspectedUser.id);
           if (isMounted) {
@@ -75,15 +81,20 @@ export const MySubmissions: React.FC<MySubmissionsProps> = ({
           return;
         } catch (e) {
           console.error('Error loading candidate submissions:', e);
+          if (isMounted) setLoading(false);
+          return;
         }
       }
 
-      // 2. Load locally stored submissions first
+      // 2. Load locally stored submissions IMMEDIATELY so user never waits
       const local = getStoredSubmissions();
       const localMistakes = getStoredMistakes();
       if (isMounted) {
         setSubmissions(local);
         setMistakes(localMistakes);
+        if (local.length > 0) {
+          setLoading(false);
+        }
       }
 
       // 3. Fetch all submissions belonging to this user from Supabase (by user.id and user.email)
@@ -100,11 +111,15 @@ export const MySubmissions: React.FC<MySubmissionsProps> = ({
           }
         } catch (e) {
           console.error('Error fetching submissions for MySubmissions:', e);
+        } finally {
+          if (isMounted) {
+            setLoading(false);
+          }
         }
-      }
-
-      if (isMounted) {
-        setLoading(false);
+      } else {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
 
@@ -112,6 +127,7 @@ export const MySubmissions: React.FC<MySubmissionsProps> = ({
 
     return () => {
       isMounted = false;
+      clearTimeout(safetyTimeout);
     };
   }, [user, isConfigured, inspectedUser]);
 

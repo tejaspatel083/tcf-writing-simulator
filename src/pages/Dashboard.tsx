@@ -63,11 +63,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     let isMounted = true;
 
-    async function loadData() {
-      setLoading(true);
+    // Safety timeout: never leave loading true for more than 1.5s
+    const safetyTimeout = setTimeout(() => {
+      if (isMounted) {
+        setLoading(false);
+      }
+    }, 1500);
 
+    async function loadData() {
       // If viewing under Admin Inspection mode for a specific candidate
       if (inspectedUser) {
+        setLoading(true);
         try {
           const candData = await getCandidateSubmissionsAndMistakes(inspectedUser.email, inspectedUser.id);
           if (isMounted) {
@@ -78,14 +84,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
           return;
         } catch (e) {
           console.error('Error loading inspected candidate data:', e);
+          if (isMounted) setLoading(false);
+          return;
         }
       }
 
+      // Load locally stored submissions IMMEDIATELY so dashboard renders instantly
       const local = getStoredSubmissions();
       const localMistakes = getStoredMistakes();
       if (isMounted) {
         setSubmissions(local);
         setMistakes(localMistakes);
+        if (local.length > 0) {
+          setLoading(false);
+        }
       }
 
       if (user && isConfigured) {
@@ -101,11 +113,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
           }
         } catch (e) {
           console.error('Error fetching submissions for dashboard:', e);
+        } finally {
+          if (isMounted) {
+            setLoading(false);
+          }
         }
-      }
-
-      if (isMounted) {
-        setLoading(false);
+      } else {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
 
@@ -113,6 +129,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
     return () => {
       isMounted = false;
+      clearTimeout(safetyTimeout);
     };
   }, [user, isConfigured, inspectedUser]);
 
