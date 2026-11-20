@@ -300,7 +300,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className="space-y-6">
           {/* Main Bento Layout (Direct view, no accordion dropdown, bento format only) */}
           <DashboardBentoLayout
-            userName={userName}
+            userName={inspectedUser ? (inspectedUser.displayName || inspectedUser.email.split('@')[0]) : userName}
             submissions={submissions}
             mistakes={mistakes}
             targetGoal={targetGoal}

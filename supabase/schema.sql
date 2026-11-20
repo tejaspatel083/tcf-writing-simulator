@@ -76,6 +76,21 @@ create policy "Users and Admin can read submissions" on public.submissions
 create policy "Users can insert own submissions" on public.submissions
   for insert with check (auth.uid() = user_id);
 
+-- Allow users to update their own submissions (e.g. saving AI score and feedback),
+-- and allow Admin (tejas083patel@gmail.com) to update any submission
+drop policy if exists "Users and Admin can update submissions" on public.submissions;
+
+create policy "Users and Admin can update submissions" on public.submissions
+  for update to authenticated
+  using (
+    auth.uid() = user_id
+    or (auth.jwt() ->> 'email') = 'tejas083patel@gmail.com'
+  )
+  with check (
+    auth.uid() = user_id
+    or (auth.jwt() ->> 'email') = 'tejas083patel@gmail.com'
+  );
+
 create policy "Users can delete own submissions" on public.submissions
   for delete using (auth.uid() = user_id);
 

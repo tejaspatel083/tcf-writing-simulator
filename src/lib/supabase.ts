@@ -93,6 +93,11 @@ export async function saveSubmissionToSupabase(
     payload.email = emailToSave.trim().toLowerCase();
   }
 
+  // Persist AI evaluation directly if already present on the result object
+  if (result.aiEvaluation) {
+    payload.ai_feedback = result.aiEvaluation;
+  }
+
   const { data, error } = await supabase
     .from('submissions')
     .insert([payload])
@@ -180,29 +185,36 @@ export async function fetchSubmissionsFromSupabase(
 }
 
 /**
- * Saves or updates AI evaluation feedback on an existing submission
+ * Saves or updates AI evaluation feedback on an existing submission.
+ * Updates directly by submission UUID so both candidates and inspecting admins can persist evaluations.
  */
 export async function updateSubmissionAiFeedback(
   submissionId: string,
   userId: string,
   aiFeedback: any
 ): Promise<{ error: Error | null }> {
-  if (!supabase || !isSupabaseConfigured) {
+  if (!supabase || !isSupabaseConfigured || !submissionId) {
     return { error: null };
   }
 
-  const { error } = await supabase
-    .from('submissions')
-    .update({ ai_feedback: aiFeedback })
-    .eq('id', submissionId)
-    .eq('user_id', userId);
+  try {
+    const cleanFeedback = JSON.parse(JSON.stringify(aiFeedback));
 
-  if (error) {
-    console.error('Error updating AI feedback in Supabase:', error);
-    return { error: new Error(error.message) };
+    const { error } = await supabase
+      .from('submissions')
+      .update({ ai_feedback: cleanFeedback })
+      .eq('id', submissionId);
+
+    if (error) {
+      console.error('Error updating AI feedback in Supabase:', error);
+      return { error: new Error(error.message) };
+    }
+
+    return { error: null };
+  } catch (err: any) {
+    console.error('Exception updating AI feedback in Supabase:', err);
+    return { error: new Error(err.message) };
   }
-
-  return { error: null };
 }
 
 /**

@@ -62,10 +62,17 @@ export const Results: React.FC<ResultsProps> = ({
       // Save mistakes to local Mistakes Bank
       saveEvaluationMistakes(evalData, updatedResult);
 
-      // Persist in Supabase if logged in
-      if (user && result.id) {
+      // Cache evaluation in local storage by ID
+      if (result.id) {
         try {
-          await updateSubmissionAiFeedback(result.id, user.id, evalData);
+          localStorage.setItem(`tcf_ai_eval_${result.id}`, JSON.stringify(evalData));
+        } catch {}
+      }
+
+      // Persist in Supabase database so scores are visible live to both user and admin
+      if (result.id) {
+        try {
+          await updateSubmissionAiFeedback(result.id, user?.id || '', evalData);
         } catch (dbErr) {
           console.warn('Could not sync AI evaluation to Supabase:', dbErr);
         }
