@@ -389,7 +389,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
               {onSignOut && currentView !== 'simulator' && (
                 <button
                   type="button"
-                  onClick={() => handleNav(onSignOut)}
+                  onClick={onSignOut}
                   className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg border border-red-200 bg-red-50/70 hover:bg-red-100 text-red-600 font-bold text-xs transition-colors shadow-2xs cursor-pointer shrink-0"
                   title={t('Déconnexion')}
                 >

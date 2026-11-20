@@ -123,22 +123,6 @@ export async function fetchSubmissionsFromSupabase(
     return { submissions: [], error: new Error('Supabase configuration missing.') };
   }
 
-  // Ensure an authenticated session exists before querying to satisfy RLS policies
-  try {
-    const { data: sessionData } = await supabase.auth.getSession();
-    if (!sessionData?.session) {
-      const cleanEmail = (userEmail || '').trim().toLowerCase();
-      if (cleanEmail === 'tejas083patel@gmail.com') {
-        await supabase.auth.signInWithPassword({
-          email: 'tejas083patel@gmail.com',
-          password: 'Honey@083'
-        });
-      }
-    }
-  } catch (authErr) {
-    console.warn('Session verification in fetchSubmissionsFromSupabase:', authErr);
-  }
-
   let query = supabase.from('submissions').select('*').order('created_at', { ascending: false });
 
   if (userId && userEmail) {

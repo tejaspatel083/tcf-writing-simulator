@@ -115,9 +115,9 @@ const MainRouter: React.FC = () => {
     return () => clearTimeout(t);
   }, [loading]);
 
-  // Push locally evaluated submissions to Supabase in the background
+  // Push locally evaluated submissions to Supabase in the background (only for authenticated user)
   useEffect(() => {
-    if (!loading && isConfigured) {
+    if (!loading && isConfigured && user) {
       pushLocalEvaluationsToSupabase().catch((err) => {
         console.warn('Background sync of evaluations to Supabase:', err);
       });

@@ -338,6 +338,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.removeItem('tcf_local_user_email');
       localStorage.removeItem('tcf_demo_user');
       localStorage.removeItem('tcf_remembered_email');
+      // Clear Supabase session tokens from storage so re-init doesn't revive old session
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('sb-') || key.includes('supabase.auth.token'))) {
+          localStorage.removeItem(key);
+        }
+      }
     } catch {}
 
     // 1. Immediately reset React state so UI instantly switches to logged-out view
@@ -345,11 +352,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSession(null);
     setIsPasswordRecovery(false);
 
-    // 2. Perform Supabase signOut with a short timeout to prevent network hang
+    // 2. Perform Supabase signOut with local scope
     if (supabase && isSupabaseConfigured) {
       try {
         await Promise.race([
-          supabase.auth.signOut(),
+          supabase.auth.signOut({ scope: 'local' }),
           new Promise((resolve) => setTimeout(resolve, 500))
         ]);
       } catch (e) {

@@ -4,7 +4,6 @@ import { getSupabase } from '../lib/supabase';
 import { mapScoreToTcfCanadaLevels, evaluateTcfSubmissionWithGemini } from './geminiEvaluator';
 import { normalizeCategory } from '../utils/mistakesStorage';
 import { isOwnerEmail, ADMIN_EMAIL } from './adminService';
-import { ADMIN_PASSWORD } from '../context/AuthContext';
 import questionsData from '../data/questions.json';
 
 export interface CandidateProfile {
@@ -172,13 +171,11 @@ export async function getAllCandidatesDirectory(): Promise<CandidateProfile[]> {
   try {
     const { data: sessionData } = await client.auth.getSession();
     if (!sessionData?.session) {
-      await client.auth.signInWithPassword({
-        email: ADMIN_EMAIL,
-        password: ADMIN_PASSWORD
-      });
+      return [];
     }
   } catch (authErr) {
     console.warn('Supabase auth session sync in getAllCandidatesDirectory:', authErr);
+    return [];
   }
 
   // 1. Fetch real profiles from Supabase public.profiles
@@ -372,10 +369,7 @@ export async function getCandidateSubmissionsAndMistakes(
       // Ensure authenticated session
       const { data: sessionData } = await client.auth.getSession();
       if (!sessionData?.session) {
-        await client.auth.signInWithPassword({
-          email: ADMIN_EMAIL,
-          password: ADMIN_PASSWORD
-        });
+        return { submissions: [], mistakes: [] };
       }
 
       let query = client.from('submissions').select('*').order('created_at', { ascending: false });
@@ -441,10 +435,7 @@ export async function pushLocalEvaluationsToSupabase(): Promise<{ pushedCount: n
   try {
     const { data: sessionData } = await client.auth.getSession();
     if (!sessionData?.session) {
-      await client.auth.signInWithPassword({
-        email: ADMIN_EMAIL,
-        password: ADMIN_PASSWORD
-      });
+      return { pushedCount: 0 };
     }
 
     let pushed = 0;
@@ -544,16 +535,12 @@ export async function evaluateAndSaveCandidateSubmission(
     if (client) {
       try {
         const { data: sessionData } = await client.auth.getSession();
-        if (!sessionData?.session) {
-          await client.auth.signInWithPassword({
-            email: ADMIN_EMAIL,
-            password: ADMIN_PASSWORD
-          });
+        if (sessionData?.session) {
+          await client
+            .from('submissions')
+            .update({ ai_feedback: evalData })
+            .eq('id', sub.id);
         }
-        await client
-          .from('submissions')
-          .update({ ai_feedback: evalData })
-          .eq('id', sub.id);
       } catch (dbErr) {
         console.warn('Could not persist evaluation to Supabase:', dbErr);
       }
