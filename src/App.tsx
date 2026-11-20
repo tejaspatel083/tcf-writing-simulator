@@ -296,6 +296,18 @@ const MainRouter: React.FC = () => {
   const handleSignOut = async () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     setInspectedUser(null);
+    try {
+      localStorage.removeItem('tcf_admin_logged_in');
+      localStorage.removeItem('tcf_admin_user_email');
+      localStorage.removeItem('tcf_local_user_email');
+      localStorage.removeItem('tcf_demo_user');
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('sb-') || key.includes('supabase.auth.token'))) {
+          localStorage.removeItem(key);
+        }
+      }
+    } catch {}
     await signOut();
   };
 

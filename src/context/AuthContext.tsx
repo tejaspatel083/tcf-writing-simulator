@@ -179,6 +179,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     supabase.auth
       .getSession()
       .then(({ data: { session } }) => {
+        if (isLoggingOutRef.current) return;
         clearTimeout(sessionTimeout);
         setSession(session);
         setUser(session?.user ?? null);
@@ -373,11 +374,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         await Promise.race([
           supabase.auth.signOut({ scope: 'local' }),
-          new Promise((resolve) => setTimeout(resolve, 500))
+          new Promise((resolve) => setTimeout(resolve, 300))
         ]);
       } catch (e) {
         console.warn('Error during signOut:', e);
       }
+    }
+
+    // 3. Immediately hard-navigate to clean root URL to guarantee a single-click clean reset
+    if (typeof window !== 'undefined' && window.location) {
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.location.replace(cleanUrl);
     }
   };
 
