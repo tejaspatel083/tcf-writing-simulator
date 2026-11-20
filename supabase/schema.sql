@@ -13,6 +13,7 @@ create table if not exists public.profiles (
 create table if not exists public.submissions (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users(id) on delete cascade not null,
+  email text,
   year text not null,
   month text not null,
   combination integer not null,
@@ -25,20 +26,28 @@ create table if not exists public.submissions (
   task2_word_count integer default 0 not null,
   task3_answer text default '' not null,
   task3_word_count integer default 0 not null,
+  ai_feedback jsonb,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Ensure columns exist if table was already created
+alter table public.submissions add column if not exists email text;
+alter table public.submissions add column if not exists ai_feedback jsonb;
 
 -- 3. Enable Row Level Security (RLS)
 alter table public.profiles enable row level security;
 alter table public.submissions enable row level security;
 
 -- 4. RLS Policies for Profiles
-create policy "Users can read own profile" on public.profiles
-  for select using (auth.uid() = id);
+drop policy if exists "Users can read own profile" on public.profiles;
+drop policy if exists "Admin can read all profiles" on public.profiles;
+drop policy if exists "Users and Admin can read profiles" on public.profiles;
 
-create policy "Admin can read all profiles" on public.profiles
+create policy "Users and Admin can read profiles" on public.profiles
   for select using (
-    (select email from auth.users where id = auth.uid()) = 'tejas083patel@gmail.com'
+    auth.uid() = id
+    or (auth.jwt() ->> 'email') = 'tejas083patel@gmail.com'
+    or auth.uid() in (select p.id from public.profiles p where p.email = 'tejas083patel@gmail.com')
   );
 
 create policy "Users can insert own profile" on public.profiles
@@ -48,13 +57,16 @@ create policy "Users can update own profile" on public.profiles
   for update using (auth.uid() = id);
 
 -- 5. RLS Policies for Submissions (CRITICAL SECURITY REQUIREMENT)
--- Users can ONLY access, create, or delete their OWN submissions.
-create policy "Users can read own submissions" on public.submissions
-  for select using (auth.uid() = user_id);
+-- Users can read their own submissions, Admin can read ALL submissions.
+drop policy if exists "Users can read own submissions" on public.submissions;
+drop policy if exists "Admin can read all submissions" on public.submissions;
+drop policy if exists "Users and Admin can read submissions" on public.submissions;
 
-create policy "Admin can read all submissions" on public.submissions
+create policy "Users and Admin can read submissions" on public.submissions
   for select using (
-    (select email from auth.users where id = auth.uid()) = 'tejas083patel@gmail.com'
+    auth.uid() = user_id
+    or (auth.jwt() ->> 'email') = 'tejas083patel@gmail.com'
+    or auth.uid() in (select p.id from public.profiles p where p.email = 'tejas083patel@gmail.com')
   );
 
 create policy "Users can insert own submissions" on public.submissions
