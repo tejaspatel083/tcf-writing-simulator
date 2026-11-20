@@ -940,7 +940,14 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                           fontWeight: '700'
                         }}
                       />
-                      <Area type="monotone" dataKey="score" stroke="#2563eb" strokeWidth={2.8} fill="url(#scoreGradientNeomorphEmpty)" />
+                      <Area
+                        type="monotone"
+                        dataKey="score"
+                        stroke="#2563eb"
+                        strokeWidth={2.8}
+                        fill="url(#scoreGradientNeomorphEmpty)"
+                        isAnimationActive={false}
+                      />
                       </AreaChart>
                     </ResponsiveContainer>
                     <div className="text-center py-2 text-xs font-semibold text-slate-400">
@@ -1114,6 +1121,8 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                           stroke="#2563eb"
                           strokeWidth={2.8}
                           fill="url(#scoreGradientNeomorph)"
+                          isAnimationActive={false}
+                          connectNulls={true}
                           dot={{
                             r: 4.5,
                             fill: '#2563eb',
@@ -1287,6 +1296,7 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                           fill="#3b82f6"
                           fillOpacity={0.28}
                           strokeWidth={2.5}
+                          isAnimationActive={false}
                           dot={{ r: 4, fill: '#2563eb', strokeWidth: 1.5, stroke: '#ffffff' }}
                         />
                         <Radar
@@ -1296,6 +1306,7 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                           fill="#f59e0b"
                           fillOpacity={0.18}
                           strokeWidth={2.5}
+                          isAnimationActive={false}
                           dot={{ r: 3.5, fill: '#f59e0b', strokeWidth: 1.5, stroke: '#ffffff' }}
                         />
                         <RechartsTooltip

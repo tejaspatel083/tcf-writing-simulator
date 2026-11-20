@@ -181,9 +181,22 @@ export const DashboardBentoLayout: React.FC<DashboardBentoLayoutProps> = ({
   const arcLength = Math.PI * arcRadius; // ~175.93
   const strokeDashoffset = arcLength * (1 - gaugePercent);
   const needleAngle = Math.PI * (1 - gaugePercent);
-  const needleLength = 43;
-  const needleX = centerX + Math.cos(needleAngle) * needleLength;
-  const needleY = centerY - Math.sin(needleAngle) * needleLength;
+  const needleLength = 46;
+  const tipX = centerX + Math.cos(needleAngle) * needleLength;
+  const tipY = centerY - Math.sin(needleAngle) * needleLength;
+
+  // Base width perpendicular to needle direction for tapered 3D pointer
+  const baseWidth = 3.5;
+  const tailLength = 8;
+  const perp1 = needleAngle + Math.PI / 2;
+  const perp2 = needleAngle - Math.PI / 2;
+  const base1X = centerX + Math.cos(perp1) * baseWidth;
+  const base1Y = centerY - Math.sin(perp1) * baseWidth;
+  const base2X = centerX + Math.cos(perp2) * baseWidth;
+  const base2Y = centerY - Math.sin(perp2) * baseWidth;
+  const tailX = centerX - Math.cos(needleAngle) * tailLength;
+  const tailY = centerY + Math.sin(needleAngle) * tailLength;
+  const needlePolygonPoints = `${tipX.toFixed(2)},${tipY.toFixed(2)} ${base1X.toFixed(2)},${base1Y.toFixed(2)} ${tailX.toFixed(2)},${tailY.toFixed(2)} ${base2X.toFixed(2)},${base2Y.toFixed(2)}`;
 
   return (
     <div className="w-full space-y-4">
@@ -343,9 +356,9 @@ export const DashboardBentoLayout: React.FC<DashboardBentoLayoutProps> = ({
                     <stop offset="100%" stopColor="#047857" /> {/* 20/20: Deep Forest Green */}
                   </linearGradient>
 
-                  {/* 3D Shadow for needle */}
-                  <filter id="needle3dShadow" x="-30%" y="-30%" width="160%" height="160%">
-                    <feDropShadow dx="2" dy="3" stdDeviation="2" floodColor="#0f172a" floodOpacity="0.38" />
+                  {/* 3D Shadow for needle - use userSpaceOnUse so 0-width elements don't get clipped */}
+                  <filter id="needle3dShadow" filterUnits="userSpaceOnUse" x="0" y="0" width="160" height="90">
+                    <feDropShadow dx="1.5" dy="2.5" stdDeviation="2" floodColor="#0f172a" floodOpacity="0.4" />
                   </filter>
 
                   {/* 3D Soft glow for active arc */}
@@ -439,26 +452,27 @@ export const DashboardBentoLayout: React.FC<DashboardBentoLayoutProps> = ({
 
                 {/* --- 3D NEEDLE POINTER --- */}
                 <g filter="url(#needle3dShadow)" className="transition-all duration-700 ease-out">
-                  {/* Needle stem */}
+                  {/* Tapered pointer polygon */}
+                  <polygon
+                    points={needlePolygonPoints}
+                    fill="#1e293b"
+                  />
+                  {/* Specular ridge on the needle */}
                   <line
                     x1={centerX}
                     y1={centerY}
-                    x2={needleX}
-                    y2={needleY}
-                    stroke="#1e293b"
-                    strokeWidth="3.2"
+                    x2={tipX}
+                    y2={tipY}
+                    stroke="#94a3b8"
+                    strokeWidth="1.2"
                     strokeLinecap="round"
                   />
-                  {/* Specular highlight edge on needle */}
-                  <line
-                    x1={centerX}
-                    y1={centerY}
-                    x2={needleX}
-                    y2={needleY}
-                    stroke="#64748b"
-                    strokeWidth="1"
-                    strokeLinecap="round"
-                    opacity="0.8"
+                  {/* Pointer tip accent */}
+                  <circle
+                    cx={tipX}
+                    cy={tipY}
+                    r="2"
+                    fill="#ef4444"
                   />
                 </g>
 
