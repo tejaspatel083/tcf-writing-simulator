@@ -12,12 +12,14 @@ import { evaluateTcfSubmissionWithGemini, setGeminiApiKey } from '../services/ge
 import { updateStoredSubmission } from '../utils/storage';
 import { updateSubmissionAiFeedback } from '../lib/supabase';
 import { saveEvaluationMistakes } from '../utils/mistakesStorage';
+import KineticDotsLoader from '../components/ui/kinetic-dots-loader';
 
 interface ResultsProps {
   result: ExamResult;
   onHomeClick: () => void;
   onDashboardClick?: () => void;
   onFeedbackClick?: () => void;
+  onNavigateToMistakes?: () => void;
   hideHeader?: boolean;
 }
 
@@ -26,6 +28,7 @@ export const Results: React.FC<ResultsProps> = ({
   onHomeClick,
   onDashboardClick,
   onFeedbackClick,
+  onNavigateToMistakes,
   hideHeader = false
 }) => {
   const { language, t } = useLanguage();
@@ -243,17 +246,6 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
             </div>
           </div>
 
-          {/* Evaluating Loading State Indicator */}
-          {evaluating && (
-            <div className="mb-6 p-4 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center gap-3 animate-pulse">
-              <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin shrink-0"></div>
-              <div className="text-xs text-indigo-900">
-                <p className="font-bold">{t("Analyse en cours par l'expert TCF Canada...")}</p>
-                <p className="text-indigo-700 mt-0.5">{t("Identification des fautes par catégorie, vérification du respect des consignes et estimation du niveau CECRL/NCLC (environ 3 secondes).")}</p>
-              </div>
-            </div>
-          )}
-
           {/* AI Evaluation Error Alert */}
           {evalError && (
             <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -416,13 +408,19 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
                       : 'Les fautes de cette évaluation sont enregistrées dans votre carnet de fautes (Tableau de bord).'}
                   </p>
                 </div>
-                {onDashboardClick && (
+                {(onNavigateToMistakes || onDashboardClick) && (
                   <button
                     type="button"
-                    onClick={onDashboardClick}
-                    className="px-3 py-1.5 rounded-lg bg-white border border-purple-200 hover:bg-purple-100/80 text-purple-800 font-bold text-xs shadow-2xs transition-colors cursor-pointer shrink-0 self-start sm:self-auto flex items-center gap-1"
+                    onClick={() => {
+                      if (onNavigateToMistakes) {
+                        onNavigateToMistakes();
+                      } else if (onDashboardClick) {
+                        onDashboardClick();
+                      }
+                    }}
+                    className="px-3.5 py-1.5 rounded-lg bg-white border border-purple-200 hover:bg-purple-100/80 text-purple-800 font-bold text-xs shadow-2xs transition-colors cursor-pointer shrink-0 self-start sm:self-auto flex items-center gap-1.5"
                   >
-                    <span>{language === 'en' ? 'Open Mistakes Bank' : 'Ouvrir mon carnet'}</span>
+                    <span>{language === 'en' ? 'Open Mistakes Bank' : 'Ouvrir mon carnet de fautes'}</span>
                     <span>→</span>
                   </button>
                 )}
@@ -437,8 +435,18 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
             </div>
           )}
 
+          {/* Evaluating Loading State: Displayed in the AI Evaluation section below the 4 cards */}
+          {evaluating && (
+            <div className="mb-8 p-6 sm:p-10 rounded-2xl bg-white border border-slate-200 shadow-sm text-center transition-all animate-in fade-in duration-300">
+              <KineticDotsLoader
+                label={t("Analyse en cours par l'expert TCF Canada...")}
+                sublabel={t("Identification des fautes par catégorie, vérification du respect des consignes et estimation du niveau CECRL/NCLC (environ 3 secondes).")}
+              />
+            </div>
+          )}
+
           {/* Individual Tasks Display (shown before AI evaluation is triggered) */}
-          {!evaluation && (
+          {!evaluation && !evaluating && (
             <div className="space-y-6">
               {tasksList.map((tItem) => {
                 const text = result.answers[tItem.key];

@@ -51,7 +51,7 @@ function createAdminUserObject(email: string = ADMIN_EMAIL): User {
   const normEmail = email.trim().toLowerCase();
   const savedName = localStorage.getItem(`tcf_user_name_${normEmail}`);
   return {
-    id: 'admin_tjp083_id',
+    id: 'a110a908-64a0-4b45-84dc-869c3133f9d8',
     email: normEmail,
     email_confirmed_at: new Date().toISOString(),
     aud: 'authenticated',
@@ -99,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     });
 
-    if (supabase && isSupabaseConfigured && user && user.id !== 'admin_tjp083_id') {
+    if (supabase && isSupabaseConfigured && user) {
       try {
         await supabase.auth.updateUser({
           data: { name: trimmed, full_name: trimmed }
@@ -117,6 +117,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const adminActive = localStorage.getItem('tcf_admin_logged_in') === 'true';
       if (adminActive) {
+        if (supabase && isSupabaseConfigured) {
+          supabase.auth
+            .signInWithPassword({
+              email: ADMIN_EMAIL,
+              password: ADMIN_PASSWORD
+            })
+            .then(({ data }) => {
+              if (data?.session) {
+                setSession(data.session);
+                setUser(data.user);
+              }
+            })
+            .catch(() => {});
+        }
         setUser(createAdminUserObject(ADMIN_EMAIL));
         setLoading(false);
         return;
@@ -266,6 +280,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           localStorage.setItem('tcf_admin_logged_in', 'true');
           localStorage.setItem('tcf_admin_user_email', normalized);
         } catch {}
+
+        // Authenticate with Supabase Auth so RLS policies allow querying all live submissions!
+        if (supabase && isSupabaseConfigured) {
+          try {
+            const { data: supaAuth } = await supabase.auth.signInWithPassword({
+              email: normalized,
+              password: ADMIN_PASSWORD
+            });
+            if (supaAuth?.session) {
+              setSession(supaAuth.session);
+              setUser(supaAuth.user);
+              return { error: null };
+            }
+          } catch (e) {
+            console.warn('Supabase admin login sync:', e);
+          }
+        }
+
         setUser(createAdminUserObject(normalized));
         return { error: null };
       }

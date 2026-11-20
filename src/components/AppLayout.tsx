@@ -40,6 +40,10 @@ interface AppLayoutProps {
   onStartNewExam?: () => void;
   onSignOut: () => void;
   submissionsCount?: number;
+  onNavigateAdmin?: () => void;
+  isAdminTabActive?: boolean;
+  inspectedUser?: { id?: string; email: string; displayName?: string } | null;
+  onClearInspectedUser?: () => void;
   children: React.ReactNode;
 }
 
@@ -59,6 +63,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   onStartNewExam,
   onSignOut,
   submissionsCount = 0,
+  onNavigateAdmin,
+  isAdminTabActive = false,
+  inspectedUser = null,
+  onClearInspectedUser,
   children
 }) => {
   const { user, userName, isAdmin } = useAuth();
@@ -184,7 +192,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
               <SidebarOption
                 Icon={BarChart3}
                 title={t('Tableau de bord')}
-                isSelected={currentView === 'dashboard'}
+                isSelected={currentView === 'dashboard' && !isAdminTabActive && !isMistakesTabActive}
                 onClick={() => handleNav(onNavigateDashboard)}
                 open={sidebarOpen}
               />
@@ -215,8 +223,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                 <SidebarOption
                   Icon={Shield}
                   title={t('Administration')}
-                  isSelected={currentView === 'dashboard' && !isMistakesTabActive}
-                  onClick={() => handleNav(onNavigateDashboard)}
+                  isSelected={isAdminTabActive}
+                  onClick={() => handleNav(onNavigateAdmin || onNavigateDashboard)}
                   open={sidebarOpen}
                   badge="👑"
                 />
@@ -376,6 +384,40 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
             </div>
           </header>
 
+          {/* Admin Inspection Mode Top Banner */}
+          {inspectedUser && (
+            <div className="bg-gradient-to-r from-amber-500/15 via-blue-500/15 to-indigo-500/15 border-b border-amber-300/60 px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3 text-xs backdrop-blur-md sticky top-[57px] sm:top-[65px] z-15 shadow-xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
+                <div className="truncate">
+                  <span className="font-extrabold text-amber-900 mr-1.5">👑 {t('Mode Inspection Administrateur')} :</span>
+                  <span className="font-bold text-slate-900">{inspectedUser.displayName || inspectedUser.email}</span>
+                  <span className="text-slate-500 ml-1.5 font-mono text-[11px] truncate">({inspectedUser.email})</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                {onNavigateAdmin && (
+                  <button
+                    type="button"
+                    onClick={onNavigateAdmin}
+                    className="px-3 py-1 rounded-xl bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold border border-slate-200 shadow-2xs transition-colors cursor-pointer"
+                  >
+                    {t('Changer de Candidat')}
+                  </button>
+                )}
+                {onClearInspectedUser && (
+                  <button
+                    type="button"
+                    onClick={onClearInspectedUser}
+                    className="px-3 py-1 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
+                  >
+                    ✕ {t('Quitter')}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Children View Content */}
           <main className={`flex-1 min-w-0 ${currentView !== 'simulator' ? 'pb-20 lg:pb-0' : ''}`}>
             {children}
@@ -446,7 +488,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                   <SidebarOption
                     Icon={BarChart3}
                     title={t('Tableau de bord')}
-                    isSelected={currentView === 'dashboard'}
+                    isSelected={currentView === 'dashboard' && !isAdminTabActive && !isMistakesTabActive}
                     onClick={() => {
                       setMobileMenuOpen(false);
                       handleNav(onNavigateDashboard);
@@ -489,10 +531,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                     <SidebarOption
                       Icon={Shield}
                       title={t('Administration')}
-                      isSelected={currentView === 'dashboard' && !isMistakesTabActive}
+                      isSelected={isAdminTabActive}
                       onClick={() => {
                         setMobileMenuOpen(false);
-                        handleNav(onNavigateDashboard);
+                        handleNav(onNavigateAdmin || onNavigateDashboard);
                       }}
                       open={true}
                       badge="👑"

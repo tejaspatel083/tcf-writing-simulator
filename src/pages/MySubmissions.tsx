@@ -7,6 +7,7 @@ import { ExamResult, TaskKey } from '../types/exam';
 import { SavedMistake } from '../types/aiEvaluation';
 import { MistakesView } from '../components/MistakesView';
 import { useLanguage } from '../context/LanguageContext';
+import { getCandidateSubmissionsAndMistakes } from '../services/userProfilesService';
 import {
   ClipboardList,
   AlertCircle,
@@ -28,6 +29,7 @@ interface MySubmissionsProps {
   onViewSubmission: (result: ExamResult) => void;
   onRetakeCombination: (combo: any, year: string, month: string) => void;
   onHomeClick?: () => void;
+  inspectedUser?: { id?: string; email: string; displayName?: string } | null;
 }
 
 export const MySubmissions: React.FC<MySubmissionsProps> = ({
@@ -36,6 +38,7 @@ export const MySubmissions: React.FC<MySubmissionsProps> = ({
   onViewSubmission,
   onRetakeCombination,
   onHomeClick,
+  inspectedUser
 }) => {
   const { user, isConfigured } = useAuth();
   const { language, t } = useLanguage();
@@ -57,6 +60,20 @@ export const MySubmissions: React.FC<MySubmissionsProps> = ({
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     async function loadData() {
       setLoading(true);
+
+      // If in Admin Inspection Mode for a candidate
+      if (inspectedUser) {
+        try {
+          const candData = await getCandidateSubmissionsAndMistakes(inspectedUser.email, inspectedUser.id);
+          setSubmissions(candData.submissions);
+          setMistakes(candData.mistakes);
+          setLoading(false);
+          return;
+        } catch (e) {
+          console.error('Error loading candidate submissions:', e);
+        }
+      }
+
       const local = getStoredSubmissions();
       setSubmissions(local);
 
@@ -85,7 +102,7 @@ export const MySubmissions: React.FC<MySubmissionsProps> = ({
     }
 
     loadData();
-  }, [user, isConfigured]);
+  }, [user, isConfigured, inspectedUser]);
 
   const handleDeleteSubmission = async (sub: ExamResult) => {
     if (!sub.id) return;

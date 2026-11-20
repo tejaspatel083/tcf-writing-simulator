@@ -59,7 +59,8 @@ import { getLocalISOString } from '../utils/dateUtils';
 export async function saveSubmissionToSupabase(
   userId: string,
   result: ExamResult,
-  startedAt?: string
+  startedAt?: string,
+  userEmail?: string
 ): Promise<{ data: DBSubmission | null; error: Error | null }> {
   if (!supabase || !isSupabaseConfigured) {
     return { data: null, error: new Error('Supabase configuration missing.') };
@@ -71,7 +72,7 @@ export async function saveSubmissionToSupabase(
     ? startedAt
     : getLocalISOString(new Date(now.getTime() - (result.timeUsedSeconds || 0) * 1000));
 
-  const payload = {
+  const payload: any = {
     user_id: userId,
     year: result.year,
     month: result.month,
@@ -86,6 +87,11 @@ export async function saveSubmissionToSupabase(
     task3_answer: result.answers.task3 || '',
     task3_word_count: result.wordCounts.task3 || 0
   };
+
+  const emailToSave = userEmail || (result as any).userEmail;
+  if (emailToSave) {
+    payload.email = emailToSave.trim().toLowerCase();
+  }
 
   const { data, error } = await supabase
     .from('submissions')

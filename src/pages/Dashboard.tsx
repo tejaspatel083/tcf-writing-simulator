@@ -11,6 +11,7 @@ import { DashboardBentoLayout } from '../components/DashboardBentoLayout';
 import { getStoredMistakes, mergeMistakesFromSubmissions } from '../utils/mistakesStorage';
 import { useLanguage } from '../context/LanguageContext';
 import { mapScoreToTcfCanadaLevels } from '../services/geminiEvaluator';
+import { getCandidateSubmissionsAndMistakes } from '../services/userProfilesService';
 
 interface DashboardProps {
   onStartNewExam: () => void;
@@ -21,6 +22,8 @@ interface DashboardProps {
   initialTab?: 'submissions' | 'mistakes' | 'admin';
   onTabChange?: (tab: 'submissions' | 'mistakes' | 'admin') => void;
   onNavigateToSubmissions?: (tab?: 'exams' | 'mistakes') => void;
+  onImpersonate?: (candidate: any) => void;
+  inspectedUser?: { id?: string; email: string; displayName?: string } | null;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -28,7 +31,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onViewSubmission,
   initialTab,
   onTabChange,
-  onNavigateToSubmissions
+  onNavigateToSubmissions,
+  onImpersonate,
+  inspectedUser
 }) => {
   const { user, userName, isConfigured, isAdmin } = useAuth();
   const { language } = useLanguage();
@@ -58,6 +63,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     async function loadData() {
       setLoading(true);
+
+      // If viewing under Admin Inspection mode for a specific candidate
+      if (inspectedUser) {
+        try {
+          const candData = await getCandidateSubmissionsAndMistakes(inspectedUser.email, inspectedUser.id);
+          setSubmissions(candData.submissions);
+          setMistakes(candData.mistakes);
+          setLoading(false);
+          return;
+        } catch (e) {
+          console.error('Error loading inspected candidate data:', e);
+        }
+      }
+
       const local = getStoredSubmissions();
       setSubmissions(local);
 
@@ -86,7 +105,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     }
 
     loadData();
-  }, [user, isConfigured]);
+  }, [user, isConfigured, inspectedUser]);
 
   // Set of all distinct practice date keys (YYYY-MM-DD)
   const practicedDateSet = useMemo(() => {
@@ -266,7 +285,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {isAdmin && activeTab === 'admin' ? (
-        <AdminPanel />
+        <AdminPanel
+          onImpersonate={onImpersonate}
+          onViewSubmission={onViewSubmission}
+        />
       ) : activeTab === 'mistakes' ? (
         <MistakesView
           mistakes={mistakes}

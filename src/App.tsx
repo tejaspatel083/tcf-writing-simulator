@@ -24,6 +24,7 @@ const MainRouter: React.FC = () => {
   const [view, setView] = useState<'home' | 'simulator' | 'results' | 'dashboard' | 'feedback' | 'submissions'>('home');
   const [dashboardTab, setDashboardTab] = useState<'submissions' | 'mistakes' | 'admin'>('submissions');
   const [submissionsTab, setSubmissionsTab] = useState<'exams' | 'mistakes'>('exams');
+  const [inspectedUser, setInspectedUser] = useState<{ id?: string; email: string; displayName?: string } | null>(null);
 
   // Auto-redirect returning users with evaluated submissions to Dashboard on first load
   const hasAutoRedirected = useRef(false);
@@ -134,7 +135,9 @@ const MainRouter: React.FC = () => {
         style={{ backgroundColor: '#e8edf5', color: '#1e293b' }}
       >
         <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-slate-600 font-medium text-sm mb-2">Chargement de votre session...</p>
+        <p className="text-slate-600 font-medium text-sm mb-2">
+          {language === 'en' ? 'Loading your session...' : 'Chargement de votre session...'}
+        </p>
         {showSlowNotice && (
           <div className="mt-4 p-3 bg-white border border-slate-200 rounded-lg max-w-xs text-xs text-slate-500 shadow-xs">
             <p className="mb-2">La vérification réseau prend du temps en raison de votre connexion.</p>
@@ -207,7 +210,8 @@ const MainRouter: React.FC = () => {
         const { data, error } = await saveSubmissionToSupabase(
           user.id,
           result,
-          startedAt || getLocalISOString(new Date(Date.now() - (result.timeUsedSeconds || 0) * 1000))
+          startedAt || getLocalISOString(new Date(Date.now() - (result.timeUsedSeconds || 0) * 1000)),
+          user.email || undefined
         );
         if (data?.id) {
           finalResult = {
@@ -251,6 +255,7 @@ const MainRouter: React.FC = () => {
   const handleNavigateSubmissions = (tab: 'exams' | 'mistakes' = 'exams') => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     setSubmissionsTab(tab);
+    setDashboardTab(tab === 'mistakes' ? 'mistakes' : 'submissions');
     setView('submissions');
   };
 
@@ -289,6 +294,12 @@ const MainRouter: React.FC = () => {
       return undefined;
     }
     if (view === 'dashboard') {
+      if (inspectedUser) {
+        return `${t('Aperçu du profil candidat :')} ${inspectedUser.displayName || inspectedUser.email}`;
+      }
+      if (isAdmin && dashboardTab === 'admin') {
+        return t("Espace Administrateur : Répertoire des candidats, suivi des devoirs et alertes.");
+      }
       return isAdmin ? t("Espace Administrateur avec gestion des alertes.") : t("Bienvenue sur votre tableau de bord personnel.");
     }
     if (view === 'submissions') {
@@ -338,6 +349,18 @@ const MainRouter: React.FC = () => {
       onStartNewExam={handleGoHome}
       onSignOut={handleSignOut}
       submissionsCount={submissionsCount}
+      onNavigateAdmin={() => {
+        setInspectedUser(null);
+        setDashboardTab('admin');
+        setView('dashboard');
+      }}
+      isAdminTabActive={view === 'dashboard' && dashboardTab === 'admin' && !inspectedUser}
+      inspectedUser={inspectedUser}
+      onClearInspectedUser={() => {
+        setInspectedUser(null);
+        setDashboardTab('admin');
+        setView('dashboard');
+      }}
     >
       {view === 'home' && (
         <Home
@@ -345,7 +368,11 @@ const MainRouter: React.FC = () => {
           onStartExam={handleStartExam}
           onViewSubmission={handleViewPastSubmission}
           onDashboardClick={() => {
-            setDashboardTab('submissions');
+            if (isAdmin) {
+              setDashboardTab('admin');
+            } else {
+              setDashboardTab('submissions');
+            }
             setView('dashboard');
           }}
           onNavigateToMistakes={handleNavigateToMistakes}
@@ -358,13 +385,19 @@ const MainRouter: React.FC = () => {
       {view === 'dashboard' && (
         <Dashboard
           initialTab={dashboardTab}
-          onTabChange={(tab) => setDashboardTab(tab === 'mistakes' ? 'mistakes' : 'submissions')}
+          onTabChange={(tab) => setDashboardTab(tab)}
           onStartNewExam={handleGoHome}
           onViewSubmission={handleViewPastSubmission}
           onRetakeCombination={handleRetakeCombination}
           onHomeClick={handleGoHome}
           onFeedbackClick={() => setView('feedback')}
           onNavigateToSubmissions={handleNavigateSubmissions}
+          onImpersonate={(cand) => {
+            setInspectedUser(cand);
+            setDashboardTab('submissions');
+            setView('dashboard');
+          }}
+          inspectedUser={inspectedUser}
         />
       )}
 
@@ -375,6 +408,7 @@ const MainRouter: React.FC = () => {
           onViewSubmission={handleViewPastSubmission}
           onRetakeCombination={handleRetakeCombination}
           onHomeClick={handleGoHome}
+          inspectedUser={inspectedUser}
         />
       )}
 
@@ -422,7 +456,15 @@ const MainRouter: React.FC = () => {
           hideHeader
           result={examResult}
           onHomeClick={handleGoHome}
-          onDashboardClick={() => setView('dashboard')}
+          onDashboardClick={() => {
+            if (isAdmin) {
+              setDashboardTab('admin');
+            } else {
+              setDashboardTab('submissions');
+            }
+            setView('dashboard');
+          }}
+          onNavigateToMistakes={handleNavigateToMistakes}
           onFeedbackClick={() => setView('feedback')}
         />
       )}
