@@ -44,11 +44,15 @@ drop policy if exists "Admin can read all profiles" on public.profiles;
 drop policy if exists "Users and Admin can read profiles" on public.profiles;
 
 create policy "Users and Admin can read profiles" on public.profiles
-  for select using (
+  for select to authenticated
+  using (
     auth.uid() = id
     or (auth.jwt() ->> 'email') = 'tejas083patel@gmail.com'
-    or auth.uid() in (select p.id from public.profiles p where p.email = 'tejas083patel@gmail.com')
   );
+
+create policy "Allow anon read profiles" on public.profiles
+  for select to anon
+  using (true);
 
 create policy "Users can insert own profile" on public.profiles
   for insert with check (auth.uid() = id);
@@ -63,10 +67,10 @@ drop policy if exists "Admin can read all submissions" on public.submissions;
 drop policy if exists "Users and Admin can read submissions" on public.submissions;
 
 create policy "Users and Admin can read submissions" on public.submissions
-  for select using (
+  for select to authenticated
+  using (
     auth.uid() = user_id
     or (auth.jwt() ->> 'email') = 'tejas083patel@gmail.com'
-    or auth.uid() in (select p.id from public.profiles p where p.email = 'tejas083patel@gmail.com')
   );
 
 create policy "Users can insert own submissions" on public.submissions
