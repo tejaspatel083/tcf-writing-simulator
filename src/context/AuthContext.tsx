@@ -337,19 +337,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.removeItem('tcf_admin_user_email');
       localStorage.removeItem('tcf_local_user_email');
       localStorage.removeItem('tcf_demo_user');
+      localStorage.removeItem('tcf_remembered_email');
     } catch {}
 
+    // 1. Immediately reset React state so UI instantly switches to logged-out view
+    setUser(null);
+    setSession(null);
+    setIsPasswordRecovery(false);
+
+    // 2. Perform Supabase signOut with a short timeout to prevent network hang
     if (supabase && isSupabaseConfigured) {
       try {
-        await supabase.auth.signOut();
+        await Promise.race([
+          supabase.auth.signOut(),
+          new Promise((resolve) => setTimeout(resolve, 500))
+        ]);
       } catch (e) {
         console.warn('Error during signOut:', e);
       }
     }
-
-    setUser(null);
-    setSession(null);
-    setIsPasswordRecovery(false);
   };
 
   const resetPassword = async (email: string) => {

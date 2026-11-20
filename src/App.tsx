@@ -84,10 +84,11 @@ const MainRouter: React.FC = () => {
 
       // If local storage is empty, also check Supabase for returning users on a new device or cleared cache
       if (isConfigured) {
-        fetchSubmissionsFromSupabase(user.id).then(({ submissions: dbSubs }) => {
+        fetchSubmissionsFromSupabase(user.id, user.email).then(({ submissions: dbSubs }) => {
           if (dbSubs && dbSubs.length > 0) {
             const merged = mergeSubmissions(dbSubs, stored);
             syncStoredSubmissions(merged);
+            setSubmissionsCount(merged.length);
             const hasEvalDb = merged.some(
               (s) => s.aiEvaluation && typeof s.aiEvaluation.overall_score === 'number'
             );
@@ -294,6 +295,7 @@ const MainRouter: React.FC = () => {
 
   const handleSignOut = async () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    setInspectedUser(null);
     await signOut();
     setView('home');
   };

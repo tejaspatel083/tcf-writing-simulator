@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { LogOut } from 'lucide-react';
 
 interface UserProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSignOut?: () => void;
 }
 
-export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) => {
+export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, onSignOut }) => {
   const { user, userName, updateUserName } = useAuth();
   const { t } = useLanguage();
 
@@ -144,29 +146,46 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
           </div>
 
           {/* Actions */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={saving}
-              className="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
-            >
-              {t('Annuler')}
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-2"
-            >
-              {saving ? (
-                <>
-                  <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block"></span>
-                  <span>{t('Enregistrement...')}</span>
-                </>
-              ) : (
-                <span>{t('Enregistrer')}</span>
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2.5">
+            <div>
+              {onSignOut && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onSignOut();
+                  }}
+                  className="px-3 py-2 border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>{t('Déconnexion')}</span>
+                </button>
               )}
-            </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                disabled={saving}
+                className="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                {t('Annuler')}
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-2"
+              >
+                {saving ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block"></span>
+                    <span>{t('Enregistrement...')}</span>
+                  </>
+                ) : (
+                  <span>{t('Enregistrer')}</span>
+                )}
+              </button>
+            </div>
           </div>
         </form>
       </div>

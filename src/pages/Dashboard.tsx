@@ -61,6 +61,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    let isMounted = true;
+
     async function loadData() {
       setLoading(true);
 
@@ -68,9 +70,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
       if (inspectedUser) {
         try {
           const candData = await getCandidateSubmissionsAndMistakes(inspectedUser.email, inspectedUser.id);
-          setSubmissions(candData.submissions);
-          setMistakes(candData.mistakes);
-          setLoading(false);
+          if (isMounted) {
+            setSubmissions(candData.submissions);
+            setMistakes(candData.mistakes);
+            setLoading(false);
+          }
           return;
         } catch (e) {
           console.error('Error loading inspected candidate data:', e);
@@ -78,33 +82,38 @@ export const Dashboard: React.FC<DashboardProps> = ({
       }
 
       const local = getStoredSubmissions();
-      setSubmissions(local);
-
       const localMistakes = getStoredMistakes();
-      setMistakes(localMistakes);
+      if (isMounted) {
+        setSubmissions(local);
+        setMistakes(localMistakes);
+      }
 
       if (user && isConfigured) {
         try {
-          const { submissions: dbSubs, error } = await fetchSubmissionsFromSupabase(user.id);
-          if (!error && dbSubs && dbSubs.length > 0) {
+          const { submissions: dbSubs, error } = await fetchSubmissionsFromSupabase(user.id, user.email);
+          if (!error && dbSubs && isMounted) {
             const merged = mergeSubmissions(dbSubs, local);
             setSubmissions(merged);
             syncStoredSubmissions(merged);
 
             const syncedMistakes = mergeMistakesFromSubmissions(localMistakes, merged);
             setMistakes(syncedMistakes);
-            setLoading(false);
-            return;
           }
         } catch (e) {
           console.error('Error fetching submissions for dashboard:', e);
         }
       }
 
-      setLoading(false);
+      if (isMounted) {
+        setLoading(false);
+      }
     }
 
     loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [user, isConfigured, inspectedUser]);
 
   // Set of all distinct practice date keys (YYYY-MM-DD)

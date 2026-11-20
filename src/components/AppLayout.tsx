@@ -264,10 +264,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                 Icon={LogOut}
                 title={t('Déconnexion')}
                 isSelected={false}
-                onClick={() => {
-                  setIsHovered(false);
-                  onSignOut();
-                }}
+                onClick={onSignOut}
                 open={sidebarOpen}
                 isDestructive
               />
@@ -385,6 +382,19 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                 >
                   <span>+</span>
                   <span>{t('Nouvel examen')}</span>
+                </button>
+              )}
+
+              {/* Direct Logout Button in Header */}
+              {onSignOut && currentView !== 'simulator' && (
+                <button
+                  type="button"
+                  onClick={() => handleNav(onSignOut)}
+                  className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg border border-red-200 bg-red-50/70 hover:bg-red-100 text-red-600 font-bold text-xs transition-colors shadow-2xs cursor-pointer shrink-0"
+                  title={t('Déconnexion')}
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden md:inline">{t('Déconnexion')}</span>
                 </button>
               )}
             </div>
@@ -654,6 +664,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       <UserProfileModal
         isOpen={showProfileModal}
         onClose={() => setShowProfileModal(false)}
+        onSignOut={onSignOut}
       />
 
       {/* Device Recommendation Modal (Prompt for laptop/desktop on mobile/tab) */}

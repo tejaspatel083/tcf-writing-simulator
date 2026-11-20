@@ -58,50 +58,61 @@ export const MySubmissions: React.FC<MySubmissionsProps> = ({
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    let isMounted = true;
+
     async function loadData() {
       setLoading(true);
 
-      // If in Admin Inspection Mode for a candidate
+      // 1. If in Admin Inspection Mode for a candidate
       if (inspectedUser) {
         try {
           const candData = await getCandidateSubmissionsAndMistakes(inspectedUser.email, inspectedUser.id);
-          setSubmissions(candData.submissions);
-          setMistakes(candData.mistakes);
-          setLoading(false);
+          if (isMounted) {
+            setSubmissions(candData.submissions);
+            setMistakes(candData.mistakes);
+            setLoading(false);
+          }
           return;
         } catch (e) {
           console.error('Error loading candidate submissions:', e);
         }
       }
 
+      // 2. Load locally stored submissions first
       const local = getStoredSubmissions();
-      setSubmissions(local);
-
       const localMistakes = getStoredMistakes();
-      setMistakes(localMistakes);
+      if (isMounted) {
+        setSubmissions(local);
+        setMistakes(localMistakes);
+      }
 
+      // 3. Fetch all submissions belonging to this user from Supabase (by user.id and user.email)
       if (user && isConfigured) {
         try {
-          const { submissions: dbSubs, error } = await fetchSubmissionsFromSupabase(user.id);
-          if (!error && dbSubs && dbSubs.length > 0) {
+          const { submissions: dbSubs, error } = await fetchSubmissionsFromSupabase(user.id, user.email);
+          if (!error && dbSubs && isMounted) {
             const merged = mergeSubmissions(dbSubs, local);
             setSubmissions(merged);
             syncStoredSubmissions(merged);
 
             const syncedMistakes = mergeMistakesFromSubmissions(localMistakes, merged);
             setMistakes(syncedMistakes);
-            setLoading(false);
-            return;
           }
         } catch (e) {
           console.error('Error fetching submissions for MySubmissions:', e);
         }
       }
 
-      setLoading(false);
+      if (isMounted) {
+        setLoading(false);
+      }
     }
 
     loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [user, isConfigured, inspectedUser]);
 
   const handleDeleteSubmission = async (sub: ExamResult) => {
