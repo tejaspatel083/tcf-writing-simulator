@@ -74,7 +74,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   const [showProfileModal, setShowProfileModal] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
-  // Persist sidebar locked open state and support smooth hover expansion
+  // Persist sidebar locked open state
   const [sidebarLockedOpen, setSidebarLockedOpen] = useState<boolean>(() => {
     if (typeof window === 'undefined') return true;
     if (currentView === 'simulator') return false;
@@ -82,8 +82,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
     if (saved !== null) return saved === 'true';
     return window.innerWidth >= 1024;
   });
-  const [isHovered, setIsHovered] = useState<boolean>(false);
-  const sidebarOpen = sidebarLockedOpen || isHovered;
+  const sidebarOpen = sidebarLockedOpen;
 
   useEffect(() => {
     localStorage.setItem('tcf_sidebar_open', String(sidebarLockedOpen));
@@ -136,22 +135,16 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   })();
 
   return (
-    <div className="flex h-screen w-full bg-slate-50 text-slate-900 overflow-hidden">
+    <div className="flex min-h-screen w-full bg-slate-50 text-slate-900">
       {/* Collapsible Sidebar (Desktop) - Animated with Framer Motion */}
       <motion.nav
-        className="hidden lg:flex h-screen shrink-0 border-r border-slate-200 bg-white p-2 shadow-xs flex-col justify-between z-30 select-none overflow-hidden"
+        className="hidden lg:flex sticky top-0 h-screen shrink-0 border-r border-slate-200 bg-white p-2 shadow-xs flex-col justify-between z-30 select-none overflow-hidden"
         animate={{
           width: sidebarOpen ? 256 : 64,
         }}
         transition={{
           duration: 0.2,
           ease: "easeInOut",
-        }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={(e) => {
-          const related = e.relatedTarget as Node | null;
-          if (related && (e.currentTarget as HTMLElement).contains(related)) return;
-          setIsHovered(false);
         }}
       >
           <div>
@@ -301,7 +294,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         </motion.nav>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+        <div className="flex-1 flex flex-col min-w-0 min-h-screen">
           {/* Top Bar */}
           <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200 px-3 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between shadow-2xs">
             <div className="min-w-0 pr-2 sm:pr-4 flex items-center gap-2">

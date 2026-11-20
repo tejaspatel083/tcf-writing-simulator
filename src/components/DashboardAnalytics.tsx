@@ -808,9 +808,9 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
         </div>
 
         {/* Both Graphs Grid with 3D Neomorphic Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 min-w-0">
           {/* ----------------- GRAPH 1: SCORE PROGRESS OVER TIME (3D NEOMORPHIC) ----------------- */}
-          <div className="flex flex-col justify-between p-5 sm:p-6 rounded-[28px] bg-[#e8edf5] border border-white/85 shadow-[8px_8px_20px_#c2cee0,-8px_-8px_20px_#ffffff] transition-all">
+          <div className="flex flex-col justify-between p-5 sm:p-6 rounded-[28px] bg-[#e8edf5] border border-white/85 shadow-[8px_8px_20px_#c2cee0,-8px_-8px_20px_#ffffff] transition-all min-w-0 overflow-hidden">
             <div>
               {/* Graph 1 Header with rounded-full title & badge */}
               <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
@@ -852,8 +852,8 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
               <div className="bg-[#e8edf5] shadow-[inset_3px_3px_8px_#c2cee0,inset_-3px_-3px_8px_#ffffff] rounded-2xl p-3 sm:p-4 border border-white/70 mt-1">
                 {activeProgressData.length === 0 && !hasEvaluatedData && selectedYear === 'all' && selectedMonth === 'all' ? (
                   /* New user: show empty chart structure with grid/axes but no data */
-                  <div className="h-64 sm:h-72 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
+                  <div className="h-64 sm:h-72 w-full min-w-0">
+                    <ResponsiveContainer width="100%" height="100%" debounce={100}>
                       <AreaChart
                         data={[]}
                         margin={{ top: 15, right: 35, left: 0, bottom: 24 }}
@@ -955,8 +955,8 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
                     </div>
                   </div>
                 ) : (
-                  <div className="h-64 sm:h-72 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
+                  <div className="h-64 sm:h-72 w-full min-w-0">
+                    <ResponsiveContainer width="100%" height="100%" debounce={100}>
                       <AreaChart
                         data={activeProgressData}
                         margin={{ top: 15, right: 35, left: 0, bottom: 24 }}
@@ -1200,7 +1200,7 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
 
           {/* ----------------- GRAPH 2: STRENGTH & WEAKNESS RADAR CHART (3D NEOMORPHIC) ----------------- */}
           {radarData && (
-            <div className="flex flex-col justify-between p-5 sm:p-6 rounded-[28px] bg-[#e8edf5] border border-white/85 shadow-[8px_8px_20px_#c2cee0,-8px_-8px_20px_#ffffff] transition-all">
+            <div className="flex flex-col justify-between p-5 sm:p-6 rounded-[28px] bg-[#e8edf5] border border-white/85 shadow-[8px_8px_20px_#c2cee0,-8px_-8px_20px_#ffffff] transition-all min-w-0 overflow-hidden">
               <div>
                 {/* Graph 2 Header with rounded-full title & legend */}
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
@@ -1269,8 +1269,8 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({
 
                 {/* 3D Recessed Well Radar Container */}
                 <div className="bg-[#e8edf5] shadow-[inset_3px_3px_8px_#c2cee0,inset_-3px_-3px_8px_#ffffff] rounded-2xl p-3 sm:p-4 border border-white/70 mt-1">
-                  <div className="h-64 sm:h-72 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
+                  <div className="h-64 sm:h-72 w-full min-w-0">
+                    <ResponsiveContainer width="100%" height="100%" debounce={100}>
                       <RadarChart
                         cx="50%"
                         cy="50%"

@@ -323,7 +323,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           onGoToExams={() => setActiveTab('submissions')}
         />
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-6 min-w-0">
           {/* Main Bento Layout (Direct view, no accordion dropdown, bento format only) */}
           <DashboardBentoLayout
             userName={inspectedUser ? (inspectedUser.displayName || inspectedUser.email.split('@')[0]) : userName}
