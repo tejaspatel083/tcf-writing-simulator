@@ -26,8 +26,8 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
-      <div className="bg-white border border-slate-300 rounded-lg shadow-xl max-w-md w-full p-6 space-y-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 overflow-y-auto">
+      <div className="bg-white border border-slate-300 rounded-lg shadow-xl max-w-md w-full p-6 space-y-4 my-auto max-h-[90vh] overflow-y-auto">
         <h3 className="text-lg font-bold text-slate-800 border-b border-slate-200 pb-2">
           {t(title)}
         </h3>

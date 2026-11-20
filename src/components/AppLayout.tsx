@@ -136,21 +136,20 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   })();
 
   return (
-    <div className="flex min-h-screen w-full bg-slate-50 text-slate-900">
-      <div className="flex w-full bg-slate-50 text-slate-900 min-h-screen">
-        {/* Collapsible Sidebar (Desktop) - Animated with Framer Motion */}
-        <motion.nav
-          className="hidden lg:flex sticky top-0 h-screen shrink-0 border-r border-slate-200 bg-white p-2 shadow-xs flex-col justify-between z-30 select-none overflow-hidden"
-          animate={{
-            width: sidebarOpen ? 256 : 64,
-          }}
-          transition={{
-            duration: 0.25,
-            ease: "easeInOut",
-          }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
+    <div className="flex min-h-screen w-full bg-slate-50 text-slate-900 overflow-x-hidden">
+      {/* Collapsible Sidebar (Desktop) - Animated with Framer Motion */}
+      <motion.nav
+        className="hidden lg:flex sticky top-0 h-screen shrink-0 border-r border-slate-200 bg-white p-2 shadow-xs flex-col justify-between z-30 select-none overflow-x-hidden overflow-y-auto no-scrollbar overscroll-contain"
+        animate={{
+          width: sidebarOpen ? 256 : 64,
+        }}
+        transition={{
+          duration: 0.25,
+          ease: "easeInOut",
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
           <div>
             {/* Title / User Brand Section */}
             <div className="mb-4 border-b border-slate-200 pb-3">
@@ -419,11 +418,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
           )}
 
           {/* Children View Content */}
-          <main className={`flex-1 min-w-0 ${currentView !== 'simulator' ? 'pb-24 lg:pb-16' : ''}`}>
+          <main className={`flex-1 min-w-0 ${currentView === 'simulator' ? 'h-[calc(100vh-57px)] overflow-hidden' : 'pb-24 lg:pb-16'}`}>
             {children}
           </main>
         </div>
-      </div>
 
       {/* Mobile Slide-Over Drawer - Animated with Framer Motion */}
       <AnimatePresence>

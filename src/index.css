@@ -54,10 +54,21 @@
     --radius: 0.75rem;
   }
 
+  html {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: auto;
+    min-height: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
   body {
     background-color: #e8edf5;
     color: #1e293b;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+    height: auto;
   }
 }
 

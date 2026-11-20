@@ -52,12 +52,12 @@ export const DeviceRecommendationModal: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs transition-opacity duration-200 animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs transition-opacity duration-200 animate-fadeIn overflow-y-auto"
       role="dialog"
       aria-modal="true"
     >
       <div
-        className="w-full max-w-md bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl relative transform transition-transform duration-200 scale-100"
+        className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl relative transform transition-transform duration-200 scale-100 my-auto"
         style={{
           boxShadow: '10px 10px 30px #cbd5e1, -10px -10px 30px #ffffff'
         }}

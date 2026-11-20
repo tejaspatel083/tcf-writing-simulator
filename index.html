@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" translate="no" class="notranslate theme-neumorphism neu-theme" style="background-color: #e8edf5; color: #1e293b;">
+<html lang="fr" translate="no" class="notranslate theme-neumorphism neu-theme" style="background-color: #e8edf5; color: #1e293b; overflow-y: scroll; overflow-x: hidden;">
   <head>
     <meta charset="UTF-8" />
     <meta name="color-scheme" content="light" />
@@ -77,7 +77,12 @@
         color: #1e293b !important;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         min-height: 100vh;
+        overflow-x: hidden;
         -webkit-text-size-adjust: 100%;
+      }
+      html {
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
       }
       #app-fallback-loader {
         display: flex;
