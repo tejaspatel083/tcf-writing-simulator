@@ -3,8 +3,6 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { User, Session } from '@supabase/supabase-js';
 import { ADMIN_EMAIL, recordUserEmail, isOwnerEmail } from '../services/adminService';
 
-export const ADMIN_PASSWORD = 'Honey@083';
-
 interface SignUpResult {
   error: Error | null;
   needsVerification?: boolean;
@@ -47,23 +45,6 @@ export function getUserDisplayName(u: User | null): string {
   return email ? email.split('@')[0] : 'Utilisateur';
 }
 
-function createAdminUserObject(email: string = ADMIN_EMAIL): User {
-  const normEmail = email.trim().toLowerCase();
-  const savedName = localStorage.getItem(`tcf_user_name_${normEmail}`);
-  return {
-    id: 'a110a908-64a0-4b45-84dc-869c3133f9d8',
-    email: normEmail,
-    email_confirmed_at: new Date().toISOString(),
-    aud: 'authenticated',
-    role: 'authenticated',
-    app_metadata: { role: 'admin', provider: 'email' },
-    user_metadata: {
-      role: 'admin',
-      name: savedName || 'Administrateur (Tejas)'
-    },
-    created_at: new Date().toISOString()
-  } as unknown as User;
-}
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -114,41 +95,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    let isCancelled = false;
-
-    // 0. Check if admin session was previously saved
-    try {
-      const adminActive = localStorage.getItem('tcf_admin_logged_in') === 'true';
-      if (adminActive && !isLoggingOutRef.current) {
-        if (supabase && isSupabaseConfigured) {
-          supabase.auth
-            .signInWithPassword({
-              email: ADMIN_EMAIL,
-              password: ADMIN_PASSWORD
-            })
-            .then(({ data }) => {
-              if (
-                !isCancelled &&
-                !isLoggingOutRef.current &&
-                localStorage.getItem('tcf_admin_logged_in') === 'true' &&
-                data?.session
-              ) {
-                setSession(data.session);
-                setUser(data.user);
-              }
-            })
-            .catch(() => {});
-        }
-        setUser(createAdminUserObject(ADMIN_EMAIL));
-        setLoading(false);
-        return () => {
-          isCancelled = true;
-        };
-      }
-    } catch (e) {
-      console.warn('LocalStorage error checking admin session:', e);
-    }
-
     // Check if URL hash indicates a password recovery redirect
     if (
       window.location.hash &&
@@ -232,16 +178,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUserName(trimmedName);
     }
 
-    // If admin signs up with ADMIN_PASSWORD
-    if (normalized === ADMIN_EMAIL.toLowerCase() && (pass === ADMIN_PASSWORD || pass.toLowerCase() === ADMIN_PASSWORD.toLowerCase())) {
-      try {
-        localStorage.setItem('tcf_admin_logged_in', 'true');
-        localStorage.setItem('tcf_admin_user_email', normalized);
-      } catch {}
-      setUser(createAdminUserObject(normalized));
-      return { error: null, needsVerification: false };
-    }
-
     if (!supabase || !isSupabaseConfigured) {
       return { error: new Error("Service d'inscription indisponible.") };
     }
@@ -287,37 +223,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, pass: string) => {
     isLoggingOutRef.current = false;
     const normalized = email.trim().toLowerCase();
-    const cleanPass = pass.trim();
-
-    // 1. Admin Master Login: tejas083patel@gmail.com with password Honey@083
-    if (normalized === ADMIN_EMAIL.toLowerCase()) {
-      if (cleanPass === ADMIN_PASSWORD || cleanPass.toLowerCase() === ADMIN_PASSWORD.toLowerCase()) {
-        try {
-          localStorage.setItem('tcf_admin_logged_in', 'true');
-          localStorage.setItem('tcf_admin_user_email', normalized);
-        } catch {}
-
-        // Authenticate with Supabase Auth so RLS policies allow querying all live submissions!
-        if (supabase && isSupabaseConfigured) {
-          try {
-            const { data: supaAuth } = await supabase.auth.signInWithPassword({
-              email: normalized,
-              password: ADMIN_PASSWORD
-            });
-            if (supaAuth?.session) {
-              setSession(supaAuth.session);
-              setUser(supaAuth.user);
-              return { error: null };
-            }
-          } catch (e) {
-            console.warn('Supabase admin login sync:', e);
-          }
-        }
-
-        setUser(createAdminUserObject(normalized));
-        return { error: null };
-      }
-    }
 
     recordUserEmail(normalized);
 
@@ -333,15 +238,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     if (error) {
-      if (normalized === ADMIN_EMAIL.toLowerCase()) {
-        return { error: new Error(`Identifiants incorrects. Pour le compte administrateur (${ADMIN_EMAIL}), le mot de passe est : ${ADMIN_PASSWORD}`) };
-      }
       return { error: new Error(error.message) };
     }
 
     if (data.session) {
       setSession(data.session);
       setUser(data.user);
+      if (isOwnerEmail(normalized)) {
+        try {
+          localStorage.setItem('tcf_admin_logged_in', 'true');
+          localStorage.setItem('tcf_admin_user_email', normalized);
+        } catch {}
+      }
     }
 
     return { error: null };
@@ -457,11 +365,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 
   const isAdmin = Boolean(
-    (user && (
+    user && (
       isOwnerEmail(user.email) ||
       user.app_metadata?.role === 'admin' ||
       user.user_metadata?.role === 'admin'
-    )) || (typeof window !== 'undefined' && localStorage.getItem('tcf_admin_logged_in') === 'true')
+    )
   );
 
   return (

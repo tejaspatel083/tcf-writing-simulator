@@ -42,6 +42,7 @@ alter table public.submissions enable row level security;
 drop policy if exists "Users can read own profile" on public.profiles;
 drop policy if exists "Admin can read all profiles" on public.profiles;
 drop policy if exists "Users and Admin can read profiles" on public.profiles;
+drop policy if exists "Allow anon read profiles" on public.profiles;
 
 create policy "Users and Admin can read profiles" on public.profiles
   for select to authenticated
@@ -49,10 +50,6 @@ create policy "Users and Admin can read profiles" on public.profiles
     auth.uid() = id
     or (auth.jwt() ->> 'email') = 'tejas083patel@gmail.com'
   );
-
-create policy "Allow anon read profiles" on public.profiles
-  for select to anon
-  using (true);
 
 create policy "Users can insert own profile" on public.profiles
   for insert with check (auth.uid() = id);
@@ -91,8 +88,15 @@ create policy "Users and Admin can update submissions" on public.submissions
     or (auth.jwt() ->> 'email') = 'tejas083patel@gmail.com'
   );
 
-create policy "Users can delete own submissions" on public.submissions
-  for delete using (auth.uid() = user_id);
+drop policy if exists "Users can delete own submissions" on public.submissions;
+drop policy if exists "Users and Admin can delete submissions" on public.submissions;
+
+create policy "Users and Admin can delete submissions" on public.submissions
+  for delete to authenticated
+  using (
+    auth.uid() = user_id
+    or (auth.jwt() ->> 'email') = 'tejas083patel@gmail.com'
+  );
 
 -- 6. Trigger to automatically create a profile entry when a new user registers
 create or replace function public.handle_new_user()
@@ -108,8 +112,11 @@ create or replace trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
--- 7. Explicit Table Grants (Required by Supabase for all new tables / migrations from Oct 30)
-grant select on public.profiles to anon;
+-- 7. Explicit Table Grants (Required by Supabase)
+-- Ensure anonymous unauthenticated users have NO access to read profiles or submissions
+revoke all on public.profiles from anon;
+revoke all on public.submissions from anon;
+
 grant select, insert, update, delete on public.profiles to authenticated;
 grant all on public.profiles to service_role;
 

@@ -32,30 +32,14 @@ export function normalizeUserEmail(rawEmail: string): string {
   return clean;
 }
 
-// Seeded users from Supabase database (public.profiles)
-export const SUPABASE_USERS_SEED = [
-  'tejadon083@gmail.com',
-  'siyam.sajnan.chowdhury@gmail.com',
-  'sandhyalawati99@gmail.com',
-  'njp30599@gmail.com',
-  'maulikchauhan97@gmail.com',
-  'sohampraj1997@gmail.com',
-  'tjp083@gmail.com'
-];
+// Seeded users from Supabase database (public.profiles) - dynamically loaded from DB
+export const SUPABASE_USERS_SEED: string[] = [];
 
 export const DEFAULT_ADMIN_SETTINGS: AdminNotificationSettings = {
   notificationsEnabled: true,
   notifyAllUsers: true,
   recipientEmail: ADMIN_EMAIL,
-  monitoredEmails: [
-    'tejadon083@gmail.com',
-    'siyam.sajnan.chowdhury@gmail.com',
-    'sandhyalawati99@gmail.com',
-    'njp30599@gmail.com',
-    'maulikchauhan97@gmail.com',
-    'sohampraj1997@gmail.com',
-    'tjp083@gmail.com'
-  ],
+  monitoredEmails: [],
   sendOnPracticeMode: true,
   formSubmitEndpoint: `https://formsubmit.co/ajax/${ADMIN_EMAIL}`
 };
@@ -171,16 +155,11 @@ export function recordUserEmail(email: string): void {
 function getStoredKnownUsers(): string[] {
   try {
     const raw = localStorage.getItem(KNOWN_USERS_STORAGE_KEY);
-    const defaults = [...SUPABASE_USERS_SEED];
-    if (!raw) return defaults;
+    if (!raw) return [];
     const parsed = JSON.parse(raw);
-    const list = Array.isArray(parsed) ? parsed : defaults;
-    SUPABASE_USERS_SEED.forEach((seed) => {
-      if (!list.includes(seed)) list.push(seed);
-    });
-    return list;
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    return [...SUPABASE_USERS_SEED];
+    return [];
   }
 }
 
@@ -191,9 +170,6 @@ export async function getTrackedUsers(): Promise<TrackedUser[]> {
   const settings = getAdminSettings();
   const monitoredSet = new Set(settings.monitoredEmails.map((e) => e.toLowerCase()));
   const allEmails = new Set<string>(getStoredKnownUsers());
-
-  // Always include database seeded users
-  SUPABASE_USERS_SEED.forEach((e) => allEmails.add(e.toLowerCase()));
 
   // Pull emails from local submissions if any
   try {
