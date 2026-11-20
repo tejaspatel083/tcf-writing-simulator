@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { CandidateProfile, getCandidateSubmissionsAndMistakes } from '../services/userProfilesService';
+import { CandidateProfile, getCandidateSubmissionsAndMistakes, evaluateAndSaveCandidateSubmission, extractMistakesFromSubmissions } from '../services/userProfilesService';
 import { ExamResult } from '../types/exam';
 import { SavedMistake, CefrLevel } from '../types/aiEvaluation';
 import { DashboardBentoLayout } from './DashboardBentoLayout';
@@ -48,6 +48,67 @@ export const CandidateInspector: React.FC<CandidateInspectorProps> = ({
 
   // Selected submission modal for direct deep inspection
   const [inspectedSubmission, setInspectedSubmission] = useState<ExamResult | null>(null);
+
+  // Evaluation state
+  const [evaluatingId, setEvaluatingId] = useState<string | null>(null);
+  const [batchEvaluating, setBatchEvaluating] = useState<boolean>(false);
+  const [batchProgress, setBatchProgress] = useState<string | null>(null);
+  const [evalError, setEvalError] = useState<string | null>(null);
+
+  const handleEvaluateSingle = async (sub: ExamResult) => {
+    if (!sub.id) return;
+    setEvaluatingId(sub.id);
+    setEvalError(null);
+    try {
+      const evalData = await evaluateAndSaveCandidateSubmission(sub);
+      const updatedSub: ExamResult = { ...sub, aiEvaluation: evalData };
+      setSubmissions((prev) => {
+        const next = prev.map((s) => (s.id === sub.id ? updatedSub : s));
+        setMistakes(extractMistakesFromSubmissions(next));
+        return next;
+      });
+      if (inspectedSubmission && inspectedSubmission.id === sub.id) {
+        setInspectedSubmission(updatedSub);
+      }
+    } catch (err: any) {
+      console.error('Error evaluating submission:', err);
+      setEvalError(err?.message || "Erreur lors de l'évaluation");
+    } finally {
+      setEvaluatingId(null);
+    }
+  };
+
+  const handleBatchEvaluate = async () => {
+    const unevaluated = submissions.filter(
+      (s) =>
+        !s.aiEvaluation &&
+        (s.answers.task1?.trim() || s.answers.task2?.trim() || s.answers.task3?.trim())
+    );
+    if (unevaluated.length === 0) return;
+
+    setBatchEvaluating(true);
+    setEvalError(null);
+    try {
+      for (let i = 0; i < unevaluated.length; i++) {
+        const sub = unevaluated[i];
+        setBatchProgress(`${i + 1}/${unevaluated.length}...`);
+        try {
+          const evalData = await evaluateAndSaveCandidateSubmission(sub);
+          const updatedSub = { ...sub, aiEvaluation: evalData };
+          setSubmissions((prev) => {
+            const next = prev.map((s) => (s.id === sub.id ? updatedSub : s));
+            setMistakes(extractMistakesFromSubmissions(next));
+            return next;
+          });
+        } catch (itemErr) {
+          console.warn(`Failed evaluating sub ${sub.id}:`, itemErr);
+        }
+      }
+    } finally {
+      setBatchEvaluating(false);
+      setBatchProgress(null);
+    }
+  };
 
   useEffect(() => {
     async function loadData() {
@@ -296,8 +357,36 @@ export const CandidateInspector: React.FC<CandidateInspectorProps> = ({
               {mistakes.length}
             </span>
           </button>
+
+          {/* Batch Evaluation Button */}
+          {submissions.some((s) => !s.aiEvaluation && (s.answers.task1?.trim() || s.answers.task2?.trim() || s.answers.task3?.trim())) && (
+            <div className="ml-auto flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleBatchEvaluate}
+                disabled={batchEvaluating}
+                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-[2px_2px_8px_rgba(147,51,234,0.35)] transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                <Sparkles className={`w-3.5 h-3.5 ${batchEvaluating ? 'animate-spin' : ''}`} />
+                <span>
+                  {batchProgress
+                    ? `${t('Évaluation en cours')} (${batchProgress})`
+                    : `${t('⚡ Évaluer les devoirs en attente')} (${submissions.filter((s) => !s.aiEvaluation && (s.answers.task1?.trim() || s.answers.task2?.trim() || s.answers.task3?.trim())).length})`}
+                </span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
+      {evalError && (
+        <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-800 flex items-center justify-between">
+          <span>⚠️ {evalError}</span>
+          <button type="button" onClick={() => setEvalError(null)} className="font-bold underline ml-2 cursor-pointer">
+            OK
+          </button>
+        </div>
+      )}
 
       {/* Main Content Area based on Active Tab */}
       {loading ? (
@@ -391,7 +480,7 @@ export const CandidateInspector: React.FC<CandidateInspectorProps> = ({
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
+                        <div className="flex items-center gap-2.5 self-end sm:self-center shrink-0">
                           {score !== undefined ? (
                             <div className="text-right">
                               <span className="text-base font-black text-slate-900">{score}/20</span>
@@ -400,7 +489,20 @@ export const CandidateInspector: React.FC<CandidateInspectorProps> = ({
                               </span>
                             </div>
                           ) : (
-                            <span className="text-xs font-semibold text-slate-400">{t('Non évalué')}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-semibold text-slate-400">{t('Non évalué')}</span>
+                              {(sub.answers.task1?.trim() || sub.answers.task2?.trim() || sub.answers.task3?.trim()) && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleEvaluateSingle(sub)}
+                                  disabled={evaluatingId === sub.id}
+                                  className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer flex items-center gap-1 disabled:opacity-50"
+                                >
+                                  <Sparkles className={`w-3 h-3 ${evaluatingId === sub.id ? 'animate-spin' : ''}`} />
+                                  <span>{evaluatingId === sub.id ? '...' : t('Évaluer')}</span>
+                                </button>
+                              )}
+                            </div>
                           )}
 
                           <button
@@ -475,6 +577,26 @@ export const CandidateInspector: React.FC<CandidateInspectorProps> = ({
 
             {/* Modal Body: Task 1, 2, 3 Breakdown */}
             <div className="p-5 sm:p-6 overflow-y-auto space-y-6">
+              {!inspectedSubmission.aiEvaluation && (
+                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs">
+                  <div>
+                    <span className="font-bold text-amber-900 block text-xs">⚠️ {t('Devoir non encore évalué par l\'IA')}</span>
+                    <span className="text-[11px] text-amber-700">
+                      {t('Lancez l\'évaluation TCF Canada officielle pour générer la note, le niveau CECRL et sauvegarder les résultats dans Supabase.')}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleEvaluateSingle(inspectedSubmission)}
+                    disabled={evaluatingId === inspectedSubmission.id}
+                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50 shrink-0"
+                  >
+                    <Sparkles className={`w-3.5 h-3.5 ${evaluatingId === inspectedSubmission.id ? 'animate-spin' : ''}`} />
+                    <span>{evaluatingId === inspectedSubmission.id ? t('Évaluation en cours...') : t('Évaluer ce devoir avec l\'IA')}</span>
+                  </button>
+                </div>
+              )}
+
               {inspectedSubmission.aiEvaluation?.overall_feedback && (
                 <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-xs text-blue-950 leading-relaxed">
                   <span className="font-bold block mb-1">📢 {t('Synthèse Générale de l\'IA')} :</span>

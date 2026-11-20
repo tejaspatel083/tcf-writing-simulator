@@ -10,7 +10,7 @@ import {
   clearNotificationLogs,
   ADMIN_EMAIL
 } from '../services/adminService';
-import { getAllCandidatesDirectory, CandidateProfile } from '../services/userProfilesService';
+import { getAllCandidatesDirectory, CandidateProfile, pushLocalEvaluationsToSupabase } from '../services/userProfilesService';
 import { sendTestNotification } from '../services/notificationService';
 import { getSupabaseAnonKey, setSupabaseAnonKey } from '../lib/supabase';
 import { AdminNotificationSettings, NotificationLog } from '../types/admin';
@@ -62,6 +62,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [isPushingEvals, setIsPushingEvals] = useState<boolean>(false);
+  const [syncEvalsMsg, setSyncEvalsMsg] = useState<string | null>(null);
   const [logs, setLogs] = useState<NotificationLog[]>([]);
 
   // Supabase anon key local state
@@ -196,6 +198,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     }
   };
 
+  const handlePushLocalEvals = async () => {
+    setIsPushingEvals(true);
+    setSyncEvalsMsg(null);
+    try {
+      const res = await pushLocalEvaluationsToSupabase();
+      if (res.error) {
+        setSyncEvalsMsg(`⚠️ Erreur : ${res.error}`);
+      } else {
+        setSyncEvalsMsg(`✓ ${res.pushedCount} évaluation(s) synchronisée(s) vers Supabase.`);
+        await refreshData();
+      }
+    } catch (err: any) {
+      setSyncEvalsMsg(`⚠️ Erreur : ${err?.message || 'Échec de synchronisation'}`);
+    } finally {
+      setIsPushingEvals(false);
+      setTimeout(() => setSyncEvalsMsg(null), 6000);
+    }
+  };
+
   // Filter candidates
   const filteredCandidates = candidates.filter((c) => {
     const q = searchQuery.toLowerCase().trim();
@@ -268,6 +289,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
             <button
               type="button"
+              onClick={handlePushLocalEvals}
+              disabled={isPushingEvals}
+              className="px-3.5 py-2.5 bg-[#e8edf5] hover:bg-white text-slate-700 hover:text-emerald-700 text-xs font-bold rounded-xl border border-white/85 shadow-[3px_3px_8px_#c2cee0,-3px_-3px_8px_#ffffff] hover:shadow-[2px_2px_5px_#c2cee0,-2px_-2px_5px_#ffffff] active:shadow-[inset_2px_2px_4px_#c2cee0,inset_-2px_-2px_4px_#ffffff] transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+              title="Pousser les évaluations enregistrées localement dans le navigateur vers Supabase"
+            >
+              <Sparkles className={`w-3.5 h-3.5 text-emerald-600 ${isPushingEvals ? 'animate-spin' : ''}`} />
+              <span>{isPushingEvals ? '...' : 'Pousser évals locales'}</span>
+            </button>
+
+            <button
+              type="button"
               onClick={handleSendTest}
               disabled={isSendingTest}
               className="flex-1 sm:flex-initial px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold rounded-xl shadow-[3px_3px_8px_rgba(37,99,235,0.35),-2px_-2px_6px_rgba(255,255,255,0.9)] hover:brightness-105 active:shadow-[inset_2px_2px_4px_rgba(0,0,0,0.3)] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
@@ -277,6 +309,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </button>
           </div>
         </div>
+
+        {syncEvalsMsg && (
+          <div className="mt-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-semibold flex items-center justify-between">
+            <span>{syncEvalsMsg}</span>
+            <button type="button" onClick={() => setSyncEvalsMsg(null)} className="underline cursor-pointer">OK</button>
+          </div>
+        )}
 
         {/* 3 Admin Mode Tabs (Neomorphic 3D Tabs) */}
         <div className="mt-6 pt-5 border-t border-slate-200/70 flex items-center gap-2.5 overflow-x-auto pb-1">

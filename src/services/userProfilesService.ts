@@ -1,7 +1,7 @@
 import { ExamResult, ExamCombination, TaskKey } from '../types/exam';
 import { SavedMistake, CefrLevel, AIEvaluation } from '../types/aiEvaluation';
 import { getSupabase } from '../lib/supabase';
-import { mapScoreToTcfCanadaLevels } from './geminiEvaluator';
+import { mapScoreToTcfCanadaLevels, evaluateTcfSubmissionWithGemini } from './geminiEvaluator';
 import { normalizeCategory } from '../utils/mistakesStorage';
 import { isOwnerEmail, ADMIN_EMAIL } from './adminService';
 import { ADMIN_PASSWORD } from '../context/AuthContext';
@@ -93,6 +93,13 @@ export function mapSupabaseRowToExamResult(row: any): ExamResult {
   const comboKey = `${row.year}-${row.month}-${row.combination}`;
   const aiEval = row.ai_feedback || getCachedAiEvaluation(row.id, comboKey);
 
+  // Detect if this was a practice session (1 or 2 tasks answered instead of all 3)
+  const answeredTasks: TaskKey[] = [];
+  if (row.task1_answer?.trim() || (Number(row.task1_word_count) > 0)) answeredTasks.push('task1');
+  if (row.task2_answer?.trim() || (Number(row.task2_word_count) > 0)) answeredTasks.push('task2');
+  if (row.task3_answer?.trim() || (Number(row.task3_word_count) > 0)) answeredTasks.push('task3');
+  const isPractice = answeredTasks.length > 0 && answeredTasks.length < 3;
+
   return {
     id: row.id,
     date: dateFormatted,
@@ -100,6 +107,10 @@ export function mapSupabaseRowToExamResult(row: any): ExamResult {
     year: String(row.year || '2026'),
     month: String(row.month || 'Novembre'),
     timeUsedSeconds: Number(row.duration_seconds || 0),
+    allocatedMinutes: row.duration_seconds ? Math.max(15, Math.round(row.duration_seconds / 60)) : undefined,
+    isPracticeMode: isPractice,
+    practiceTasks: isPractice ? answeredTasks : undefined,
+    practiceTask: isPractice ? answeredTasks.join(',') : undefined,
     answers: {
       task1: row.task1_answer || '',
       task2: row.task2_answer || '',
@@ -416,4 +427,143 @@ export async function getCandidateSubmissionsAndMistakes(
 
   const mistakes = extractMistakesFromSubmissions(submissions);
   return { submissions, mistakes };
+}
+
+/**
+ * Pushes any locally stored AI evaluations from the current browser into Supabase submissions.
+ * Matches rows by submission ID or by combination/month/year.
+ */
+export async function pushLocalEvaluationsToSupabase(): Promise<{ pushedCount: number; error?: string }> {
+  if (typeof window === 'undefined') return { pushedCount: 0 };
+  const client = getSupabase();
+  if (!client) return { pushedCount: 0, error: 'No supabase client' };
+
+  try {
+    const { data: sessionData } = await client.auth.getSession();
+    if (!sessionData?.session) {
+      await client.auth.signInWithPassword({
+        email: ADMIN_EMAIL,
+        password: ADMIN_PASSWORD
+      });
+    }
+
+    let pushed = 0;
+    // 1. Gather all local evaluations from tcf_exam_submissions_v1
+    const localRaw = localStorage.getItem('tcf_exam_submissions_v1');
+    const localSubs: ExamResult[] = localRaw ? JSON.parse(localRaw) : [];
+
+    // 2. Also gather any standalone tcf_ai_eval_* keys
+    const standaloneEvals: Record<string, AIEvaluation> = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('tcf_ai_eval_')) {
+        const id = k.replace('tcf_ai_eval_', '');
+        try {
+          const val = JSON.parse(localStorage.getItem(k) || '');
+          if (val && val.overall_score !== undefined) {
+            standaloneEvals[id] = val;
+          }
+        } catch {}
+      }
+    }
+
+    // Merge evaluations into a map
+    const evalMap = new Map<string, { eval: AIEvaluation; sub?: ExamResult }>();
+    localSubs.forEach((s) => {
+      if (s.aiEvaluation && s.aiEvaluation.overall_score !== undefined) {
+        if (s.id) evalMap.set(s.id, { eval: s.aiEvaluation, sub: s });
+      }
+    });
+    Object.entries(standaloneEvals).forEach(([id, ev]) => {
+      if (!evalMap.has(id)) {
+        evalMap.set(id, { eval: ev });
+      }
+    });
+
+    if (evalMap.size === 0) {
+      return { pushedCount: 0 };
+    }
+
+    // Now query submissions from Supabase that need ai_feedback
+    const { data: existingRows } = await client
+      .from('submissions')
+      .select('id, year, month, combination, ai_feedback');
+
+    if (Array.isArray(existingRows)) {
+      for (const [keyId, item] of evalMap.entries()) {
+        // Try match by UUID id
+        const directMatch = existingRows.find((r) => r.id === keyId);
+        if (directMatch && !directMatch.ai_feedback) {
+          const { error: updErr } = await client
+            .from('submissions')
+            .update({ ai_feedback: item.eval })
+            .eq('id', keyId);
+          if (!updErr) pushed++;
+          continue;
+        }
+
+        // Try match by year, month, combination
+        if (item.sub) {
+          const comboNum = Number(item.sub.combination?.combinationNumber || item.sub.combination?.combination || 1);
+          const comboMatch = existingRows.find(
+            (r) =>
+              String(r.year) === String(item.sub?.year) &&
+              String(r.month).toLowerCase() === String(item.sub?.month).toLowerCase() &&
+              Number(r.combination) === comboNum &&
+              !r.ai_feedback
+          );
+          if (comboMatch) {
+            const { error: updErr } = await client
+              .from('submissions')
+              .update({ ai_feedback: item.eval })
+              .eq('id', comboMatch.id);
+            if (!updErr) pushed++;
+          }
+        }
+      }
+    }
+
+    return { pushedCount: pushed };
+  } catch (err: any) {
+    console.error('Error pushing local evaluations to Supabase:', err);
+    return { pushedCount: 0, error: err?.message };
+  }
+}
+
+/**
+ * Evaluates a candidate submission using Gemini and saves the evaluation directly to Supabase.
+ */
+export async function evaluateAndSaveCandidateSubmission(
+  sub: ExamResult
+): Promise<AIEvaluation> {
+  const evalData = await evaluateTcfSubmissionWithGemini(sub);
+
+  // Update in Supabase
+  if (sub.id) {
+    const client = getSupabase();
+    if (client) {
+      try {
+        const { data: sessionData } = await client.auth.getSession();
+        if (!sessionData?.session) {
+          await client.auth.signInWithPassword({
+            email: ADMIN_EMAIL,
+            password: ADMIN_PASSWORD
+          });
+        }
+        await client
+          .from('submissions')
+          .update({ ai_feedback: evalData })
+          .eq('id', sub.id);
+      } catch (dbErr) {
+        console.warn('Could not persist evaluation to Supabase:', dbErr);
+      }
+    }
+
+    // Cache locally as well
+    try {
+      localStorage.setItem(`tcf_ai_eval_${sub.id}`, JSON.stringify(evalData));
+    } catch {}
+  }
+
+  return evalData;
 }

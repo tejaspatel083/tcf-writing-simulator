@@ -334,11 +334,12 @@ Return ONLY valid JSON matching this schema:
   } catch {}
 
   const defaultPreferredModels = [
-    'gemini-3.5-flash-lite',
-    'gemini-3.5-flash',
-    'gemini-3.1-flash-lite',
     'gemini-flash-latest',
-    'gemini-pro-latest'
+    'gemini-pro-latest',
+    'gemini-2.5-flash-lite',
+    'gemma-4-26b-a4b-it',
+    'gemini-3.5-flash-lite',
+    'gemini-3.5-flash'
   ];
 
   const candidateModels: string[] = cachedWorkingModel

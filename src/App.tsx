@@ -15,6 +15,7 @@ import { saveSubmissionToSupabase, fetchSubmissionsFromSupabase } from './lib/su
 import { getLocalISOString } from './utils/dateUtils';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { sendSubmissionNotification } from './services/notificationService';
+import { pushLocalEvaluationsToSupabase } from './services/userProfilesService';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 
 const MainRouter: React.FC = () => {
@@ -112,6 +113,15 @@ const MainRouter: React.FC = () => {
     }
     return () => clearTimeout(t);
   }, [loading]);
+
+  // Push locally evaluated submissions to Supabase in the background
+  useEffect(() => {
+    if (!loading && isConfigured) {
+      pushLocalEvaluationsToSupabase().catch((err) => {
+        console.warn('Background sync of evaluations to Supabase:', err);
+      });
+    }
+  }, [loading, isConfigured, user]);
 
   // Automatically scroll to the top of the page whenever the view/route changes
   useEffect(() => {
