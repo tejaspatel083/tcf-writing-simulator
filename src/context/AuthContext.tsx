@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { User, Session } from '@supabase/supabase-js';
 import { ADMIN_EMAIL, recordUserEmail, isOwnerEmail } from '../services/adminService';
@@ -71,6 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState<boolean>(true);
   const [isPasswordRecovery, setIsPasswordRecovery] = useState<boolean>(false);
   const [userName, setUserName] = useState<string>(() => getUserDisplayName(null));
+  const isLoggingOutRef = useRef(false);
 
   useEffect(() => {
     setUserName(getUserDisplayName(user));
@@ -113,10 +114,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    let isCancelled = false;
+
     // 0. Check if admin session was previously saved
     try {
       const adminActive = localStorage.getItem('tcf_admin_logged_in') === 'true';
-      if (adminActive) {
+      if (adminActive && !isLoggingOutRef.current) {
         if (supabase && isSupabaseConfigured) {
           supabase.auth
             .signInWithPassword({
@@ -124,7 +127,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               password: ADMIN_PASSWORD
             })
             .then(({ data }) => {
-              if (data?.session) {
+              if (
+                !isCancelled &&
+                !isLoggingOutRef.current &&
+                localStorage.getItem('tcf_admin_logged_in') === 'true' &&
+                data?.session
+              ) {
                 setSession(data.session);
                 setUser(data.user);
               }
@@ -133,7 +141,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         setUser(createAdminUserObject(ADMIN_EMAIL));
         setLoading(false);
-        return;
+        return () => {
+          isCancelled = true;
+        };
       }
     } catch (e) {
       console.warn('LocalStorage error checking admin session:', e);
@@ -184,6 +194,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       data: { subscription }
     } = supabase.auth.onAuthStateChange((event, session) => {
       clearTimeout(sessionTimeout);
+      if (isLoggingOutRef.current && session) {
+        return;
+      }
       setSession(session);
       setUser(session?.user ?? null);
       if (event === 'PASSWORD_RECOVERY') {
@@ -206,6 +219,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUp = async (email: string, pass: string, name?: string): Promise<SignUpResult> => {
+    isLoggingOutRef.current = false;
     const normalized = email.trim().toLowerCase();
     recordUserEmail(normalized);
 
@@ -270,6 +284,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (email: string, pass: string) => {
+    isLoggingOutRef.current = false;
     const normalized = email.trim().toLowerCase();
     const cleanPass = pass.trim();
 
@@ -332,6 +347,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
+    isLoggingOutRef.current = true;
     try {
       localStorage.removeItem('tcf_admin_logged_in');
       localStorage.removeItem('tcf_admin_user_email');

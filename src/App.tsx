@@ -297,7 +297,6 @@ const MainRouter: React.FC = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     setInspectedUser(null);
     await signOut();
-    setView('home');
   };
 
   // Determine layout subtitle and combinationTitle
