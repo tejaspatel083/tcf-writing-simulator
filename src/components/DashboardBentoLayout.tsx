@@ -724,9 +724,9 @@ export const DashboardBentoLayout: React.FC<DashboardBentoLayoutProps> = ({
             </button>
           }
         >
-          <div className="flex flex-col justify-between h-full space-y-3">
+          <div className="flex flex-col justify-between min-h-0 space-y-3">
             {submissions.length > 0 ? (
-              <div className="space-y-2.5">
+              <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
                 {submissions.slice(0, 5).map((sub, idx) => {
                   const score = sub.aiEvaluation?.overall_score;
                   const cefr = sub.aiEvaluation?.estimated_cefr_level;

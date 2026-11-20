@@ -136,7 +136,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   })();
 
   return (
-    <div className="flex min-h-screen w-full bg-slate-50 text-slate-900 overflow-x-hidden">
+    <div className="flex min-h-screen w-full bg-slate-50 text-slate-900">
       {/* Collapsible Sidebar (Desktop) - Animated with Framer Motion */}
       <motion.nav
         className="hidden lg:flex sticky top-0 h-screen shrink-0 border-r border-slate-200 bg-white p-2 shadow-xs flex-col justify-between z-30 select-none overflow-x-hidden overflow-y-auto no-scrollbar overscroll-contain"
