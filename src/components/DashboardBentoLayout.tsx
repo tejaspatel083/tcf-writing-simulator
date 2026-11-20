@@ -235,10 +235,10 @@ export const DashboardBentoLayout: React.FC<DashboardBentoLayoutProps> = ({
                 </span>
                 <div className="flex items-baseline justify-end gap-1.5 mt-0.5">
                   <span className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-                    {totalSubmissions}
+                    {evaluatedSubmissions}
                   </span>
                   <span className="text-xs font-bold text-slate-500">
-                    / {evaluatedSubmissions} {language === 'en' ? 'evaluated' : 'évalués'}
+                    / {totalSubmissions} {language === 'en' ? 'evaluated' : 'évalués'}
                   </span>
                 </div>
               </div>

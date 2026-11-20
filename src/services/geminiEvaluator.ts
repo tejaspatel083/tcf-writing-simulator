@@ -210,16 +210,23 @@ Your grading philosophy is STRICT and RIGOROUS ("Train Hard, Exam Easy"):
 
 CRITICAL EVALUATION & PENALTY CRITERIA:
 1. ONLY evaluate the task(s) requested below. If a task was NOT part of this practice session, DO NOT evaluate it, DO NOT invent mistakes for it, and DO NOT penalize the student.
-2. RIGOROUS ERROR DETECTION:
-   Actively scan for and catalog ALL errors without being lenient:
-   - "Grammaire": Subject-verb agreements, gender/number agreements (accords en genre et en nombre), incorrect prepositions (à vs de, pour vs en), auxiliary choice (avoir vs être), subjunctive triggers.
-   - "Orthographe / Accents": Missing or incorrect accents (a vs à, ou vs où, é/è/ê), spelling slips, silent letter omissions, homophones (ses/ces, c'est/s'est).
-   - "Conjugaison / Temps": Incorrect verb forms, sequence of tenses (si clauses, concordance des temps), conditional vs imperfect vs passé composé.
-   - "Structure de phrase": Run-on sentences, missing logical articulators, awkward literal translations from English/other languages, lack of sentence variety.
-   - "Vocabulaire": Overuse of repetitive/generic terms ('chose', 'bien', 'faire', 'il y a', 'problème', 'beaucoup'). Penalize lack of B2/C1 lexical precision, register slips (e.g., informal 'tu' instead of formal 'vous', colloquial terms in formal letters).
-   - original_text: exact excerpt from student's text containing the error.
-   - corrected_text: the corrected French text.
-   - explanation: STRICTLY IN ENGLISH. Explain concisely why it is an error, the specific French grammar/syntax/spelling rule, and how to avoid it in the real TCF exam. NEVER write explanations in French.
+2. PRECISE, SHORT ERROR DETECTION (STRICTLY ACTUAL ERRORS ONLY — NO STYLISTIC REWRITES):
+   CRITICAL RULES FOR "mistakes" ARRAY:
+   - ONLY report ACTUAL ERRORS in French (Spelling, Accents, Grammar, Agreements, Verb Tenses/Conjugation, Preposition choice, or clear incorrect vocabulary usage).
+   - DO NOT suggest "better versions" or stylistic rewrites if the student's text is grammatically and semantically correct French.
+   - DO NOT write "To target C1/C2...", "To reach C1/C2...", or "enrich your vocabulary" in the mistakes array. If a student wrote standard French that is correct, DO NOT flag it as a mistake! Advanced C1/C2 expressions belong EXCLUSIVELY in the "c1_c2_model_answer".
+   - SHORT MISTAKES ONLY: "original_text" MUST be ONLY the specific erroneous word, verb, or short phrase (1 to 5 words maximum). NEVER quote an entire sentence or multiple clauses!
+   - BREAK DOWN MULTIPLE ERRORS: If a sentence contains more than one error (for example, a spelling mistake AND a wrong preposition AND a wrong verb tense), you MUST break them down into separate, individual mistake entries. NEVER group multiple errors into a single long sentence replacement!
+   - FOR VOCABULARY: Only flag true lexical errors (e.g. incorrect word meaning, false cognates / faux amis, wrong preposition collocations, or inappropriate informal register like slang/tutoiement in a formal task). Break it down to just the single misused word (e.g. original_text: "faire du sport", corrected_text: "pratiquer un sport"). NEVER quote an entire sentence for vocabulary!
+   - "original_text": The exact short erroneous snippet from the student's text (1 to 5 words).
+   - "corrected_text": The exact short corrected French replacement (1 to 5 words).
+   - "explanation": STRICTLY IN ENGLISH. Concisely explain the objective grammar, spelling, or tense rule (1-2 sentences). Do NOT mention C1/C2 levels or stylistic suggestions here.
+   - CATEGORIES:
+     * "Grammaire": Subject-verb agreements, gender/number agreements (accords en genre et en nombre), incorrect prepositions (à vs de, pour vs en), auxiliary choice (avoir vs être), subjunctive triggers.
+     * "Orthographe / Accents": Missing or incorrect accents (a vs à, ou vs où, é/è/ê), spelling slips, silent letter omissions, homophones (ses/ces, c'est/s'est).
+     * "Conjugaison / Temps": Incorrect verb forms, sequence of tenses (si clauses, concordance des temps), conditional vs imperfect vs passé composé.
+     * "Structure de phrase": Broken syntax, missing connectors, missing negation words, awkward literal word-for-word translations from English.
+     * "Vocabulaire": Genuine word misuse, improper register, or false cognates.
 3. WORD COUNT & CONSIGNE RESPECT (FEI Rules):
    - Task 1: minimum 60 words (target 60-120). If under 60 words, penalize score and level severely.
    - Task 2: minimum 120 words (target 120-150). If under 120 words, penalize score and level severely.
@@ -252,13 +259,19 @@ CRITICAL EVALUATION & PENALTY CRITERIA:
      * overall_score MUST BE 0 / 20.
      * overall_feedback MUST state: "Échec de l'examen : Aucune réponse n'a été rédigée. La réalisation de la tâche (Task Achievement) est de 0/20."
      * overall_feedback_en MUST state: "Exam Failed: No responses were written for the required tasks. Task achievement was completely missed (0/20)."
-6. AI MODEL RESPONSE (CRITICAL - C1-C2 LEVEL ONLY):
+6. AI MODEL RESPONSE (CRITICAL - C1-C2 LEVEL & STRICT WORD COUNT COMPLIANCE):
    For each evaluated task, generate ONE reference response at C1-C2 level:
    - "c1_c2_model_answer": An exemplary, advanced, and elegant C1-C2 French response using nuanced vocabulary, sophisticated sentence structures, and idiomatic expressions.
-   Formatting Constraints:
-   - Task 1: Message / Courriel (60 to 120 words).
-   - Task 2: EXACTLY THREE BODY PARAGRAPHS (Greeting -> Paragraph 1 context -> Paragraph 2 narrative/details -> Paragraph 3 conclusion/feelings -> Sign-off). 120 to 150 words. No labels like 'P1:'.
-   - Task 3: Title on Line 1, then an empty line, then EXACTLY TWO PARAGRAPHS ONLY (Paragraph 1 = objective synthesis of Document 1 & 2; Paragraph 2 = personal argumentative stance with clear connectors). 120 to 180 words. No labels.
+   CRITICAL WORD COUNT CONSTRAINTS (MANDATORY & ENFORCED):
+   Every model answer MUST strictly respect the official TCF Canada word count range:
+   - Task 1: STRICTLY between 60 and 120 words. (Target: 80 to 100 words).
+     Format: Message / Courriel amical. NEVER under 60 words, NEVER exceed 120 words!
+   - Task 2: STRICTLY between 120 and 150 words. (Target: 130 to 145 words).
+     Format: EXACTLY THREE BODY PARAGRAPHS: Greeting/intro context -> Narrative details -> Personal reflection/sign-off. NEVER under 120 words, NEVER exceed 150 words! No labels like 'P1:'.
+   - Task 3: STRICTLY between 120 and 180 words. (Target: 140 to 165 words).
+     Format: Short catchy Title on Line 1, empty line, then EXACTLY TWO PARAGRAPHS ONLY (Paragraph 1 = objective synthesis of Doc 1 & Doc 2; Paragraph 2 = personal argumentative stance with clear connectors). NEVER under 120 words, NEVER exceed 180 words! No labels.
+   COUNT YOUR WORDS BEFORE RETURNING THE JSON:
+   You must count the exact French words in each "c1_c2_model_answer" and ensure it falls strictly within the [minWords, maxWords] bounds. If your draft is too long (e.g. over 150 words for Task 2 or over 180 words for Task 3), TRIM IT to stay within the limit!
 
 OUTPUT JSON SCHEMA:
 Return ONLY valid JSON matching this schema:
@@ -305,16 +318,19 @@ Return ONLY valid JSON matching this schema:
     if (tKey === 'task1') {
       promptContent += `--- TÂCHE 1 (${wc} mots) ---\n`;
       promptContent += `Consigne: ${req.instruction}\n`;
+      promptContent += `Exigences de longueur officielles: MINIMUM 60 mots, MAXIMUM 120 mots.\n`;
       promptContent += `Réponse du candidat:\n"""\n${text || '(Aucune réponse saisie)'}\n"""\n\n`;
     } else if (tKey === 'task2') {
       promptContent += `--- TÂCHE 2 (${wc} mots) ---\n`;
       promptContent += `Consigne: ${req.instruction}\n`;
+      promptContent += `Exigences de longueur officielles: MINIMUM 120 mots, MAXIMUM 150 mots.\n`;
       promptContent += `Réponse du candidat:\n"""\n${text || '(Aucune réponse saisie)'}\n"""\n\n`;
     } else if (tKey === 'task3') {
       promptContent += `--- TÂCHE 3 (${wc} mots) ---\n`;
       promptContent += `Sujet / Titre: ${req.title || req.instruction}\n`;
       if (req.document1) promptContent += `Document 1: ${req.document1}\n`;
       if (req.document2) promptContent += `Document 2: ${req.document2}\n`;
+      promptContent += `Exigences de longueur officielles: MINIMUM 120 mots, MAXIMUM 180 mots.\n`;
       promptContent += `Réponse du candidat:\n"""\n${text || '(Aucune réponse saisie)'}\n"""\n\n`;
     }
   }
@@ -322,9 +338,19 @@ Return ONLY valid JSON matching this schema:
   promptContent += `MANDATORY REQUIREMENTS:\n`;
   promptContent += `1. Provide overall_feedback in French AND provide its accurate English translation in overall_feedback_en.\n`;
   promptContent += `2. For each task, provide general_feedback in French AND its accurate English translation in general_feedback_en.\n`;
-  promptContent += `3. All mistake "explanation" values MUST be written 100% IN ENGLISH ONLY (explain French grammar/spelling rule clearly in English).\n`;
-  promptContent += `4. Keep the student's original_text, corrected_text, and c1_c2_model_answer in French.\n`;
-  promptContent += `5. Output strictly standard RFC 8259 JSON. Do NOT escape single quotes (\\') in French text (write "c'est", "l'écriture", never "c\\'est"). Ensure all strings are strictly valid JSON.\n`;
+  promptContent += `3. MISTAKES MUST BE SHORT AND REAL ERRORS ONLY:\n`;
+  promptContent += `   - Do NOT suggest stylistic "better versions" or "C1/C2 elevation" in mistakes! If a student's French is grammatically and semantically correct, DO NOT flag it as a mistake!\n`;
+  promptContent += `   - NEVER quote entire sentences! "original_text" and "corrected_text" must be short snippets (1 to 5 words maximum).\n`;
+  promptContent += `   - If there are multiple errors in a sentence, break them down into separate, individual mistakes.\n`;
+  promptContent += `   - NEVER write "To target C1/C2..." in explanations. Just state the grammatical, spelling, agreement, or tense rule in English.\n`;
+  promptContent += `4. MODEL ANSWER WORD COUNT COMPLIANCE IS STRICTLY MANDATORY:\n`;
+  promptContent += `   - Task 1 c1_c2_model_answer: 60 to 120 words (target 80-100 words).\n`;
+  promptContent += `   - Task 2 c1_c2_model_answer: 120 to 150 words (target 130-145 words). NEVER exceed 150 words!\n`;
+  promptContent += `   - Task 3 c1_c2_model_answer: 120 to 180 words (target 140-165 words). NEVER exceed 180 words!\n`;
+  promptContent += `   You must count words and ensure the model answers do NOT exceed the maximum limit under any circumstances!\n`;
+  promptContent += `5. All mistake "explanation" values MUST be written 100% IN ENGLISH ONLY (explain French grammar/spelling rule clearly in English).\n`;
+  promptContent += `6. Keep the student's original_text, corrected_text, and c1_c2_model_answer in French.\n`;
+  promptContent += `7. Output strictly standard RFC 8259 JSON. Do NOT escape single quotes (\\') in French text (write "c'est", "l'écriture", never "c\\'est"). Ensure all strings are strictly valid JSON.\n`;
   promptContent += `Please evaluate the active task(s) and output ONLY the valid JSON response.`;
 
   // Memory & session cache for currently active working model
@@ -517,13 +543,60 @@ Return ONLY valid JSON matching this schema:
     let taskScore = typeof rawTask?.score === 'number' ? Math.min(20, Math.max(0, rawTask.score)) : 14;
     let taskFeedback = rawTask?.general_feedback || '';
     let taskFeedbackEn = rawTask?.general_feedback_en || '';
+
+    // Enforce word count limit on C1/C2 model answer
+    const maxWordsMap: Record<TaskKey, number> = {
+      task1: 120,
+      task2: 150,
+      task3: 180
+    };
+    let modelAnswer = (rawTask?.c1_c2_model_answer || '').trim();
+    if (modelAnswer) {
+      const maxW = maxWordsMap[tKey] || 150;
+      const currentWords = countFrenchWords(modelAnswer);
+      if (currentWords > maxW) {
+        const sentences = modelAnswer.match(/[^.!?]+[.!?]+(?:\s+|$)/g) || [];
+        let accumulated = '';
+        for (const s of sentences) {
+          const test = (accumulated + s).trim();
+          if (countFrenchWords(test) <= maxW) {
+            accumulated = test + ' ';
+          } else {
+            break;
+          }
+        }
+        if (accumulated.trim()) {
+          modelAnswer = accumulated.trim();
+        }
+      }
+    }
+
     let mistakesList = Array.isArray(rawTask?.mistakes)
-      ? rawTask.mistakes.map((m: any) => ({
-          category: m.category || 'Grammaire',
-          original_text: m.original_text || '',
-          corrected_text: m.corrected_text || '',
-          explanation: m.explanation || ''
-        })).filter((m: any) => Boolean(m.original_text || m.corrected_text))
+      ? rawTask.mistakes
+          .map((m: any) => {
+            let explanation = (m.explanation || '').trim();
+            // Clean up any stylistic C1/C2 phrases
+            explanation = explanation
+              .replace(/^(?:In order to|To)\s+(?:target|reach|achieve|aim for)\s+C1\/?C2,?\s*/i, '')
+              .replace(/To reach high-level C1\/?C2,?\s*/i, '');
+            if (explanation.length > 0) {
+              explanation = explanation.charAt(0).toUpperCase() + explanation.slice(1);
+            }
+
+            return {
+              category: m.category || 'Grammaire',
+              original_text: (m.original_text || '').trim(),
+              corrected_text: (m.corrected_text || '').trim(),
+              explanation
+            };
+          })
+          .filter((m: any) => {
+            if (!m.original_text && !m.corrected_text) return false;
+            // Filter out full-sentence stylistic suggestions masquerading as vocabulary mistakes
+            const origWords = m.original_text.split(/\s+/).length;
+            if (origWords > 12 && m.category === 'Vocabulaire') return false;
+            return true;
+          })
       : [];
 
     if (isBlank) {
@@ -550,7 +623,7 @@ Return ONLY valid JSON matching this schema:
       general_feedback_en: taskFeedbackEn,
       mistakes: mistakesList,
       b2_model_answer: rawTask?.b2_model_answer || undefined,
-      c1_c2_model_answer: rawTask?.c1_c2_model_answer || ''
+      c1_c2_model_answer: modelAnswer
     };
   }
 

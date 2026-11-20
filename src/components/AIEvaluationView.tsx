@@ -375,8 +375,14 @@ export const AIEvaluationView: React.FC<AIEvaluationViewProps> = ({
               <div className="flex items-center justify-between text-[11px] text-slate-500 pt-0.5">
                 <span className="font-mono font-medium">{countFrenchWords(currentTask.c1_c2_model_answer)} {t('mots')}</span>
                 {taskReq && (
-                  <span>
-                    {t('Cible exigée')} : {taskReq.minWords}–{taskReq.maxWords} {t('mots')}
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                    countFrenchWords(currentTask.c1_c2_model_answer) >= taskReq.minWords && countFrenchWords(currentTask.c1_c2_model_answer) <= taskReq.maxWords
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                      : 'bg-amber-50 text-amber-700 border border-amber-200'
+                  }`}>
+                    {countFrenchWords(currentTask.c1_c2_model_answer) >= taskReq.minWords && countFrenchWords(currentTask.c1_c2_model_answer) <= taskReq.maxWords
+                      ? `✓ ${t('Conforme')} (${taskReq.minWords}–${taskReq.maxWords} ${t('mots')})`
+                      : `${t('Cible exigée')} : ${taskReq.minWords}–${taskReq.maxWords} ${t('mots')}`}
                   </span>
                 )}
               </div>
