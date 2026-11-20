@@ -136,19 +136,23 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   })();
 
   return (
-    <div className="flex min-h-screen w-full bg-slate-50 text-slate-900">
+    <div className="flex h-screen w-full bg-slate-50 text-slate-900 overflow-hidden">
       {/* Collapsible Sidebar (Desktop) - Animated with Framer Motion */}
       <motion.nav
-        className="hidden lg:flex sticky top-0 h-screen shrink-0 border-r border-slate-200 bg-white p-2 shadow-xs flex-col justify-between z-30 select-none overflow-x-hidden overflow-y-auto no-scrollbar overscroll-contain"
+        className="hidden lg:flex h-screen shrink-0 border-r border-slate-200 bg-white p-2 shadow-xs flex-col justify-between z-30 select-none overflow-hidden"
         animate={{
           width: sidebarOpen ? 256 : 64,
         }}
         transition={{
-          duration: 0.25,
+          duration: 0.2,
           ease: "easeInOut",
         }}
         onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseLeave={(e) => {
+          const related = e.relatedTarget as Node | null;
+          if (related && (e.currentTarget as HTMLElement).contains(related)) return;
+          setIsHovered(false);
+        }}
       >
           <div>
             {/* Title / User Brand Section */}
@@ -260,7 +264,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                 Icon={LogOut}
                 title={t('Déconnexion')}
                 isSelected={false}
-                onClick={() => handleNav(onSignOut)}
+                onClick={() => {
+                  setIsHovered(false);
+                  onSignOut();
+                }}
                 open={sidebarOpen}
                 isDestructive
               />
@@ -297,7 +304,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         </motion.nav>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
           {/* Top Bar */}
           <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200 px-3 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between shadow-2xs">
             <div className="min-w-0 pr-2 sm:pr-4 flex items-center gap-2">
@@ -418,7 +425,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
           )}
 
           {/* Children View Content */}
-          <main className={`flex-1 min-w-0 ${currentView === 'simulator' ? 'h-[calc(100vh-57px)] overflow-hidden' : 'pb-24 lg:pb-16'}`}>
+          <main className={`flex-1 min-w-0 ${currentView === 'simulator' ? 'h-full overflow-hidden' : 'pb-24 lg:pb-16'}`}>
             {children}
           </main>
         </div>
