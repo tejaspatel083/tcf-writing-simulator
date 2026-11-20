@@ -279,16 +279,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                   }`}
                 />
               </div>
-              <motion.span
-                animate={{
-                  display: sidebarOpen ? "inline-block" : "none",
-                  opacity: sidebarOpen ? 1 : 0,
-                }}
-                transition={{ duration: 0.15 }}
-                className="text-xs font-semibold ml-2 group-hover/toggle:translate-x-1 transition-transform duration-150 whitespace-pre"
-              >
-                {t('Réduire le menu')}
-              </motion.span>
+              {sidebarOpen && (
+                <span className="text-xs font-semibold ml-2 whitespace-pre">
+                  {t('Réduire le menu')}
+                </span>
+              )}
             </button>
           </div>
         </motion.nav>
@@ -691,7 +686,7 @@ const SidebarOption: React.FC<SidebarOptionProps> = ({
     <button
       type="button"
       onClick={onClick}
-      className={`group/sidebar relative flex h-11 w-full items-center rounded-xl transition-all duration-150 cursor-pointer ${
+      className={`relative flex h-11 w-full items-center rounded-xl transition-colors cursor-pointer ${
         open ? 'px-2.5 justify-start' : 'justify-center px-0'
       } ${
         isSelected
@@ -704,29 +699,20 @@ const SidebarOption: React.FC<SidebarOptionProps> = ({
       }`}
       title={open ? undefined : title}
     >
-      <div className={`grid h-full place-content-center shrink-0 ${open ? 'w-8' : 'w-full'} transition-transform duration-150 group-hover/sidebar:scale-105`}>
+      <div className={`grid h-full place-content-center shrink-0 ${open ? 'w-8' : 'w-full'}`}>
         <Icon className="h-5 w-5" />
       </div>
 
-      <motion.span
-        animate={{
-          display: open ? 'inline-block' : 'none',
-          opacity: open ? 1 : 0,
-        }}
-        transition={{ duration: 0.15 }}
-        className="text-xs truncate transition-transform duration-150 group-hover/sidebar:translate-x-1 whitespace-pre inline-block pr-2"
-      >
-        {title}
-      </motion.span>
+      {open && (
+        <span className="text-xs truncate whitespace-pre inline-block pr-2">
+          {title}
+        </span>
+      )}
 
       {notifs !== undefined && open && (
-        <motion.span
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="ml-auto mr-2 flex h-5 min-w-[20px] px-1 items-center justify-center rounded-full bg-blue-600 text-[10px] text-white font-bold"
-        >
+        <span className="ml-auto mr-2 flex h-5 min-w-[20px] px-1 items-center justify-center rounded-full bg-blue-600 text-[10px] text-white font-bold">
           {notifs}
-        </motion.span>
+        </span>
       )}
 
       {badge && open && (
