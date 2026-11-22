@@ -327,11 +327,16 @@ export const Home: React.FC<HomeProps> = ({
         {/* Header Title */}
         <div className="text-center mb-8 border-b border-slate-200 pb-6">
           <div className="inline-flex items-center justify-center gap-3.5 sm:gap-4.5 flex-wrap sm:flex-nowrap mb-2">
-            <img
-              src="./logo-icon.png"
-              alt="TCF Canada"
-              className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-contain shrink-0 drop-shadow-sm select-none"
-            />
+            <picture>
+              <source srcSet="./logo-icon.webp" type="image/webp" />
+              <img
+                src="./logo-icon.png"
+                alt="TCF Canada Expression Écrite - Logo Officiel"
+                width="96"
+                height="96"
+                className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-contain shrink-0 drop-shadow-sm select-none"
+              />
+            </picture>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight text-center sm:text-left">
               {t('TCF Canada — Expression Écrite Simulator')}
             </h1>

@@ -58,10 +58,13 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
         <div>
-          <h1 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight flex items-center gap-2.5">
-            <img src="./logo-icon.png" alt="TCF Canada" className="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0 drop-shadow-2xs select-none" />
+          <div role="heading" aria-level={2} className="text-sm sm:text-base font-bold text-slate-800 tracking-tight flex items-center gap-2.5">
+            <picture>
+              <source srcSet="./logo-icon.webp" type="image/webp" />
+              <img src="./logo-icon.png" alt="TCF Canada Expression Écrite Logo" width="32" height="32" className="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0 drop-shadow-2xs select-none" />
+            </picture>
             {tr('header.title')}
-          </h1>
+          </div>
           {subtitle && (
             <p className="text-xs text-slate-500 font-normal">{tr(subtitle)}</p>
           )}

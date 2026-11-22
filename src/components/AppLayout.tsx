@@ -305,14 +305,19 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
               </button>
 
               <div className="flex items-center gap-2.5 flex-wrap min-w-0">
-                <h1 className="text-base sm:text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5 truncate">
-                  <img
-                    src="./logo-icon.png"
-                    alt="TCF Canada"
-                    className="w-8 h-8 sm:w-10 sm:h-10 object-contain shrink-0 drop-shadow-2xs select-none"
-                  />
+                <div role="heading" aria-level={2} className="text-base sm:text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5 truncate">
+                  <picture>
+                    <source srcSet="./logo-icon.webp" type="image/webp" />
+                    <img
+                      src="./logo-icon.png"
+                      alt="TCF Canada Expression Écrite Logo"
+                      width="40"
+                      height="40"
+                      className="w-8 h-8 sm:w-10 sm:h-10 object-contain shrink-0 drop-shadow-2xs select-none"
+                    />
+                  </picture>
                   <span className="truncate">{resolvedTitle}</span>
-                </h1>
+                </div>
                 {isAdmin && (
                   <span className="bg-amber-100 text-amber-800 border border-amber-300 text-[9px] sm:text-[10px] font-extrabold px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">
                     {t('👑 Admin')}
