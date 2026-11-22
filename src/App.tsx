@@ -17,12 +17,23 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { sendSubmissionNotification } from './services/notificationService';
 import { pushLocalEvaluationsToSupabase } from './services/userProfilesService';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
+import { NotFound, Illustration } from './components/ui/not-found';
 
 const MainRouter: React.FC = () => {
   const { user, loading, isEmailVerified, signOut, isAdmin, isConfigured } = useAuth();
   const { language, t } = useLanguage();
 
-  const [view, setView] = useState<'home' | 'simulator' | 'results' | 'dashboard' | 'feedback' | 'submissions'>('home');
+  const [view, setView] = useState<'home' | 'simulator' | 'results' | 'dashboard' | 'feedback' | 'submissions' | '404'>(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('view') === '404' || window.location.pathname.includes('/404') || window.location.hash === '#404') {
+          return '404';
+        }
+      }
+    } catch {}
+    return 'home';
+  });
   const [dashboardTab, setDashboardTab] = useState<'submissions' | 'mistakes' | 'admin'>('submissions');
   const [submissionsTab, setSubmissionsTab] = useState<'exams' | 'mistakes'>('exams');
   const [inspectedUser, setInspectedUser] = useState<{ id?: string; email: string; displayName?: string } | null>(null);
@@ -500,6 +511,26 @@ const MainRouter: React.FC = () => {
           onHomeClick={handleGoHome}
           userEmail={user?.email}
         />
+      )}
+
+      {view === '404' && (
+        <div className="relative flex flex-col w-full justify-center min-h-[70vh] p-4 sm:p-8">
+          <div className="relative max-w-4xl mx-auto w-full">
+            <Illustration className="absolute inset-0 w-full h-[50vh] opacity-[0.05] text-slate-800 pointer-events-none" />
+            <NotFound
+              title={language === 'en' ? "Page not found" : "Page introuvable"}
+              description={language === 'en' ? "Lost, this page is. In another system, it may be." : "Cette page semble introuvable ou a été déplacée dans le système."}
+              onTakeHome={handleGoHome}
+              onGoBack={() => {
+                if (typeof window !== 'undefined' && window.history.length > 1) {
+                  window.history.back();
+                } else {
+                  handleGoHome();
+                }
+              }}
+            />
+          </div>
+        </div>
       )}
     </AppLayout>
   );

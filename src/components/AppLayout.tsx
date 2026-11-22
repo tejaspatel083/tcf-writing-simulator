@@ -22,7 +22,7 @@ import {
   ClipboardList
 } from 'lucide-react';
 
-export type AppView = 'home' | 'dashboard' | 'simulator' | 'results' | 'feedback' | 'submissions';
+export type AppView = 'home' | 'dashboard' | 'simulator' | 'results' | 'feedback' | 'submissions' | '404';
 
 interface AppLayoutProps {
   currentView: AppView;

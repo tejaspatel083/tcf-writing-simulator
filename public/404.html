@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <title>Page non trouvée — TCF Canada Simulator</title>
+    <script>
+      // Single Page App redirect for GitHub Pages 404
+      var pathSegmentsToKeep = 1;
+      var l = window.location;
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?view=404&p=' +
+        encodeURIComponent(l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/') + l.search) +
+        l.hash
+      );
+    </script>
+  </head>
+  <body>
+    <p>Redirection vers le simulateur...</p>
+  </body>
+</html>
