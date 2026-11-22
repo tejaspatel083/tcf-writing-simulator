@@ -109,7 +109,22 @@ export async function saveSubmissionToSupabase(
     return { data: null, error: new Error(error.message) };
   }
 
+  // Invalidate client cache on new submission
+  invalidateSubmissionsCache();
+
   return { data, error: null };
+}
+
+// In-memory cache to prevent redundant Supabase bandwidth egress on tab/view switches
+interface SubmissionsCacheEntry {
+  submissions: ExamResult[];
+  timestamp: number;
+}
+const submissionsCache = new Map<string, SubmissionsCacheEntry>();
+const SUBMISSIONS_CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes
+
+export function invalidateSubmissionsCache() {
+  submissionsCache.clear();
 }
 
 /**
@@ -117,10 +132,19 @@ export async function saveSubmissionToSupabase(
  */
 export async function fetchSubmissionsFromSupabase(
   userId: string,
-  userEmail?: string | null
+  userEmail?: string | null,
+  forceRefresh: boolean = false
 ): Promise<{ submissions: ExamResult[]; error: Error | null }> {
   if (!supabase || !isSupabaseConfigured) {
     return { submissions: [], error: new Error('Supabase configuration missing.') };
+  }
+
+  const cacheKey = `${userId || ''}_${(userEmail || '').trim().toLowerCase()}`;
+  if (!forceRefresh) {
+    const cached = submissionsCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < SUBMISSIONS_CACHE_TTL_MS) {
+      return { submissions: cached.submissions, error: null };
+    }
   }
 
   let query = supabase.from('submissions').select('*').order('created_at', { ascending: false });
@@ -204,6 +228,9 @@ export async function fetchSubmissionsFromSupabase(
     };
   });
 
+  // Store in client-side memory cache
+  submissionsCache.set(cacheKey, { submissions: mappedSubmissions, timestamp: Date.now() });
+
   return { submissions: mappedSubmissions, error: null };
 }
 
@@ -233,6 +260,9 @@ export async function updateSubmissionAiFeedback(
       return { error: new Error(error.message) };
     }
 
+    // Invalidate client cache on evaluation update
+    invalidateSubmissionsCache();
+
     return { error: null };
   } catch (err: any) {
     console.error('Exception updating AI feedback in Supabase:', err);
@@ -261,6 +291,9 @@ export async function deleteSubmissionFromSupabase(
     console.error('Error deleting submission from Supabase:', error);
     return { error: new Error(error.message) };
   }
+
+  // Invalidate client cache on deletion
+  invalidateSubmissionsCache();
 
   return { error: null };
 }

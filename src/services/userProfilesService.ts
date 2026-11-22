@@ -159,11 +159,23 @@ export function extractMistakesFromSubmissions(subs: ExamResult[]): SavedMistake
   return mistakes;
 }
 
+// In-memory cache for candidate directory to minimize Supabase egress bandwidth
+let candidatesDirectoryCache: { data: CandidateProfile[]; timestamp: number } | null = null;
+const DIRECTORY_CACHE_TTL_MS = 60 * 1000; // 60 seconds
+
+export function invalidateCandidateDirectoryCache() {
+  candidatesDirectoryCache = null;
+}
+
 /**
  * Fetches all real candidates and their live submissions from Supabase database.
  * No mock or sample submissions are generated.
  */
-export async function getAllCandidatesDirectory(): Promise<CandidateProfile[]> {
+export async function getAllCandidatesDirectory(forceRefresh: boolean = false): Promise<CandidateProfile[]> {
+  if (!forceRefresh && candidatesDirectoryCache && Date.now() - candidatesDirectoryCache.timestamp < DIRECTORY_CACHE_TTL_MS) {
+    return candidatesDirectoryCache.data;
+  }
+
   const client = getSupabase();
   if (!client) return [];
 
@@ -193,12 +205,12 @@ export async function getAllCandidatesDirectory(): Promise<CandidateProfile[]> {
     console.warn('Error fetching profiles from Supabase:', err);
   }
 
-  // 2. Fetch all real live submissions from Supabase public.submissions
+  // 2. Fetch submissions metadata from Supabase (exclude full essay texts to cut 80%+ egress bandwidth)
   let submissionsData: any[] = [];
   try {
     const { data, error } = await client
       .from('submissions')
-      .select('*')
+      .select('id, user_id, email, created_at, year, month, combination, duration_seconds, task1_word_count, task2_word_count, task3_word_count, ai_feedback')
       .order('created_at', { ascending: false });
 
     if (!error && Array.isArray(data)) {
@@ -344,11 +356,13 @@ export async function getAllCandidatesDirectory(): Promise<CandidateProfile[]> {
   }
 
   // Sort: Admin first, then candidates with submissions descending, then alphabetically
-  return candidateList.sort((a, b) => {
+  const sorted = candidateList.sort((a, b) => {
     if (a.isAdmin && !b.isAdmin) return -1;
     if (!a.isAdmin && b.isAdmin) return 1;
     return b.submissionsCount - a.submissionsCount || a.email.localeCompare(b.email);
   });
+  candidatesDirectoryCache = { data: sorted, timestamp: Date.now() };
+  return sorted;
 }
 
 /**
@@ -475,16 +489,17 @@ export async function pushLocalEvaluationsToSupabase(): Promise<{ pushedCount: n
       return { pushedCount: 0 };
     }
 
-    // Now query submissions from Supabase that need ai_feedback
+    // Query only submissions from Supabase that actually lack ai_feedback, selecting minimal columns to cut egress bandwidth
     const { data: existingRows } = await client
       .from('submissions')
-      .select('id, year, month, combination, ai_feedback');
+      .select('id, year, month, combination')
+      .is('ai_feedback', null);
 
-    if (Array.isArray(existingRows)) {
+    if (Array.isArray(existingRows) && existingRows.length > 0) {
       for (const [keyId, item] of evalMap.entries()) {
         // Try match by UUID id
         const directMatch = existingRows.find((r) => r.id === keyId);
-        if (directMatch && !directMatch.ai_feedback) {
+        if (directMatch) {
           const { error: updErr } = await client
             .from('submissions')
             .update({ ai_feedback: item.eval })
@@ -500,8 +515,7 @@ export async function pushLocalEvaluationsToSupabase(): Promise<{ pushedCount: n
             (r) =>
               String(r.year) === String(item.sub?.year) &&
               String(r.month).toLowerCase() === String(item.sub?.month).toLowerCase() &&
-              Number(r.combination) === comboNum &&
-              !r.ai_feedback
+              Number(r.combination) === comboNum
           );
           if (comboMatch) {
             const { error: updErr } = await client
