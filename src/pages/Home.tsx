@@ -913,6 +913,18 @@ export const Home: React.FC<HomeProps> = ({
               <button
                 type="button"
                 onClick={() => {
+                  // If not logged in, directly trigger onStartExam so the Login / Sign Up modal opens immediately!
+                  if (!user) {
+                    if (currentCombo) {
+                      if (trainingMode === 'single_task') {
+                        onStartExam(currentCombo, selectedYear, selectedMonth, true, selectedTasks, customMinutes);
+                      } else {
+                        onStartExam(currentCombo, selectedYear, selectedMonth, false, 'task1', 60);
+                      }
+                    }
+                    return;
+                  }
+
                   try {
                     const storedMistakes = getStoredMistakes();
                     if (storedMistakes && storedMistakes.length > 0) {
