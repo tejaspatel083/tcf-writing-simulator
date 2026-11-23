@@ -49,20 +49,8 @@ const MainRouter: React.FC = () => {
   const [practiceTask, setPracticeTask] = useState<TaskKey>('task1');
   const [practiceTasks, setPracticeTasks] = useState<TaskKey[]>(['task1']);
   const [practiceDuration, setPracticeDuration] = useState<number>(60);
-  const [submissionsCount, setSubmissionsCount] = useState<number>(() => {
-    try {
-      return getStoredSubmissions().length;
-    } catch {
-      return 0;
-    }
-  });
-  const [mistakesCount, setMistakesCount] = useState<number>(() => {
-    try {
-      return getStoredMistakes().length;
-    } catch {
-      return 0;
-    }
-  });
+  const [submissionsCount, setSubmissionsCount] = useState<number>(0);
+  const [mistakesCount, setMistakesCount] = useState<number>(0);
   const [retakePendingCombo, setRetakePendingCombo] = useState<{ combo: ExamCombination; year: string; month: string } | null>(null);
   const [showRetakeMistakesModal, setShowRetakeMistakesModal] = useState<boolean>(false);
 
@@ -82,10 +70,15 @@ const MainRouter: React.FC = () => {
 
   useEffect(() => {
     try {
+      if (!user) {
+        setSubmissionsCount(0);
+        setMistakesCount(0);
+        return;
+      }
       setSubmissionsCount(getStoredSubmissions().length);
       setMistakesCount(getStoredMistakes().length);
     } catch {}
-  }, [view]);
+  }, [view, user]);
 
   // Auto-redirect: if user is authenticated and has past AI-evaluated submissions,
   // send them to the Dashboard (with analytics) instead of the Exam Selector on first load.
@@ -442,7 +435,7 @@ const MainRouter: React.FC = () => {
       onNavigateSubmissions={handleNavigateSubmissions}
       submissionsTab={submissionsTab}
       onNavigateMistakes={handleNavigateToMistakes}
-      mistakesCount={mistakesCount}
+      mistakesCount={user ? mistakesCount : 0}
       isMistakesTabActive={view === 'dashboard' && dashboardTab === 'mistakes'}
       onNavigateFeedback={() => setView('feedback')}
       onStartNewExam={handleGoHome}
@@ -451,7 +444,7 @@ const MainRouter: React.FC = () => {
         setLoginModalBanner(null);
         setShowLoginModal(true);
       }}
-      submissionsCount={submissionsCount}
+      submissionsCount={user ? submissionsCount : 0}
       onNavigateAdmin={() => {
         if (!user || !isAdmin) {
           setShowLoginModal(true);

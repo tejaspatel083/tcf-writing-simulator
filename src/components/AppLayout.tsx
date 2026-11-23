@@ -210,7 +210,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                 isSelected={currentView === 'submissions' && submissionsTab !== 'mistakes'}
                 onClick={() => handleNav(() => (onNavigateSubmissions ? onNavigateSubmissions('exams') : onNavigateDashboard()))}
                 open={sidebarOpen}
-                badge={submissionsCount > 0 ? String(submissionsCount) : undefined}
+                badge={user && submissionsCount > 0 ? String(submissionsCount) : undefined}
               />
               <SidebarOption
                 Icon={AlertCircle}
@@ -218,7 +218,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                 isSelected={(currentView === 'dashboard' && isMistakesTabActive) || (currentView === 'submissions' && submissionsTab === 'mistakes')}
                 onClick={() => handleNav(() => (onNavigateSubmissions ? onNavigateSubmissions('mistakes') : (onNavigateMistakes ? onNavigateMistakes() : onNavigateDashboard())))}
                 open={sidebarOpen}
-                badge={mistakesCount && mistakesCount > 0 ? String(mistakesCount) : undefined}
+                badge={user && mistakesCount && mistakesCount > 0 ? String(mistakesCount) : undefined}
               />
               {isAdmin && (
                 <SidebarOption
@@ -558,7 +558,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                       handleNav(() => (onNavigateSubmissions ? onNavigateSubmissions('exams') : onNavigateDashboard()));
                     }}
                     open={true}
-                    badge={submissionsCount > 0 ? String(submissionsCount) : undefined}
+                    badge={user && submissionsCount > 0 ? String(submissionsCount) : undefined}
                   />
                   <SidebarOption
                     Icon={AlertCircle}
@@ -569,7 +569,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                       handleNav(() => (onNavigateSubmissions ? onNavigateSubmissions('mistakes') : (onNavigateMistakes ? onNavigateMistakes() : onNavigateDashboard())));
                     }}
                     open={true}
-                    badge={mistakesCount && mistakesCount > 0 ? String(mistakesCount) : undefined}
+                    badge={user && mistakesCount && mistakesCount > 0 ? String(mistakesCount) : undefined}
                   />
                   {isAdmin && (
                     <SidebarOption
