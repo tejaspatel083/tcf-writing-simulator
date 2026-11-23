@@ -193,19 +193,26 @@ export const Home: React.FC<HomeProps> = ({
   }, []);
 
   // Fetch submissions from Supabase and LocalStorage in the background
-  // to power the combination completion indicators
+  // to power the combination completion indicators (only for authenticated users)
   useEffect(() => {
     let isMounted = true;
 
     async function loadSubmissions() {
+      if (!user) {
+        if (isMounted) {
+          setPastSubmissions([]);
+        }
+        return;
+      }
+
       const local = getStoredSubmissions();
       if (isMounted) {
         setPastSubmissions(local);
       }
 
-      if (user && isConfigured) {
+      if (isConfigured) {
         try {
-          const { submissions: dbSubs, error } = await fetchSubmissionsFromSupabase(user.id);
+          const { submissions: dbSubs, error } = await fetchSubmissionsFromSupabase(user.id, user.email);
           if (!error && dbSubs && isMounted) {
             const merged = mergeSubmissions(dbSubs, local);
             setPastSubmissions(merged);
@@ -226,8 +233,9 @@ export const Home: React.FC<HomeProps> = ({
 
   const currentCombo: ExamCombination | undefined = combinations[selectedComboIndex] || combinations[0];
 
-  // Helper: check if a combination has been submitted before
+  // Helper: check if a combination has been submitted before (only if user is logged in)
   const isCombinationCompleted = (comboNum: number): boolean => {
+    if (!user) return false;
     return pastSubmissions.some((sub) => {
       if (!sub) return false;
       const matchYear = String(sub.year || '').trim() === String(selectedYear || '').trim();
@@ -237,8 +245,9 @@ export const Home: React.FC<HomeProps> = ({
     });
   };
 
-  // Helper: count completed combinations for a given month
+  // Helper: count completed combinations for a given month (only if user is logged in)
   const getCompletedCountForMonth = (monthName: string): number => {
+    if (!user) return 0;
     const finished = new Set<number>();
     pastSubmissions.forEach((sub) => {
       if (

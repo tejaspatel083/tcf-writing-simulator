@@ -360,12 +360,10 @@ Return ONLY valid JSON matching this schema:
   } catch {}
 
   const defaultPreferredModels = [
-    'gemini-flash-latest',
-    'gemini-pro-latest',
-    'gemini-2.5-flash-lite',
-    'gemma-4-26b-a4b-it',
     'gemini-3.5-flash-lite',
-    'gemini-3.5-flash'
+    'gemini-flash-lite-latest',
+    'gemini-3.5-flash',
+    'gemini-flash-latest'
   ];
 
   const candidateModels: string[] = cachedWorkingModel
@@ -411,60 +409,78 @@ Return ONLY valid JSON matching this schema:
     if (attemptedModels.has(modelName)) continue;
     attemptedModels.add(modelName);
 
-    try {
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: 'user',
-              parts: [{ text: `${systemInstructions}\n\n${promptContent}` }]
+    // Try up to 2 attempts for 503/429 transient overload
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+      try {
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            contents: [
+              {
+                role: 'user',
+                parts: [{ text: `${systemInstructions}\n\n${promptContent}` }]
+              }
+            ],
+            generationConfig: {
+              responseMimeType: 'application/json',
+              temperature: 0.2
             }
-          ],
-          generationConfig: {
-            responseMimeType: 'application/json',
-            temperature: 0.2
+          })
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          lastError = errorData?.error?.message || `Erreur API Gemini (${response.status}: ${response.statusText})`;
+          if ((response.status === 503 || response.status === 429) && attempt === 0) {
+            console.warn(`Model ${modelName} returned ${response.status}. Retrying in 1s...`);
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            continue;
           }
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        lastError = errorData?.error?.message || `Erreur API Gemini (${response.status}: ${response.statusText})`;
-        console.warn(`Model ${modelName} returned error: ${lastError}. Trying next candidate...`);
-        continue;
-      }
-
-      const jsonResponse = await response.json();
-      const candidateText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (candidateText) {
-        try {
-          parsed = safeParseGeminiJson(candidateText);
-          rawText = candidateText;
-          try {
-            sessionStorage.setItem('tcf_working_gemini_model', modelName);
-          } catch {}
+          console.warn(`Model ${modelName} returned error: ${lastError}. Trying next candidate...`);
           break;
-        } catch (parseErr: any) {
-          console.warn(`Model ${modelName} returned unparseable JSON:`, parseErr?.message);
-          lastError = `Erreur de format JSON avec le modèle ${modelName}: ${parseErr?.message}`;
-          continue;
         }
+
+        const jsonResponse = await response.json();
+        const candidateText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (candidateText) {
+          try {
+            parsed = safeParseGeminiJson(candidateText);
+            rawText = candidateText;
+            try {
+              sessionStorage.setItem('tcf_working_gemini_model', modelName);
+            } catch {}
+            break;
+          } catch (parseErr: any) {
+            console.warn(`Model ${modelName} returned unparseable JSON:`, parseErr?.message);
+            lastError = `Erreur de format JSON avec le modèle ${modelName}: ${parseErr?.message}`;
+            break;
+          }
+        }
+      } catch (err: any) {
+        clearTimeout(timeoutId);
+        lastError = err?.name === 'AbortError' ? `Timeout après 12s avec ${modelName}` : (err?.message || 'Erreur réseau');
+        console.warn(`Model ${modelName} failed with error:`, lastError);
+        break;
       }
-    } catch (err: any) {
-      lastError = err?.message || 'Erreur réseau';
-      console.warn(`Model ${modelName} failed with error:`, err);
     }
+
+    if (parsed) break;
   }
 
-  // Phase 2 (Self-Healing Fallback): If all default models failed, dynamically query Google API
+  // Phase 2 (Self-Healing Fallback): If all default models failed, dynamically query Google API (top 3 flash models only)
   if (!parsed) {
     console.info('Querying Google ModelService.ListModels to dynamically discover active generation models...');
-    const liveModels = await discoverLiveModels(apiKey);
+    const liveModels = (await discoverLiveModels(apiKey)).slice(0, 3);
 
     for (const modelName of liveModels) {
       if (attemptedModels.has(modelName)) continue;

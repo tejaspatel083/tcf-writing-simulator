@@ -499,7 +499,7 @@ export const CandidateInspector: React.FC<CandidateInspectorProps> = ({
                                   className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer flex items-center gap-1 disabled:opacity-50"
                                 >
                                   <Sparkles className={`w-3 h-3 ${evaluatingId === sub.id ? 'animate-spin' : ''}`} />
-                                  <span>{evaluatingId === sub.id ? '...' : t('Évaluer')}</span>
+                                  <span>{evaluatingId === sub.id ? t('Évaluation...') : t('Évaluer')}</span>
                                 </button>
                               )}
                             </div>

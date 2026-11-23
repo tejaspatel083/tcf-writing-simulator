@@ -13,6 +13,7 @@ import {
   Shield,
   User,
   LogOut,
+  LogIn,
   MessageSquare,
   ChevronsRight,
   ChevronDown,
@@ -39,6 +40,7 @@ interface AppLayoutProps {
   onNavigateFeedback: () => void;
   onStartNewExam?: () => void;
   onSignOut: () => void;
+  onLoginClick?: () => void;
   submissionsCount?: number;
   onNavigateAdmin?: () => void;
   isAdminTabActive?: boolean;
@@ -62,6 +64,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   onNavigateFeedback,
   onStartNewExam,
   onSignOut,
+  onLoginClick,
   submissionsCount = 0,
   onNavigateAdmin,
   isAdminTabActive = false,
@@ -101,7 +104,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
     document.documentElement.classList.add('theme-neumorphism', 'neu-theme');
   }, []);
 
-  const displayName = userName || (user?.email ? user.email.split('@')[0] : 'Étudiant');
+  const displayName = user
+    ? (userName || (user?.email ? user.email.split('@')[0] : 'Étudiant'))
+    : t('Invité (Non connecté)');
 
   // Navigation guard if in simulator
   const handleNav = (action: () => void) => {
@@ -151,15 +156,15 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
             {/* Title / User Brand Section */}
             <div className="mb-4 border-b border-slate-200 pb-3">
               <div
-                onClick={() => setShowProfileModal(true)}
+                onClick={() => (user ? setShowProfileModal(true) : (onLoginClick && onLoginClick()))}
                 className={`flex cursor-pointer items-center rounded-xl transition-colors hover:bg-slate-100 ${
                   sidebarOpen ? 'p-2 justify-between' : 'py-1 px-0 justify-center'
                 }`}
-                title={t('Mon Profil')}
+                title={user ? t('Mon Profil') : t('Se connecter')}
               >
                 <div className={`flex items-center ${sidebarOpen ? 'gap-3 min-w-0' : 'justify-center w-full'}`}>
                   <div className="grid size-10 shrink-0 place-content-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold text-sm shadow-xs mx-auto">
-                    {isAdmin ? '👑' : displayName.charAt(0).toUpperCase()}
+                    {user ? (isAdmin ? '👑' : displayName.charAt(0).toUpperCase()) : '👤'}
                   </div>
                   <motion.div
                     animate={{
@@ -173,7 +178,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                       {t(displayName)}
                     </span>
                     <span className="block text-xs text-slate-500 truncate">
-                      {isAdmin ? t('👑 Administrateur') : t('Candidat TCF')}
+                      {user ? (isAdmin ? t('👑 Administrateur') : t('Candidat TCF')) : t('Se connecter →')}
                     </span>
                   </motion.div>
                 </div>
@@ -239,28 +244,49 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
               >
                 {t('Compte & Aide')}
               </motion.div>
-              <SidebarOption
-                Icon={User}
-                title={t('Mon Profil')}
-                isSelected={false}
-                onClick={() => setShowProfileModal(true)}
-                open={sidebarOpen}
-              />
-              <SidebarOption
-                Icon={MessageSquare}
-                title={t('Feedback')}
-                isSelected={currentView === 'feedback'}
-                onClick={() => handleNav(onNavigateFeedback)}
-                open={sidebarOpen}
-              />
-              <SidebarOption
-                Icon={LogOut}
-                title={t('Déconnexion')}
-                isSelected={false}
-                onClick={onSignOut}
-                open={sidebarOpen}
-                isDestructive
-              />
+              {user ? (
+                <>
+                  <SidebarOption
+                    Icon={User}
+                    title={t('Mon Profil')}
+                    isSelected={false}
+                    onClick={() => setShowProfileModal(true)}
+                    open={sidebarOpen}
+                  />
+                  <SidebarOption
+                    Icon={MessageSquare}
+                    title={t('Feedback')}
+                    isSelected={currentView === 'feedback'}
+                    onClick={() => handleNav(onNavigateFeedback)}
+                    open={sidebarOpen}
+                  />
+                  <SidebarOption
+                    Icon={LogOut}
+                    title={t('Déconnexion')}
+                    isSelected={false}
+                    onClick={onSignOut}
+                    open={sidebarOpen}
+                    isDestructive
+                  />
+                </>
+              ) : (
+                <>
+                  <SidebarOption
+                    Icon={LogIn}
+                    title={t('Se connecter')}
+                    isSelected={false}
+                    onClick={() => (onLoginClick ? onLoginClick() : onNavigateHome())}
+                    open={sidebarOpen}
+                  />
+                  <SidebarOption
+                    Icon={MessageSquare}
+                    title={t('Feedback')}
+                    isSelected={currentView === 'feedback'}
+                    onClick={() => handleNav(onNavigateFeedback)}
+                    open={sidebarOpen}
+                  />
+                </>
+              )}
             </div>
           </div>
 
@@ -555,37 +581,64 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                   <div className="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                     {t('Compte & Aide')}
                   </div>
-                  <SidebarOption
-                    Icon={User}
-                    title={t('Mon Profil')}
-                    isSelected={false}
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      setShowProfileModal(true);
-                    }}
-                    open={true}
-                  />
-                  <SidebarOption
-                    Icon={MessageSquare}
-                    title={t('Feedback')}
-                    isSelected={currentView === 'feedback'}
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      handleNav(onNavigateFeedback);
-                    }}
-                    open={true}
-                  />
-                  <SidebarOption
-                    Icon={LogOut}
-                    title={t('Déconnexion')}
-                    isSelected={false}
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      handleNav(onSignOut);
-                    }}
-                    open={true}
-                    isDestructive
-                  />
+                  {user ? (
+                    <>
+                      <SidebarOption
+                        Icon={User}
+                        title={t('Mon Profil')}
+                        isSelected={false}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          setShowProfileModal(true);
+                        }}
+                        open={true}
+                      />
+                      <SidebarOption
+                        Icon={MessageSquare}
+                        title={t('Feedback')}
+                        isSelected={currentView === 'feedback'}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          handleNav(onNavigateFeedback);
+                        }}
+                        open={true}
+                      />
+                      <SidebarOption
+                        Icon={LogOut}
+                        title={t('Déconnexion')}
+                        isSelected={false}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          handleNav(onSignOut);
+                        }}
+                        open={true}
+                        isDestructive
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <SidebarOption
+                        Icon={LogIn}
+                        title={t('Se connecter')}
+                        isSelected={false}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          if (onLoginClick) onLoginClick();
+                        }}
+                        open={true}
+                      />
+                      <SidebarOption
+                        Icon={MessageSquare}
+                        title={t('Feedback')}
+                        isSelected={currentView === 'feedback'}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          handleNav(onNavigateFeedback);
+                        }}
+                        open={true}
+                      />
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>

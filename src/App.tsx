@@ -11,7 +11,7 @@ import { ExamCombination, ExamResult, TaskKey } from './types/exam';
 import { saveSubmission, getStoredSubmissions, syncStoredSubmissions, mergeSubmissions } from './utils/storage';
 import { getStoredMistakes } from './utils/mistakesStorage';
 import { MistakesRevisionModal } from './components/MistakesRevisionModal';
-import { saveSubmissionToSupabase, fetchSubmissionsFromSupabase } from './lib/supabase';
+import { saveSubmissionToSupabase, fetchSubmissionsFromSupabase, syncLocalSubmissionsToCloud } from './lib/supabase';
 import { getLocalISOString } from './utils/dateUtils';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { sendSubmissionNotification } from './services/notificationService';
@@ -20,7 +20,7 @@ import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { NotFound, Illustration } from './components/ui/not-found';
 
 const MainRouter: React.FC = () => {
-  const { user, loading, isEmailVerified, signOut, isAdmin, isConfigured } = useAuth();
+  const { user, userName, loading, isEmailVerified, signOut, isAdmin, isConfigured } = useAuth();
   const { language, t } = useLanguage();
 
   const [view, setView] = useState<'home' | 'simulator' | 'results' | 'dashboard' | 'feedback' | 'submissions' | '404'>(() => {
@@ -65,6 +65,18 @@ const MainRouter: React.FC = () => {
   });
   const [retakePendingCombo, setRetakePendingCombo] = useState<{ combo: ExamCombination; year: string; month: string } | null>(null);
   const [showRetakeMistakesModal, setShowRetakeMistakesModal] = useState<boolean>(false);
+
+  // Login/Signup modal state & pending exam selection to auto-launch immediately upon login
+  const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
+  const [loginModalBanner, setLoginModalBanner] = useState<{ title: string; subtitle: string } | null>(null);
+  const [pendingExamToStart, setPendingExamToStart] = useState<{
+    combo: ExamCombination;
+    year: string;
+    month: string;
+    practiceMode: boolean;
+    task: TaskKey | TaskKey[];
+    duration: number;
+  } | null>(null);
 
   const [showSlowNotice, setShowSlowNotice] = useState(false);
 
@@ -126,11 +138,14 @@ const MainRouter: React.FC = () => {
     return () => clearTimeout(t);
   }, [loading]);
 
-  // Push locally evaluated submissions to Supabase in the background (only once per session for authenticated user)
-  const hasSyncedLocalEvaluationsRef = useRef(false);
+  // Push locally evaluated submissions and any un-synced local submissions to Supabase in the background (only once per session for authenticated user)
+  const hasSyncedLocalRef = useRef(false);
   useEffect(() => {
-    if (!loading && isConfigured && user && !hasSyncedLocalEvaluationsRef.current) {
-      hasSyncedLocalEvaluationsRef.current = true;
+    if (!loading && isConfigured && user && !hasSyncedLocalRef.current) {
+      hasSyncedLocalRef.current = true;
+      syncLocalSubmissionsToCloud(user.id, user.email).catch((err) => {
+        console.warn('Background sync of submissions to Supabase:', err);
+      });
       pushLocalEvaluationsToSupabase().catch((err) => {
         console.warn('Background sync of evaluations to Supabase:', err);
       });
@@ -178,30 +193,33 @@ const MainRouter: React.FC = () => {
     );
   }
 
-  // 1.5. If view is feedback and user is not authenticated, show standalone Feedback
-  if (view === 'feedback' && (!user || !isEmailVerified)) {
-    return (
-      <Feedback
-        onHomeClick={() => setView('home')}
-        userEmail={user?.email}
-      />
-    );
-  }
+  const handleAuthSuccess = () => {
+    setShowLoginModal(false);
+    hasAutoRedirected.current = false;
 
-  // 2. Gatekeeper: If user is not logged in OR email is not verified, show Login page as the 1st page
-  if (!user || !isEmailVerified) {
-    return (
-      <Login
-        onSuccess={() => {
-          hasAutoRedirected.current = false;
-          setView('home');
-        }}
-        onFeedbackClick={() => setView('feedback')}
-      />
-    );
-  }
+    // If an exam was queued when user clicked "Start", launch it immediately
+    if (pendingExamToStart) {
+      const p = pendingExamToStart;
+      setPendingExamToStart(null);
+      setActiveCombo(p.combo);
+      setActiveYear(p.year);
+      setActiveMonth(p.month);
+      setIsPracticeMode(p.practiceMode);
+      if (Array.isArray(p.task)) {
+        setPracticeTasks(p.task);
+        setPracticeTask(p.task[0] || 'task1');
+      } else {
+        setPracticeTasks([p.task]);
+        setPracticeTask(p.task);
+      }
+      setPracticeDuration(p.duration);
+      setStartedAt(getLocalISOString());
+      setView('simulator');
+    }
+  };
 
-  // 3. User is authenticated and verified -> give full access to Home, Simulator, Dashboard, and Results
+  // Start exam handler: Value first, Gate on action!
+  // If user is not authenticated or email is not verified, open the Login/Signup popup modal.
   const handleStartExam = (
     combo: ExamCombination,
     year: string,
@@ -210,6 +228,25 @@ const MainRouter: React.FC = () => {
     task: TaskKey | TaskKey[] = 'task1',
     duration: number = 60
   ) => {
+    if (!user || !isEmailVerified) {
+      setPendingExamToStart({
+        combo,
+        year,
+        month,
+        practiceMode,
+        task,
+        duration
+      });
+      setLoginModalBanner({
+        title: language === 'en' ? 'Sign in required to start exam' : "Connexion requise pour commencer l'épreuve",
+        subtitle: language === 'en'
+          ? 'Log in or create a free account to take the exam and save your AI evaluations.'
+          : "Connectez-vous ou créez un compte gratuit pour passer l'épreuve et sauvegarder vos rédactions."
+      });
+      setShowLoginModal(true);
+      return;
+    }
+
     setActiveCombo(combo);
     setActiveYear(year);
     setActiveMonth(month);
@@ -277,6 +314,16 @@ const MainRouter: React.FC = () => {
   };
 
   const handleNavigateSubmissions = (tab: 'exams' | 'mistakes' = 'exams') => {
+    if (!user || !isEmailVerified) {
+      setLoginModalBanner({
+        title: language === 'en' ? 'Sign in to access Submissions' : "Connexion requise pour vos soumissions",
+        subtitle: language === 'en'
+          ? 'Sign in to review your past exam papers and saved mistakes.'
+          : "Connectez-vous pour consulter vos épreuves passées et vos erreurs enregistrées."
+      });
+      setShowLoginModal(true);
+      return;
+    }
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     setSubmissionsTab(tab);
     setDashboardTab(tab === 'mistakes' ? 'mistakes' : 'submissions');
@@ -366,16 +413,32 @@ const MainRouter: React.FC = () => {
     return undefined;
   };
 
+  const handleNavigateDashboard = () => {
+    if (!user || !isEmailVerified) {
+      setLoginModalBanner({
+        title: language === 'en' ? 'Sign in to access Dashboard' : "Connexion requise pour le Tableau de bord",
+        subtitle: language === 'en'
+          ? 'Sign in to view your candidate analytics, CEFR target goals, and score progress.'
+          : "Connectez-vous pour voir vos statistiques, vos objectifs CECRL et votre progression."
+      });
+      setShowLoginModal(true);
+      return;
+    }
+    if (isAdmin) {
+      setDashboardTab('admin');
+    } else {
+      setDashboardTab('submissions');
+    }
+    setView('dashboard');
+  };
+
   return (
     <AppLayout
       currentView={view}
       subtitle={getLayoutSubtitle()}
       combinationTitle={getLayoutComboTitle()}
       onNavigateHome={handleGoHome}
-      onNavigateDashboard={() => {
-        setDashboardTab('submissions');
-        setView('dashboard');
-      }}
+      onNavigateDashboard={handleNavigateDashboard}
       onNavigateSubmissions={handleNavigateSubmissions}
       submissionsTab={submissionsTab}
       onNavigateMistakes={handleNavigateToMistakes}
@@ -384,8 +447,16 @@ const MainRouter: React.FC = () => {
       onNavigateFeedback={() => setView('feedback')}
       onStartNewExam={handleGoHome}
       onSignOut={handleSignOut}
+      onLoginClick={() => {
+        setLoginModalBanner(null);
+        setShowLoginModal(true);
+      }}
       submissionsCount={submissionsCount}
       onNavigateAdmin={() => {
+        if (!user || !isAdmin) {
+          setShowLoginModal(true);
+          return;
+        }
         setInspectedUser(null);
         setDashboardTab('admin');
         setView('dashboard');
@@ -403,18 +474,15 @@ const MainRouter: React.FC = () => {
           hideHeader
           onStartExam={handleStartExam}
           onViewSubmission={handleViewPastSubmission}
-          onDashboardClick={() => {
-            if (isAdmin) {
-              setDashboardTab('admin');
-            } else {
-              setDashboardTab('submissions');
-            }
-            setView('dashboard');
+          onLoginClick={() => {
+            setLoginModalBanner(null);
+            setShowLoginModal(true);
           }}
+          onDashboardClick={handleNavigateDashboard}
           onNavigateToMistakes={handleNavigateToMistakes}
           onFeedbackClick={() => setView('feedback')}
           onLogoutClick={handleSignOut}
-          userEmail={user.email}
+          userEmail={user?.email}
         />
       )}
 
@@ -531,6 +599,24 @@ const MainRouter: React.FC = () => {
             />
           </div>
         </div>
+      )}
+
+      {/* Guest Login/Signup Required Popup Modal */}
+      {showLoginModal && (
+        <Login
+          isModal
+          onClose={() => {
+            setShowLoginModal(false);
+            setPendingExamToStart(null);
+          }}
+          titleBanner={loginModalBanner?.title}
+          subtitleBanner={loginModalBanner?.subtitle}
+          onSuccess={handleAuthSuccess}
+          onFeedbackClick={() => {
+            setShowLoginModal(false);
+            setView('feedback');
+          }}
+        />
       )}
     </AppLayout>
   );

@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { ExamResult, ExamCombination } from '../types/exam';
 import questionsData from '../data/questions.json';
+import { getStoredSubmissions, syncStoredSubmissions } from '../utils/storage';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://zuctnfowdpndgumumrnx.supabase.co';
 const defaultAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1Y3RuZm93ZHBuZGd1bXVtcm54Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MjYxNzEsImV4cCI6MjEwNjAwMjE3MX0.SAAVDWVf9pgLdFLrQOgoF6AueQRMS8bMwJeUXTpz8SA';
@@ -296,4 +297,76 @@ export async function deleteSubmissionFromSupabase(
   invalidateSubmissionsCache();
 
   return { error: null };
+}
+
+/**
+ * Automatically syncs any offline/local submissions in localStorage to the user's Supabase account.
+ * This ensures submissions created before logging in or on another browser tab are safely persisted in the cloud.
+ */
+export async function syncLocalSubmissionsToCloud(
+  userId: string,
+  userEmail?: string | null
+): Promise<{ syncedCount: number; error: Error | null }> {
+  if (!supabase || !isSupabaseConfigured || !userId) {
+    return { syncedCount: 0, error: null };
+  }
+
+  try {
+    const local = getStoredSubmissions();
+    if (!local || local.length === 0) {
+      return { syncedCount: 0, error: null };
+    }
+
+    // Fetch existing submissions for this user from Supabase (forced fresh)
+    const { submissions: dbSubs, error: fetchErr } = await fetchSubmissionsFromSupabase(userId, userEmail, true);
+    if (fetchErr) {
+      return { syncedCount: 0, error: fetchErr };
+    }
+
+    let syncedCount = 0;
+    const updatedLocal = [...local];
+
+    for (let i = 0; i < updatedLocal.length; i++) {
+      const sub = updatedLocal[i];
+      const comboNum = Number(sub.combination?.combinationNumber ?? sub.combination?.combination ?? 1);
+
+      // Check if this submission already exists in Supabase
+      const isAlreadyInDb = dbSubs.some((dbSub) => {
+        if (sub.id && dbSub.id === sub.id) return true;
+        const dbComboNum = Number(dbSub.combination?.combinationNumber ?? dbSub.combination?.combination ?? 1);
+        return (
+          String(dbSub.year) === String(sub.year) &&
+          String(dbSub.month).toLowerCase() === String(sub.month).toLowerCase() &&
+          dbComboNum === comboNum &&
+          Math.abs((dbSub.timeUsedSeconds || 0) - (sub.timeUsedSeconds || 0)) < 10
+        );
+      });
+
+      if (!isAlreadyInDb) {
+        const { data, error: insertErr } = await saveSubmissionToSupabase(
+          userId,
+          sub,
+          sub.date,
+          userEmail || undefined
+        );
+        if (!insertErr && data?.id) {
+          updatedLocal[i] = {
+            ...sub,
+            id: data.id
+          };
+          syncedCount++;
+        }
+      }
+    }
+
+    if (syncedCount > 0) {
+      syncStoredSubmissions(updatedLocal);
+      invalidateSubmissionsCache();
+    }
+
+    return { syncedCount, error: null };
+  } catch (err: any) {
+    console.error('Error during cloud sync of local submissions:', err);
+    return { syncedCount: 0, error: err };
+  }
 }

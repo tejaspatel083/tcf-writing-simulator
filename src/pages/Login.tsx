@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { DeviceRecommendationModal } from '../components/DeviceRecommendationModal';
 
@@ -10,11 +10,23 @@ interface LoginProps {
   onSuccess: () => void;
   onHomeClick?: () => void;
   onFeedbackClick?: () => void;
+  isModal?: boolean;
+  onClose?: () => void;
+  titleBanner?: string;
+  subtitleBanner?: string;
 }
 
 type AuthMode = 'login' | 'register' | 'forgot' | 'recovery';
 
-export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedbackClick }) => {
+export const Login: React.FC<LoginProps> = ({
+  onSuccess,
+  onHomeClick,
+  onFeedbackClick,
+  isModal = false,
+  onClose,
+  titleBanner,
+  subtitleBanner
+}) => {
   const { t } = useLanguage();
   const {
     signIn,
@@ -280,43 +292,35 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
     }
   };
 
-  return (
-    <div className="min-h-screen bg-[#e8edf5] flex flex-col justify-between">
-      <Header
-        onHomeClick={onHomeClick}
-        subtitle={t('Accès obligatoire par authentification')}
-      />
-
-      <div className="max-w-md mx-auto w-full px-6 py-8 flex-1 flex flex-col justify-center">
-        <div className="bg-[#e8edf5] border border-white/80 rounded-2xl p-6 sm:p-8 shadow-[10px_10px_24px_#c2cee0,-10px_-10px_24px_#ffffff]">
-          
-          {/* Mode Selector Tabs (Login / Register) */}
-          {mode !== 'forgot' && mode !== 'recovery' && (
-            <div className="flex border border-white/60 rounded-xl p-1.5 bg-[#e8edf5] mb-6 shadow-[inset_3px_3px_6px_#c2cee0,inset_-3px_-3px_6px_#ffffff]">
-              <button
-                type="button"
-                onClick={() => switchMode('login')}
-                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  mode === 'login'
-                    ? 'bg-[#e8edf5] text-blue-700 shadow-[3px_3px_7px_#c2cee0,-3px_-3px_7px_#ffffff] border border-white/80'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <span>{t('Se connecter')}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => switchMode('register')}
-                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  mode === 'register'
-                    ? 'bg-[#e8edf5] text-blue-700 shadow-[3px_3px_7px_#c2cee0,-3px_-3px_7px_#ffffff] border border-white/80'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <span>{t('Créer un compte')}</span>
-              </button>
-            </div>
-          )}
+  const renderAuthContent = () => (
+    <>
+      {/* Mode Selector Tabs (Login / Register) */}
+      {mode !== 'forgot' && mode !== 'recovery' && (
+        <div className="flex border border-white/60 rounded-xl p-1.5 bg-[#e8edf5] mb-6 shadow-[inset_3px_3px_6px_#c2cee0,inset_-3px_-3px_6px_#ffffff]">
+          <button
+            type="button"
+            onClick={() => switchMode('login')}
+            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+              mode === 'login'
+                ? 'bg-[#e8edf5] text-blue-700 shadow-[3px_3px_7px_#c2cee0,-3px_-3px_7px_#ffffff] border border-white/80'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <span>{t('Se connecter')}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => switchMode('register')}
+            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+              mode === 'register'
+                ? 'bg-[#e8edf5] text-blue-700 shadow-[3px_3px_7px_#c2cee0,-3px_-3px_7px_#ffffff] border border-white/80'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <span>{t('Créer un compte')}</span>
+          </button>
+        </div>
+      )}
 
           {/* Header Icon & Title */}
           <div className="text-center mb-6">
@@ -682,6 +686,55 @@ export const Login: React.FC<LoginProps> = ({ onSuccess, onHomeClick, onFeedback
               </button>
             </div>
           )}
+    </>
+  );
+
+  // Modal Dialog Mode (used when guest attempts to start exam)
+  if (isModal) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+        <div className="relative max-w-md w-full my-auto">
+          <div className="relative bg-[#e8edf5] border border-white/85 rounded-3xl p-6 sm:p-8 shadow-[10px_10px_35px_rgba(0,0,0,0.35),-5px_-5px_15px_#ffffff]">
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-200/70 transition-colors cursor-pointer"
+                title="Fermer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+
+            {/* Modal Title Banner */}
+            <div className="text-center mb-6 pr-6">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100 text-blue-800 text-xs font-black border border-blue-200 mb-2 shadow-xs">
+                <span>🔒</span>
+                <span>{titleBanner || t("Connexion requise pour l'examen")}</span>
+              </div>
+              <p className="text-xs text-slate-600 font-medium leading-relaxed max-w-xs mx-auto">
+                {subtitleBanner || t("Connectez-vous ou créez un compte gratuit pour commencer l'épreuve et sauvegarder vos rédactions.")}
+              </p>
+            </div>
+
+            {renderAuthContent()}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Full Page Mode
+  return (
+    <div className="min-h-screen bg-[#e8edf5] flex flex-col justify-between">
+      <Header
+        onHomeClick={onHomeClick}
+        subtitle={t('Accès obligatoire par authentification')}
+      />
+
+      <div className="max-w-md mx-auto w-full px-6 py-8 flex-1 flex flex-col justify-center">
+        <div className="bg-[#e8edf5] border border-white/80 rounded-2xl p-6 sm:p-8 shadow-[10px_10px_24px_#c2cee0,-10px_-10px_24px_#ffffff]">
+          {renderAuthContent()}
         </div>
 
         {/* Security Note */}
