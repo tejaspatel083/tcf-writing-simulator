@@ -404,8 +404,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                 </button>
               )}
 
-              {/* Direct Logout Button in Header */}
-              {onSignOut && currentView !== 'simulator' && (
+              {/* Direct Login or Logout Button in Header: show Log out ONLY when user is logged in */}
+              {user && currentView !== 'simulator' ? (
                 <button
                   type="button"
                   onClick={onSignOut}
@@ -415,7 +415,17 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                   <LogOut className="w-3.5 h-3.5" />
                   <span className="hidden md:inline">{t('Déconnexion')}</span>
                 </button>
-              )}
+              ) : !user && onLoginClick && currentView !== 'simulator' ? (
+                <button
+                  type="button"
+                  onClick={onLoginClick}
+                  className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50/70 hover:bg-blue-100 text-blue-700 font-bold text-xs transition-colors shadow-2xs cursor-pointer shrink-0"
+                  title={t('Se connecter')}
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span className="hidden md:inline">{t('Se connecter')}</span>
+                </button>
+              ) : null}
             </div>
           </header>
 
