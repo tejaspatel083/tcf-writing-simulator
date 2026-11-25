@@ -1,6 +1,7 @@
 import { ExamResult, TaskKey } from '../types/exam';
 import { AIEvaluation, TaskEvaluation, CefrLevel } from '../types/aiEvaluation';
 import { countFrenchWords } from '../utils/wordCount';
+import { sendAiMaintenanceAlert } from './notificationService';
 
 const GEMINI_API_KEY_STORAGE = 'tcf_gemini_api_key';
 
@@ -19,23 +20,61 @@ function getBuiltInFallbackKey(): string {
   }
 }
 
-export function getGeminiApiKey(): string {
+/**
+ * Parses and returns the ordered failover pool of Gemini API keys.
+ * Priority order:
+ * 1. User's custom API key from LocalStorage
+ * 2. Explicit customApiKey passed as argument
+ * 3. All keys defined in VITE_GEMINI_API_KEY / VITE_GEMINI_API_KEYS (.env, comma or newline separated)
+ * 4. Runtime built-in fallback key
+ */
+export function getGeminiApiKeysPool(customApiKey?: string): string[] {
+  const pool: string[] = [];
+
+  const addKeys = (raw?: string | null) => {
+    if (!raw || typeof raw !== 'string') return;
+    // Split by commas, semicolons, or newlines to support multi-account key arrays
+    const parts = raw.split(/[,;\n\r]+/);
+    for (const p of parts) {
+      const trimmed = p.trim();
+      if (trimmed && !pool.includes(trimmed)) {
+        pool.push(trimmed);
+      }
+    }
+  };
+
   // 1. User-configured custom key in LocalStorage takes highest priority
   if (typeof window !== 'undefined') {
     try {
       const localKey = localStorage.getItem(GEMINI_API_KEY_STORAGE);
-      if (localKey && localKey.trim().length > 0) {
-        return localKey.trim();
-      }
+      addKeys(localKey);
     } catch {}
   }
-  // 2. Check Vite env variable
-  const envKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
-  if (envKey && typeof envKey === 'string' && envKey.trim().length > 0) {
-    return envKey.trim();
+
+  // 2. Explicit custom key argument
+  addKeys(customApiKey);
+
+  // 3. Environment variables from Vite (.env)
+  try {
+    const envKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
+    addKeys(envKey);
+
+    const envKeysAlt = (import.meta as any).env?.VITE_GEMINI_API_KEYS;
+    addKeys(envKeysAlt);
+  } catch {}
+
+  // 4. Built-in default key
+  const fallback = getBuiltInFallbackKey();
+  if (fallback) {
+    addKeys(fallback);
   }
-  // 3. Built-in default key
-  return getBuiltInFallbackKey();
+
+  return pool;
+}
+
+export function getGeminiApiKey(): string {
+  const pool = getGeminiApiKeysPool();
+  return pool[0] || '';
 }
 
 export function setGeminiApiKey(key: string): void {
@@ -198,9 +237,9 @@ export async function evaluateTcfSubmissionWithGemini(
   result: ExamResult,
   customApiKey?: string
 ): Promise<AIEvaluation> {
-  const apiKey = (customApiKey || getGeminiApiKey()).trim();
+  const keysPool = getGeminiApiKeysPool(customApiKey);
 
-  if (!apiKey) {
+  if (keysPool.length === 0) {
     throw new Error("Clé API Gemini introuvable. Veuillez renseigner votre clé API Google Gemini gratuite pour lancer l'évaluation.");
   }
 
@@ -380,52 +419,20 @@ Return ONLY valid JSON matching this schema:
   let rawText = '';
   let parsed: any = null;
   let lastError = '';
-  const attemptedModels = new Set<string>();
 
-  // Helper function to dynamically discover live models directly from Google API (strictly filtering out deprecated models)
-  async function discoverLiveModels(key: string): Promise<string[]> {
-    try {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
-      if (!res.ok) return [];
-      const data = await res.json();
-      if (!Array.isArray(data?.models)) return [];
+  // Rotate across each API key in the failover pool
+  for (let keyIdx = 0; keyIdx < keysPool.length; keyIdx++) {
+    const currentKey = keysPool[keyIdx];
+    let keyHitLimit = false;
 
-      return data.models
-        .filter(
-          (m: any) =>
-            Array.isArray(m.supportedGenerationMethods) &&
-            m.supportedGenerationMethods.includes('generateContent') &&
-            !m.name.includes('tts') &&
-            !m.name.includes('image') &&
-            !m.name.includes('robotics') &&
-            !m.name.includes('2.5') &&
-            !m.name.includes('1.5') &&
-            !m.name.includes('2.0')
-        )
-        .map((m: any) => m.name.replace(/^models\//, ''))
-        .sort((a: string, b: string) => {
-          const aLite = a.includes('flash-lite') ? 2 : a.includes('flash') ? 1 : 0;
-          const bLite = b.includes('flash-lite') ? 2 : b.includes('flash') ? 1 : 0;
-          return bLite - aLite;
-        });
-    } catch (e) {
-      console.warn('Could not query dynamic ListModels from Google:', e);
-      return [];
-    }
-  }
+    for (const modelName of candidateModels) {
+      if (keyHitLimit) break;
 
-  // Phase 1: Try preferred/cached models
-  for (const modelName of candidateModels) {
-    if (attemptedModels.has(modelName)) continue;
-    attemptedModels.add(modelName);
-
-    // Try up to 2 attempts for 503/429 transient overload
-    for (let attempt = 0; attempt < 2; attempt++) {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 12000);
+      const timeoutId = setTimeout(() => controller.abort(), 9000);
 
       try {
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${currentKey}`;
         const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
@@ -450,82 +457,28 @@ Return ONLY valid JSON matching this schema:
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => null);
-          lastError = errorData?.error?.message || `Erreur API Gemini (${response.status}: ${response.statusText})`;
-          if ((response.status === 503 || response.status === 429) && attempt === 0) {
-            console.warn(`Model ${modelName} returned ${response.status}. Retrying in 1s...`);
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            continue;
-          }
-          console.warn(`Model ${modelName} returned error: ${lastError}. Trying next candidate...`);
-          break;
-        }
+          const statusCode = response.status;
+          const errorMsg = errorData?.error?.message || `API Error (${statusCode}: ${response.statusText})`;
+          lastError = errorMsg;
 
-        const jsonResponse = await response.json();
-        const candidateText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (candidateText) {
-          try {
-            parsed = safeParseGeminiJson(candidateText);
-            rawText = candidateText;
-            try {
-              sessionStorage.setItem('tcf_working_gemini_model', modelName);
-            } catch {}
-            break;
-          } catch (parseErr: any) {
-            console.warn(`Model ${modelName} returned unparseable JSON:`, parseErr?.message);
-            lastError = `Erreur de format JSON avec le modèle ${modelName}: ${parseErr?.message}`;
+          // If Rate limited (429), Quota exceeded, or Forbidden (403/400)
+          // This specific account/key is exhausted. Fail over immediately to the next key!
+          if (
+            statusCode === 429 ||
+            statusCode === 403 ||
+            statusCode === 400 ||
+            errorMsg.includes('quota') ||
+            errorMsg.includes('Quota exceeded') ||
+            errorMsg.includes('RESOURCE_EXHAUSTED')
+          ) {
+            console.warn(
+              `[Gemini Failover] Key #${keyIdx + 1} exhausted (${statusCode}: ${errorMsg}). Seamlessly failing over to next key...`
+            );
+            keyHitLimit = true;
             break;
           }
-        }
-      } catch (err: any) {
-        clearTimeout(timeoutId);
-        lastError = err?.name === 'AbortError' ? `Timeout après 12s avec ${modelName}` : (err?.message || 'Erreur réseau');
-        console.warn(`Model ${modelName} failed with error:`, lastError);
-        break;
-      }
-    }
 
-    if (parsed) break;
-  }
-
-  // Phase 2 (Self-Healing Fallback): If all default models failed, dynamically query Google API
-  if (!parsed) {
-    console.info('Querying Google ModelService.ListModels to dynamically discover active generation models...');
-    const liveModels = (await discoverLiveModels(apiKey)).slice(0, 5);
-
-    for (const modelName of liveModels) {
-      if (attemptedModels.has(modelName)) continue;
-      attemptedModels.add(modelName);
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 12000);
-
-      try {
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          signal: controller.signal,
-          body: JSON.stringify({
-            contents: [
-              {
-                role: 'user',
-                parts: [{ text: `${systemInstructions}\n\n${promptContent}` }]
-              }
-            ],
-            generationConfig: {
-              responseMimeType: 'application/json',
-              temperature: 0.2
-            }
-          })
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => null);
-          lastError = errorData?.error?.message || `Erreur API Gemini (${response.status}: ${response.statusText})`;
+          console.warn(`[Gemini Failover] Key #${keyIdx + 1} with ${modelName} returned status ${statusCode}: ${errorMsg}`);
           continue;
         }
 
@@ -538,27 +491,41 @@ Return ONLY valid JSON matching this schema:
             try {
               sessionStorage.setItem('tcf_working_gemini_model', modelName);
             } catch {}
-            break;
+            break; // Successfully evaluated!
           } catch (parseErr: any) {
-            console.warn(`Model ${modelName} returned unparseable JSON:`, parseErr?.message);
-            lastError = `Erreur de format JSON avec le modèle ${modelName}: ${parseErr?.message}`;
+            console.warn(`[Gemini Failover] Key #${keyIdx + 1} returned unparseable JSON with ${modelName}:`, parseErr?.message);
+            lastError = `JSON parse error: ${parseErr?.message}`;
             continue;
           }
         }
       } catch (err: any) {
         clearTimeout(timeoutId);
-        lastError = err?.name === 'AbortError' ? `Timeout après 12s avec ${modelName}` : (err?.message || 'Erreur réseau');
+        lastError = err?.name === 'AbortError' ? `Timeout après 9s avec ${modelName}` : (err?.message || 'Erreur réseau');
+        console.warn(`[Gemini Failover] Key #${keyIdx + 1} failed:`, lastError);
+        continue;
       }
+    }
+
+    if (parsed) {
+      console.info(`[Gemini Failover] Evaluation successfully completed using key #${keyIdx + 1} of ${keysPool.length}`);
+      break;
     }
   }
 
+  // If all keys in the pool were exhausted or failed
   if (!parsed) {
-    if (lastError && (lastError.includes('Quota exceeded') || lastError.includes('quota') || lastError.includes('429') || lastError.includes('503') || lastError.includes('high demand'))) {
-      throw new Error(
-        "Le quota journalier de la clé Google Gemini partagée est temporairement saturé. Veuillez cliquer sur le bouton « Clé API » ci-contre et coller votre propre clé gratuite Google Gemini (générable en 10 secondes sur https://aistudio.google.com/app/apikey) pour évaluer immédiatement sans aucune limite."
-      );
+    // 1. Dispatch automated urgent email alert to admin tejas083patel@gmail.com
+    try {
+      const candidateEmail = (result as any)?.userEmail || (result as any)?.user_email || (result as any)?.userProfile?.email || '';
+      sendAiMaintenanceAlert(candidateEmail, lastError);
+    } catch (alertErr) {
+      console.warn('Failed to dispatch AI maintenance alert to admin:', alertErr);
     }
-    throw new Error(lastError || "Impossible d'obtenir une évaluation de l'IA pour le moment. Veuillez réessayer.");
+
+    // 2. Throw clean, friendly, non-technical maintenance message
+    throw new Error(
+      "L'évaluation par IA est actuellement en maintenance pour optimisation. Notre équipe technique a été automatiquement prévenue et intervient pour rétablir le service. Veuillez réessayer dans quelques instants. / AI evaluation is currently under maintenance for optimization. Our technical team has been notified. Please try again shortly."
+    );
   }
 
   // Build clean structured tasks record

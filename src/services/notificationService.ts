@@ -488,3 +488,55 @@ export async function sendTestNotification(
     };
   }
 }
+
+/**
+ * Dispatches an automated urgent email alert to the admin when all Gemini API keys in the failover pool are exhausted
+ * or when AI evaluation encounters a complete maintenance blackout.
+ */
+let lastAiAlertTimestamp = 0;
+
+export async function sendAiMaintenanceAlert(
+  userEmail?: string,
+  errorDetails?: string
+): Promise<boolean> {
+  // Throttle alerts to at most one every 15 minutes to avoid email flood
+  const now = Date.now();
+  if (now - lastAiAlertTimestamp < 15 * 60 * 1000) {
+    return false;
+  }
+  lastAiAlertTimestamp = now;
+
+  const targetEmail = ADMIN_EMAIL; // tejas083patel@gmail.com
+  const subject = `🚨 [URGENT] AI Evaluation Limit Reached / Service Under Maintenance`;
+
+  const payload: Record<string, string> = {
+    _subject: subject,
+    _replyto: userEmail || 'support@tcfsimulator.com',
+    _captcha: 'false',
+    notification_type: 'AI_LIMIT_ALERT',
+    impacted_user: userEmail || 'Guest (unauthenticated) / Anonymous',
+    alert_time: new Date().toLocaleString('fr-FR'),
+    admin_notice:
+      "All Gemini API keys in the failover pool have exhausted their daily quotas or encountered errors. The candidate/user was shown the friendly 'AI evaluation is under maintenance' notice.",
+    technical_error: errorDetails || 'All keys in the failover rotation pool hit rate/quota limit (HTTP 429 / 503).'
+  };
+
+  try {
+    const sent = await dispatchNotification(targetEmail, payload);
+
+    addNotificationLog({
+      userEmail: userEmail || 'anonyme@tcfsimulator.com',
+      tasks: ['AI Evaluation Engine'],
+      taskSummary: 'Quota Exceeded / Maintenance Alert',
+      subject,
+      status: sent ? 'sent' : 'simulated',
+      recipient: targetEmail,
+      errorMessage: errorDetails
+    });
+
+    return sent;
+  } catch (e: any) {
+    console.warn('Failed to send AI maintenance alert to admin:', e);
+    return false;
+  }
+}
