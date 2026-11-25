@@ -20,15 +20,19 @@ function getBuiltInFallbackKey(): string {
 }
 
 export function getGeminiApiKey(): string {
-  // 1. Check Vite env variable
+  // 1. User-configured custom key in LocalStorage takes highest priority
+  if (typeof window !== 'undefined') {
+    try {
+      const localKey = localStorage.getItem(GEMINI_API_KEY_STORAGE);
+      if (localKey && localKey.trim().length > 0) {
+        return localKey.trim();
+      }
+    } catch {}
+  }
+  // 2. Check Vite env variable
   const envKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
   if (envKey && typeof envKey === 'string' && envKey.trim().length > 0) {
     return envKey.trim();
-  }
-  // 2. Check LocalStorage
-  const localKey = localStorage.getItem(GEMINI_API_KEY_STORAGE);
-  if (localKey && localKey.trim().length > 0) {
-    return localKey.trim();
   }
   // 3. Built-in default key
   return getBuiltInFallbackKey();
@@ -365,11 +369,8 @@ Return ONLY valid JSON matching this schema:
   } catch {}
 
   const defaultPreferredModels = [
-    'gemini-3.5-flash-lite',
     'gemini-flash-lite-latest',
-    'gemini-3.5-flash',
-    'gemini-3.6-flash',
-    'gemini-3.8-flash'
+    'gemini-3.5-flash-lite'
   ];
 
   const candidateModels: string[] = cachedWorkingModel
@@ -552,6 +553,11 @@ Return ONLY valid JSON matching this schema:
   }
 
   if (!parsed) {
+    if (lastError && (lastError.includes('Quota exceeded') || lastError.includes('quota') || lastError.includes('429') || lastError.includes('503') || lastError.includes('high demand'))) {
+      throw new Error(
+        "Le quota journalier de la clé Google Gemini partagée est temporairement saturé. Veuillez cliquer sur le bouton « Clé API » ci-contre et coller votre propre clé gratuite Google Gemini (générable en 10 secondes sur https://aistudio.google.com/app/apikey) pour évaluer immédiatement sans aucune limite."
+      );
+    }
     throw new Error(lastError || "Impossible d'obtenir une évaluation de l'IA pour le moment. Veuillez réessayer.");
   }
 
