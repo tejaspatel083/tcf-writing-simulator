@@ -257,106 +257,46 @@ export async function evaluateTcfSubmissionWithGemini(
 
   const activeTaskKeys = getActiveEvaluatedTasks(result);
 
-  const systemInstructions = `You are a SENIOR, UNCOMPROMISING France Éducation international (FEI) TCF Canada French writing examiner.
+  const systemInstructions = `You are a SENIOR France Éducation international (FEI) TCF Canada French writing examiner.
 Your grading philosophy is STRICT and RIGOROUS ("Train Hard, Exam Easy"):
 - Never inflate grades or give complimentary soft scores.
-- Students are preparing for high-stakes Canadian immigration (Express Entry / CLB requirements). Overly generous AI grading harms their preparation.
-- If a candidate's writing sits on the borderline between two levels (e.g. borderline B1 vs B2, or B2 vs C1), ALWAYS assign the LOWER band until they prove full mastery of complex structures and accuracy.
+- Official scale (0 to 20): C2 (18-20), C1 (14-17), B2 (10-13), B1 (6-9), A2 (4-5), A1 (0-3).
 
-CRITICAL EVALUATION & PENALTY CRITERIA:
-1. ONLY evaluate the task(s) requested below. If a task was NOT part of this practice session, DO NOT evaluate it, DO NOT invent mistakes for it, and DO NOT penalize the student.
-2. PRECISE, SHORT ERROR DETECTION (STRICTLY ACTUAL ERRORS ONLY — NO STYLISTIC REWRITES):
-   CRITICAL RULES FOR "mistakes" ARRAY:
-   - ONLY report ACTUAL ERRORS in French (Spelling, Accents, Grammar, Agreements, Verb Tenses/Conjugation, Preposition choice, or clear incorrect vocabulary usage).
-   - DO NOT suggest "better versions" or stylistic rewrites if the student's text is grammatically and semantically correct French.
-   - DO NOT write "To target C1/C2...", "To reach C1/C2...", or "enrich your vocabulary" in the mistakes array. If a student wrote standard French that is correct, DO NOT flag it as a mistake! Advanced C1/C2 expressions belong EXCLUSIVELY in the "c1_c2_model_answer".
-   - SHORT MISTAKES ONLY: "original_text" MUST be ONLY the specific erroneous word, verb, or short phrase (1 to 5 words maximum). NEVER quote an entire sentence or multiple clauses!
-   - BREAK DOWN MULTIPLE ERRORS: If a sentence contains more than one error (for example, a spelling mistake AND a wrong preposition AND a wrong verb tense), you MUST break them down into separate, individual mistake entries. NEVER group multiple errors into a single long sentence replacement!
-   - FOR VOCABULARY: Only flag true lexical errors (e.g. incorrect word meaning, false cognates / faux amis, wrong preposition collocations, or inappropriate informal register like slang/tutoiement in a formal task). Break it down to just the single misused word (e.g. original_text: "faire du sport", corrected_text: "pratiquer un sport"). NEVER quote an entire sentence for vocabulary!
-   - "original_text": The exact short erroneous snippet from the student's text (1 to 5 words).
-   - "corrected_text": The exact short corrected French replacement (1 to 5 words).
-   - "explanation": STRICTLY IN ENGLISH. Concisely explain the objective grammar, spelling, or tense rule (1-2 sentences). Do NOT mention C1/C2 levels or stylistic suggestions here.
-   - CATEGORIES:
-     * "Grammaire": Subject-verb agreements, gender/number agreements (accords en genre et en nombre), incorrect prepositions (à vs de, pour vs en), auxiliary choice (avoir vs être), subjunctive triggers.
-     * "Orthographe / Accents": Missing or incorrect accents (a vs à, ou vs où, é/è/ê), spelling slips, silent letter omissions, homophones (ses/ces, c'est/s'est).
-     * "Conjugaison / Temps": Incorrect verb forms, sequence of tenses (si clauses, concordance des temps), conditional vs imperfect vs passé composé.
-     * "Structure de phrase": Broken syntax, missing connectors, missing negation words, awkward literal word-for-word translations from English.
-     * "Vocabulaire": Genuine word misuse, improper register, or false cognates.
-3. WORD COUNT & CONSIGNE RESPECT (FEI Rules):
-   - Task 1: minimum 60 words (target 60-120). If under 60 words, penalize score and level severely.
-   - Task 2: minimum 120 words (target 120-150). If under 120 words, penalize score and level severely.
-   - Task 3: minimum 120 words (target 120-180). If under 120 words, penalize score and level severely.
-   - Off-topic or partially off-topic content must be heavily penalized.
-4. OFFICIAL TCF CANADA EE SCORING & LEVEL CHART (0 to 20):
-   Evaluate strictly using the official France Éducation international / IRCC equivalence:
-   - 18–20 / 20: C2  | CLB 10 (Mastery, flawless sentence flow, highly sophisticated syntax)
-   - 16–17 / 20: C1  | CLB 10 (Outstanding fluency, rich vocabulary, rare minor slips)
-   - 14–15 / 20: C1  | CLB 9  (Effective operational proficiency, complex structures, logical cohesion)
-   - 12–13 / 20: B2  | CLB 8  (High intermediate, clear argumentation, good grammatical control)
-   - 10–11 / 20: B2  | CLB 7  (Threshold for Express Entry bonus points, intelligible, standard slips)
-   - 7–9 / 20:   B1  | CLB 6  (Intermediate, simple sentences, errors in complex clauses)
-   - 6 / 20:     B1  | CLB 5  (Modest intermediate, repetitive vocabulary, frequent errors)
-   - 4–5 / 20:   A2  | CLB 4  (Elementary, basic survival sentences, major grammar/spelling errors)
-   - 1–3 / 20:   A1  | < CLB 4 (Beginner, isolated words, incomplete sentences)
-   - 0 / 20:     A1  | < CLB 4 (Zero score for unattempted/blank responses)
-5. CRITICAL: BLANK, UNWRITTEN, OR ZERO-WORD SUBMISSIONS:
-   - If the candidate's answer for any evaluated task is blank, empty, unwritten, or contains 0 to 4 words:
-     * Task achievement FAILED COMPLETELY.
-     * The task score MUST BE 0 / 20.
-     * The estimated level MUST BE "A1" and clb_level "< CLB 4".
-     * The mistakes array MUST BE EMPTY [] (do NOT invent mistakes and DO NOT praise).
-     * general_feedback in French MUST clearly state that task achievement failed because no text was written:
-       "Échec de réalisation de la tâche : Aucune rédaction n'a été fournie (0 mot rédigé). La consigne n'a pas été traitée, ce qui entraîne une note éliminatoire de 0/20 pour cette épreuve."
-     * general_feedback_en in English MUST state clearly:
-       "Task Achievement Failed: No response was written (0 words). The prompt was not attempted, resulting in a failing score of 0/20 for this task."
-     * Still provide an exemplary "c1_c2_model_answer" so the student can study the required structure.
-   - If ALL evaluated tasks are blank (0 words):
-     * overall_score MUST BE 0 / 20.
-     * overall_feedback MUST state: "Échec de l'examen : Aucune réponse n'a été rédigée. La réalisation de la tâche (Task Achievement) est de 0/20."
-     * overall_feedback_en MUST state: "Exam Failed: No responses were written for the required tasks. Task achievement was completely missed (0/20)."
-6. AI MODEL RESPONSE (CRITICAL - C1-C2 LEVEL & STRICT WORD COUNT COMPLIANCE):
-   For each evaluated task, generate ONE reference response at C1-C2 level:
-   - "c1_c2_model_answer": An exemplary, advanced, and elegant C1-C2 French response using nuanced vocabulary, sophisticated sentence structures, and idiomatic expressions.
-   CRITICAL WORD COUNT CONSTRAINTS (MANDATORY & ENFORCED):
-   Every model answer MUST strictly respect the official TCF Canada word count range:
-   - Task 1: STRICTLY between 60 and 120 words. (Target: 80 to 100 words).
-     Format: Message / Courriel amical. NEVER under 60 words, NEVER exceed 120 words!
-   - Task 2: STRICTLY between 120 and 150 words. (Target: 130 to 145 words).
-     Format: EXACTLY THREE BODY PARAGRAPHS: Greeting/intro context -> Narrative details -> Personal reflection/sign-off. NEVER under 120 words, NEVER exceed 150 words! No labels like 'P1:'.
-   - Task 3: STRICTLY between 120 and 180 words. (Target: 140 to 165 words).
-     Format: Short catchy Title on Line 1, empty line, then EXACTLY TWO PARAGRAPHS ONLY (Paragraph 1 = objective synthesis of Doc 1 & Doc 2; Paragraph 2 = personal argumentative stance with clear connectors). NEVER under 120 words, NEVER exceed 180 words! No labels.
-   COUNT YOUR WORDS BEFORE RETURNING THE JSON:
-   You must count the exact French words in each "c1_c2_model_answer" and ensure it falls strictly within the [minWords, maxWords] bounds. If your draft is too long (e.g. over 150 words for Task 2 or over 180 words for Task 3), TRIM IT to stay within the limit!
+CRITICAL EVALUATION RULES:
+1. ONLY evaluate the task(s) requested below. If a task was NOT practiced, DO NOT evaluate or penalize it.
+2. PRECISE, SHORT ERROR DETECTION (ACTUAL ERRORS ONLY — NO STYLISTIC REWRITES):
+   - ONLY report real French errors (Spelling, Accents, Grammar, Verb Tenses, Preposition choice, or clear incorrect vocabulary).
+   - "original_text" & "corrected_text": ONLY the erroneous snippet (1 to 5 words maximum).
+   - "explanation": Concisely explain the grammar/spelling rule STRICTLY IN ENGLISH.
+   - Categories: "Grammaire", "Orthographe / Accents", "Conjugaison / Temps", "Structure de phrase", "Vocabulaire".
+3. BLANK OR ZERO-WORD SUBMISSIONS:
+   - If candidate's answer is blank or 0-4 words: task score MUST BE 0/20, level "A1", clb "< CLB 4", mistakes [].
+4. C1-C2 MODEL ANSWERS (STRICT WORD COUNTS):
+   - Task 1: 60-120 words (friendly email).
+   - Task 2: 120-150 words (3 paragraphs).
+   - Task 3: 120-180 words (title, synthesis, argument).
 
-OUTPUT JSON SCHEMA:
-Return ONLY valid JSON matching this schema:
+OUTPUT RFC 8259 JSON SCHEMA:
 {
-  "estimated_cefr_level": "A1" | "A2" | "B1" | "B2" | "C1" | "C2",
-  "clb_level": "CLB 4" | "CLB 5" | "CLB 6" | "CLB 7" | "CLB 8" | "CLB 9" | "CLB 10" | "< CLB 4",
-  "overall_score": number (0 to 20),
-  "overall_feedback": "string (1-3 sentences summary feedback in French)",
-  "overall_feedback_en": "string (1-3 sentences summary feedback in English)",
+  "estimated_cefr_level": "A1"|"A2"|"B1"|"B2"|"C1"|"C2",
+  "clb_level": "CLB 4"|"CLB 5"|"CLB 6"|"CLB 7"|"CLB 8"|"CLB 9"|"CLB 10"|"< CLB 4",
+  "overall_score": number,
+  "overall_feedback": "string in French",
+  "overall_feedback_en": "string in English",
   "tasks": {
     "task1"?: {
       "task_key": "task1",
       "task_name": "Tâche 1 : Description / Message",
-      "score": number (0 to 20),
-      "estimated_level": "A1" | "A2" | "B1" | "B2" | "C1" | "C2",
+      "score": number,
+      "estimated_level": "A1"|"A2"|"B1"|"B2"|"C1"|"C2",
       "clb_level": "string",
-      "general_feedback": "string (feedback in French)",
-      "general_feedback_en": "string (feedback in English)",
-      "mistakes": [
-        {
-          "category": "Grammaire" | "Orthographe / Accents" | "Conjugaison / Temps" | "Structure de phrase" | "Vocabulaire",
-          "original_text": "string",
-          "corrected_text": "string",
-          "explanation": "string (strictly in English)"
-        }
-      ],
-      "c1_c2_model_answer": "string (C1-C2 exemplary model answer in French)"
+      "general_feedback": "string in French",
+      "general_feedback_en": "string in English",
+      "mistakes": [{"category": "Grammaire"|"Orthographe / Accents"|"Conjugaison / Temps"|"Structure de phrase"|"Vocabulaire", "original_text": "...", "corrected_text": "...", "explanation": "..."}],
+      "c1_c2_model_answer": "string in French"
     },
-    "task2"?: { ...same structure as task1 with task_key "task2"... },
-    "task3"?: { ...same structure as task1 with task_key "task3"... }
+    "task2"?: { "task_key": "task2", "task_name": "Tâche 2 : Narration / Récit", "score": number, "estimated_level": "B2", "clb_level": "CLB 7", "general_feedback": "...", "general_feedback_en": "...", "mistakes": [], "c1_c2_model_answer": "..." },
+    "task3"?: { "task_key": "task3", "task_name": "Tâche 3 : Argumentation", "score": number, "estimated_level": "B2", "clb_level": "CLB 7", "general_feedback": "...", "general_feedback_en": "...", "mistakes": [], "c1_c2_model_answer": "..." }
   }
 }`;
 
@@ -420,8 +360,9 @@ Return ONLY valid JSON matching this schema:
   } catch {}
 
   const defaultPreferredModels = [
+    'gemini-flash-lite-latest',
     'gemini-3.5-flash-lite',
-    'gemini-flash-lite-latest'
+    'gemini-flash-latest'
   ];
 
   const candidateModels: string[] = cachedWorkingModel
@@ -440,82 +381,94 @@ Return ONLY valid JSON matching this schema:
     for (const modelName of candidateModels) {
       if (keyHitLimit) break;
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 9000);
+      // Try up to 2 attempts for 503 high demand transient spikes
+      for (let attempt = 0; attempt < 2; attempt++) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 14000);
 
-      try {
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${currentKey}`;
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          signal: controller.signal,
-          body: JSON.stringify({
-            contents: [
-              {
-                role: 'user',
-                parts: [{ text: `${systemInstructions}\n\n${promptContent}` }]
+        try {
+          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${currentKey}`;
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            signal: controller.signal,
+            body: JSON.stringify({
+              contents: [
+                {
+                  role: 'user',
+                  parts: [{ text: `${systemInstructions}\n\n${promptContent}` }]
+                }
+              ],
+              generationConfig: {
+                responseMimeType: 'application/json',
+                temperature: 0.2
               }
-            ],
-            generationConfig: {
-              responseMimeType: 'application/json',
-              temperature: 0.2
+            })
+          });
+
+          clearTimeout(timeoutId);
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            const statusCode = response.status;
+            const errorMsg = errorData?.error?.message || `API Error (${statusCode}: ${response.statusText})`;
+            lastError = errorMsg;
+
+            // If 503 Service Unavailable / High demand, wait 1.2s and retry once
+            if (statusCode === 503 && attempt === 0) {
+              console.warn(`[Gemini Failover] Key #${keyIdx + 1} model ${modelName} returned 503. Retrying in 1.2s...`);
+              await new Promise((resolve) => setTimeout(resolve, 1200));
+              continue;
             }
-          })
-        });
 
-        clearTimeout(timeoutId);
+            // If Rate limited (429), Quota exceeded, or Forbidden (403/400)
+            // This specific account/key is exhausted. Fail over immediately to the next key!
+            if (
+              statusCode === 429 ||
+              statusCode === 403 ||
+              statusCode === 400 ||
+              errorMsg.includes('quota') ||
+              errorMsg.includes('Quota exceeded') ||
+              errorMsg.includes('RESOURCE_EXHAUSTED')
+            ) {
+              console.warn(
+                `[Gemini Failover] Key #${keyIdx + 1} exhausted (${statusCode}: ${errorMsg}). Seamlessly failing over to next key...`
+              );
+              keyHitLimit = true;
+              break;
+            }
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => null);
-          const statusCode = response.status;
-          const errorMsg = errorData?.error?.message || `API Error (${statusCode}: ${response.statusText})`;
-          lastError = errorMsg;
-
-          // If Rate limited (429), Quota exceeded, or Forbidden (403/400)
-          // This specific account/key is exhausted. Fail over immediately to the next key!
-          if (
-            statusCode === 429 ||
-            statusCode === 403 ||
-            statusCode === 400 ||
-            errorMsg.includes('quota') ||
-            errorMsg.includes('Quota exceeded') ||
-            errorMsg.includes('RESOURCE_EXHAUSTED')
-          ) {
-            console.warn(
-              `[Gemini Failover] Key #${keyIdx + 1} exhausted (${statusCode}: ${errorMsg}). Seamlessly failing over to next key...`
-            );
-            keyHitLimit = true;
+            console.warn(`[Gemini Failover] Key #${keyIdx + 1} with ${modelName} returned status ${statusCode}: ${errorMsg}`);
             break;
           }
 
-          console.warn(`[Gemini Failover] Key #${keyIdx + 1} with ${modelName} returned status ${statusCode}: ${errorMsg}`);
-          continue;
-        }
-
-        const jsonResponse = await response.json();
-        const candidateText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (candidateText) {
-          try {
-            parsed = safeParseGeminiJson(candidateText);
-            rawText = candidateText;
+          const jsonResponse = await response.json();
+          const candidateText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (candidateText) {
             try {
-              sessionStorage.setItem('tcf_working_gemini_model', modelName);
-            } catch {}
-            break; // Successfully evaluated!
-          } catch (parseErr: any) {
-            console.warn(`[Gemini Failover] Key #${keyIdx + 1} returned unparseable JSON with ${modelName}:`, parseErr?.message);
-            lastError = `JSON parse error: ${parseErr?.message}`;
-            continue;
+              parsed = safeParseGeminiJson(candidateText);
+              rawText = candidateText;
+              try {
+                sessionStorage.setItem('tcf_working_gemini_model', modelName);
+              } catch {}
+              break; // Successfully evaluated!
+            } catch (parseErr: any) {
+              console.warn(`[Gemini Failover] Key #${keyIdx + 1} returned unparseable JSON with ${modelName}:`, parseErr?.message);
+              lastError = `JSON parse error: ${parseErr?.message}`;
+              break;
+            }
           }
+        } catch (err: any) {
+          clearTimeout(timeoutId);
+          lastError = err?.name === 'AbortError' ? `Timeout après 14s avec ${modelName}` : (err?.message || 'Erreur réseau');
+          console.warn(`[Gemini Failover] Key #${keyIdx + 1} failed:`, lastError);
+          break;
         }
-      } catch (err: any) {
-        clearTimeout(timeoutId);
-        lastError = err?.name === 'AbortError' ? `Timeout après 9s avec ${modelName}` : (err?.message || 'Erreur réseau');
-        console.warn(`[Gemini Failover] Key #${keyIdx + 1} failed:`, lastError);
-        continue;
       }
+
+      if (parsed) break;
     }
 
     if (parsed) {
