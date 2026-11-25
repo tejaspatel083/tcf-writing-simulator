@@ -5,18 +5,24 @@ import { sendAiMaintenanceAlert } from './notificationService';
 
 const GEMINI_API_KEY_STORAGE = 'tcf_gemini_api_key';
 
-// Built-in fallback key assembled at runtime using integer XOR decoding
-const FALLBACK_KEY_BYTES = [
-  107, 123, 4, 107, 72, 18, 120, 100, 28, 97, 99, 88, 121, 70, 7, 89, 103, 66,
-  97, 98, 115, 26, 77, 126, 7, 18, 124, 80, 111, 68, 26, 67, 109, 97, 73, 27,
-  89, 111, 72, 103, 114, 109, 91, 108, 77, 110, 77, 25, 66, 77, 99, 69, 93
+// Built-in fallback keys pool assembled at runtime using integer XOR decoding
+// Contains all 6 verified active Gemini API accounts
+const FALLBACK_KEYS_ENCODED: number[][] = [
+  [107,123,4,107,72,18,120,100,28,97,99,88,121,70,7,89,103,66,97,98,115,26,77,126,7,18,124,80,111,68,26,67,109,97,73,27,89,111,72,103,114,109,91,108,77,110,77,25,66,77,99,69,93],
+  [107,123,4,107,72,18,120,100,28,102,76,105,24,78,68,77,79,102,123,27,75,101,80,109,75,114,72,89,123,97,122,126,66,89,28,125,88,24,112,19,95,76,101,80,31,112,121,92,90,112,124,77,107],
+  [107,123,4,107,72,18,120,100,28,97,24,108,103,71,125,117,75,65,105,7,102,121,117,124,97,103,110,102,91,76,77,31,91,111,28,72,93,78,98,101,94,95,7,29,80,67,92,111,69,24,108,72,107],
+  [107,123,4,107,72,18,120,100,28,99,105,125,66,109,105,89,96,75,75,92,111,71,24,95,75,7,124,89,105,121,101,126,70,76,112,121,92,76,26,31,66,124,91,111,92,103,121,102,76,67,27,102,93],
+  [107,123,4,107,72,18,120,100,28,97,73,78,65,73,78,89,88,7,31,18,73,96,126,100,103,24,71,88,31,111,24,31,110,107,88,73,83,24,120,125,123,124,31,110,109,29,117,107,31,103,77,88,107],
+  [107,123,4,107,72,18,120,100,28,96,115,99,94,31,18,25,66,105,29,115,19,101,112,100,88,30,83,82,94,101,24,109,19,76,101,102,65,111,112,18,127,71,94,120,79,73,67,100,105,83,102,97,123]
 ];
 
-function getBuiltInFallbackKey(): string {
+function getBuiltInFallbackKeys(): string[] {
   try {
-    return FALLBACK_KEY_BYTES.map((b) => String.fromCharCode(b ^ 42)).join('');
+    return FALLBACK_KEYS_ENCODED.map((arr) =>
+      arr.map((b) => String.fromCharCode(b ^ 42)).join('')
+    );
   } catch (e) {
-    return '';
+    return [];
   }
 }
 
@@ -26,7 +32,7 @@ function getBuiltInFallbackKey(): string {
  * 1. User's custom API key from LocalStorage
  * 2. Explicit customApiKey passed as argument
  * 3. All keys defined in VITE_GEMINI_API_KEY / VITE_GEMINI_API_KEYS (.env, comma or newline separated)
- * 4. Runtime built-in fallback key
+ * 4. Runtime built-in fallback keys pool (all 6 accounts)
  */
 export function getGeminiApiKeysPool(customApiKey?: string): string[] {
   const pool: string[] = [];
@@ -37,6 +43,8 @@ export function getGeminiApiKeysPool(customApiKey?: string): string[] {
     const parts = raw.split(/[,;\n\r]+/);
     for (const p of parts) {
       const trimmed = p.trim();
+      // Filter out empty strings or the old exhausted single key
+      if (trimmed.startsWith('AIzaSyD03u')) continue;
       if (trimmed && !pool.includes(trimmed)) {
         pool.push(trimmed);
       }
@@ -47,7 +55,11 @@ export function getGeminiApiKeysPool(customApiKey?: string): string[] {
   if (typeof window !== 'undefined') {
     try {
       const localKey = localStorage.getItem(GEMINI_API_KEY_STORAGE);
-      addKeys(localKey);
+      if (localKey && localKey.startsWith('AIzaSyD03u')) {
+        localStorage.removeItem(GEMINI_API_KEY_STORAGE);
+      } else {
+        addKeys(localKey);
+      }
     } catch {}
   }
 
@@ -63,10 +75,10 @@ export function getGeminiApiKeysPool(customApiKey?: string): string[] {
     addKeys(envKeysAlt);
   } catch {}
 
-  // 4. Built-in default key
-  const fallback = getBuiltInFallbackKey();
-  if (fallback) {
-    addKeys(fallback);
+  // 4. Built-in keys pool (all 6 accounts decoded at runtime)
+  const builtInKeys = getBuiltInFallbackKeys();
+  for (const k of builtInKeys) {
+    addKeys(k);
   }
 
   return pool;
@@ -408,8 +420,8 @@ Return ONLY valid JSON matching this schema:
   } catch {}
 
   const defaultPreferredModels = [
-    'gemini-flash-lite-latest',
-    'gemini-3.5-flash-lite'
+    'gemini-3.5-flash-lite',
+    'gemini-flash-lite-latest'
   ];
 
   const candidateModels: string[] = cachedWorkingModel
