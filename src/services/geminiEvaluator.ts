@@ -353,17 +353,23 @@ Return ONLY valid JSON matching this schema:
   promptContent += `7. Output strictly standard RFC 8259 JSON. Do NOT escape single quotes (\\') in French text (write "c'est", "l'écriture", never "c\\'est"). Ensure all strings are strictly valid JSON.\n`;
   promptContent += `Please evaluate the active task(s) and output ONLY the valid JSON response.`;
 
-  // Memory & session cache for currently active working model
+  // Memory & session cache for currently active working model (purging any discontinued 2.5/1.5/2.0 models)
   let cachedWorkingModel: string | null = null;
   try {
-    cachedWorkingModel = sessionStorage.getItem('tcf_working_gemini_model');
+    const stored = sessionStorage.getItem('tcf_working_gemini_model');
+    if (stored && !stored.includes('2.5') && !stored.includes('1.5') && !stored.includes('2.0')) {
+      cachedWorkingModel = stored;
+    } else {
+      sessionStorage.removeItem('tcf_working_gemini_model');
+    }
   } catch {}
 
   const defaultPreferredModels = [
     'gemini-3.5-flash-lite',
     'gemini-flash-lite-latest',
     'gemini-3.5-flash',
-    'gemini-flash-latest'
+    'gemini-3.6-flash',
+    'gemini-3.8-flash'
   ];
 
   const candidateModels: string[] = cachedWorkingModel
@@ -375,7 +381,7 @@ Return ONLY valid JSON matching this schema:
   let lastError = '';
   const attemptedModels = new Set<string>();
 
-  // Helper function to dynamically discover live models directly from Google API
+  // Helper function to dynamically discover live models directly from Google API (strictly filtering out deprecated models)
   async function discoverLiveModels(key: string): Promise<string[]> {
     try {
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
@@ -390,13 +396,16 @@ Return ONLY valid JSON matching this schema:
             m.supportedGenerationMethods.includes('generateContent') &&
             !m.name.includes('tts') &&
             !m.name.includes('image') &&
-            !m.name.includes('robotics')
+            !m.name.includes('robotics') &&
+            !m.name.includes('2.5') &&
+            !m.name.includes('1.5') &&
+            !m.name.includes('2.0')
         )
         .map((m: any) => m.name.replace(/^models\//, ''))
         .sort((a: string, b: string) => {
-          const aFlash = a.includes('flash') ? 1 : 0;
-          const bFlash = b.includes('flash') ? 1 : 0;
-          return bFlash - aFlash;
+          const aLite = a.includes('flash-lite') ? 2 : a.includes('flash') ? 1 : 0;
+          const bLite = b.includes('flash-lite') ? 2 : b.includes('flash') ? 1 : 0;
+          return bLite - aLite;
         });
     } catch (e) {
       console.warn('Could not query dynamic ListModels from Google:', e);
@@ -477,14 +486,17 @@ Return ONLY valid JSON matching this schema:
     if (parsed) break;
   }
 
-  // Phase 2 (Self-Healing Fallback): If all default models failed, dynamically query Google API (top 3 flash models only)
+  // Phase 2 (Self-Healing Fallback): If all default models failed, dynamically query Google API
   if (!parsed) {
     console.info('Querying Google ModelService.ListModels to dynamically discover active generation models...');
-    const liveModels = (await discoverLiveModels(apiKey)).slice(0, 3);
+    const liveModels = (await discoverLiveModels(apiKey)).slice(0, 5);
 
     for (const modelName of liveModels) {
       if (attemptedModels.has(modelName)) continue;
       attemptedModels.add(modelName);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
 
       try {
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
@@ -493,6 +505,7 @@ Return ONLY valid JSON matching this schema:
           headers: {
             'Content-Type': 'application/json'
           },
+          signal: controller.signal,
           body: JSON.stringify({
             contents: [
               {
@@ -506,6 +519,8 @@ Return ONLY valid JSON matching this schema:
             }
           })
         });
+
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => null);
@@ -530,7 +545,8 @@ Return ONLY valid JSON matching this schema:
           }
         }
       } catch (err: any) {
-        lastError = err?.message || 'Erreur réseau';
+        clearTimeout(timeoutId);
+        lastError = err?.name === 'AbortError' ? `Timeout après 12s avec ${modelName}` : (err?.message || 'Erreur réseau');
       }
     }
   }
