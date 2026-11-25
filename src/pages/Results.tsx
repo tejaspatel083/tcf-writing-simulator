@@ -224,7 +224,7 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
 
             {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-2 shrink-0 self-start sm:self-center">
-              {!evaluation && (
+              {!evaluation ? (
                 <button
                   type="button"
                   onClick={() => handleStartEvaluation()}
@@ -233,6 +233,17 @@ Temps utilisé : ${formatTime(result.timeUsedSeconds)}${result.allocatedMinutes 
                 >
                   <span>🤖</span>
                   <span>{evaluating ? t('Évaluation en cours...') : t('Évaluer avec l’IA (Coach TCF)')}</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => handleStartEvaluation()}
+                  disabled={evaluating}
+                  className="px-3.5 py-2.5 rounded-lg bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-800 font-bold text-xs sm:text-sm transition-all shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 disabled:opacity-50"
+                  title={language === 'en' ? 'Re-run evaluation with strict French tutor' : 'Relancer une évaluation stricte'}
+                >
+                  <span>🔄</span>
+                  <span>{evaluating ? t('Évaluation en cours...') : (language === 'en' ? 'Re-evaluate with AI' : 'Réévaluer avec l’IA')}</span>
                 </button>
               )}
 

@@ -2,7 +2,7 @@ import { ExamResult, ExamCombination, TaskKey } from '../types/exam';
 import { SavedMistake, CefrLevel, AIEvaluation } from '../types/aiEvaluation';
 import { getSupabase } from '../lib/supabase';
 import { mapScoreToTcfCanadaLevels, evaluateTcfSubmissionWithGemini } from './geminiEvaluator';
-import { normalizeCategory } from '../utils/mistakesStorage';
+import { normalizeCategory, saveEvaluationMistakes } from '../utils/mistakesStorage';
 import { isOwnerEmail, ADMIN_EMAIL } from './adminService';
 import questionsData from '../data/questions.json';
 
@@ -134,15 +134,18 @@ export function extractMistakesFromSubmissions(subs: ExamResult[]): SavedMistake
       const taskKeys: TaskKey[] = ['task1', 'task2', 'task3'];
       taskKeys.forEach((tKey) => {
         const taskEval = sub.aiEvaluation?.tasks[tKey];
-        if (taskEval && Array.isArray(taskEval.mistakes)) {
-          taskEval.mistakes.forEach((m, mIdx) => {
-            if (m.original_text || m.corrected_text) {
+        if (taskEval) {
+          const rawMistakes = Array.isArray(taskEval.mistakes) ? taskEval.mistakes : [];
+          rawMistakes.forEach((m: any, mIdx) => {
+            const orig = (m.original_text || m.original || m.error || m.erreur || m.text || '').trim();
+            const corr = (m.corrected_text || m.correction || m.corrected || m.correct || '').trim();
+            if (orig || corr) {
               mistakes.push({
                 id: `mst_${sub.id || sIdx}_${tKey}_${mIdx}`,
-                category: normalizeCategory(m.category),
-                original_text: m.original_text || '',
-                corrected_text: m.corrected_text || '',
-                explanation: m.explanation || '',
+                category: normalizeCategory(m.category || m.type || 'Grammaire'),
+                original_text: orig,
+                corrected_text: corr,
+                explanation: m.explanation || m.rule || m.explication || '',
                 task_key: tKey,
                 task_name: tKey === 'task1' ? 'Tâche 1' : tKey === 'task2' ? 'Tâche 2' : 'Tâche 3',
                 submission_id: sub.id,
@@ -542,6 +545,12 @@ export async function evaluateAndSaveCandidateSubmission(
   sub: ExamResult
 ): Promise<AIEvaluation> {
   const evalData = await evaluateTcfSubmissionWithGemini(sub);
+  const updatedSub: ExamResult = { ...sub, aiEvaluation: evalData };
+
+  // Save mistakes into local mistakes bank as well
+  try {
+    saveEvaluationMistakes(evalData, updatedSub);
+  } catch {}
 
   // Update in Supabase
   if (sub.id) {

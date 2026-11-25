@@ -258,20 +258,27 @@ export async function evaluateTcfSubmissionWithGemini(
 
   const activeTaskKeys = getActiveEvaluatedTasks(result);
 
-  const systemInstructions = `You are a SENIOR France Éducation international (FEI) TCF Canada French writing examiner.
-Your grading philosophy is STRICT and RIGOROUS ("Train Hard, Exam Easy"):
-- Never inflate grades or give complimentary soft scores.
-- Official scale (0 to 20): C2 (18-20), C1 (14-17), B2 (10-13), B1 (6-9), A2 (4-5), A1 (0-3).
+  const systemInstructions = `You are a SENIOR French Language Professor and France Éducation international (FEI) Accredited TCF Canada Examiner.
+Your grading philosophy is HARD, STRICT, and RIGOROUS ("Train Hard, Exam Easy"):
+- Never inflate grades, soften criticism, or overlook errors. Be an exacting French tutor.
+- Official TCF Canada scale (0 to 20): C2 (18-20), C1 (14-17), B2 (10-13), B1 (6-9), A2 (4-5), A1 (0-3).
 
 CRITICAL EVALUATION RULES:
 1. ONLY evaluate the task(s) requested below. If a task was NOT practiced, DO NOT evaluate or penalize it.
-2. PRECISE, SHORT ERROR DETECTION (ACTUAL ERRORS ONLY — NO STYLISTIC REWRITES):
-   - ONLY report real French errors (Spelling, Accents, Grammar, Verb Tenses, Preposition choice, or clear incorrect vocabulary).
+2. MANDATORY EXHAUSTIVE PROOFREADING (HARD CHECKING — CATCH ALL MISTAKES):
+   - You MUST perform an exhaustive, word-by-word, line-by-line proofreading scan of the candidate's French writing.
+   - You MUST report 100% of all real errors in the text. DO NOT STOP AFTER 2 OR 3 MISTAKES! If there are 5, 8, 12, or 20 mistakes, LIST EVERY SINGLE ONE in the "mistakes" array. A strict French tutor never ignores mistakes.
+   - Exhaustively scan for ALL error types:
+     * "Orthographe / Accents": Missing or incorrect accents (e.g. "a" vs "à", "ou" vs "où", "deja" -> "déjà", "tres" -> "très", "evenement" -> "événement", "francais" -> "français", "chere" -> "chère"). In French, a missing accent is an orthographic error! Missing hyphens ("peut-être", "est-ce que", "rendez-vous"), apostrophe elision ("je ai" -> "j'ai", "de le" -> "du", "qu'il").
+     * "Grammaire": Gender & number agreements (plural -s, feminine -e on nouns/adjectives), subject-verb agreements, past participle agreement ("accord du participe passé" with être, and with avoir when COD precedes: "les photos que j'ai prises"), pronoun errors (y, en, lui, leur, dont, qui, que), negation ("ne... pas").
+     * "Conjugaison / Temps": Incorrect conjugation endings, wrong tense (imparfait vs passé composé vs présent), subjunctive violations (after "il faut que", "bien que", "pour que", "avant que"), auxiliary confusion (avoir instead of être for movement/reflexive verbs).
+     * "Structure de phrase": Faulty syntax, incorrect word order ("je aussi pense" -> "je pense aussi"), English calques/Anglicisms ("faire une décision" -> "prendre une décision", "demander pour" -> "demander", "appliquer pour" -> "postuler à").
+     * "Vocabulaire": Wrong prepositions required by verbs/nouns ("participer dans" -> "participer à", "rendre visite à", "jouer au"), false friends ("opportunité" vs "occasion", "actuellement" vs "en fait").
    - "original_text" & "corrected_text": ONLY the erroneous snippet (1 to 5 words maximum).
    - "explanation": Concisely explain the grammar/spelling rule STRICTLY IN ENGLISH.
-   - Categories: "Grammaire", "Orthographe / Accents", "Conjugaison / Temps", "Structure de phrase", "Vocabulaire".
-3. BLANK OR ZERO-WORD SUBMISSIONS:
-   - If candidate's answer is blank or 0-4 words: task score MUST BE 0/20, level "A1", clb "< CLB 4", mistakes [].
+3. STRICT SCORING REFLECTION:
+   - Frequent basic grammar/spelling/accent errors MUST pull the score down to A1-B1 (0-9/20). Do not grant unearned B2 or C1!
+   - 0 words / blank: task score MUST BE 0/20, level "A1", clb "< CLB 4", mistakes [].
 4. C1-C2 MODEL ANSWERS (STRICT WORD COUNTS):
    - Task 1: 60-120 words (friendly email).
    - Task 2: 120-150 words (3 paragraphs).
@@ -296,8 +303,28 @@ OUTPUT RFC 8259 JSON SCHEMA:
       "mistakes": [{"category": "Grammaire"|"Orthographe / Accents"|"Conjugaison / Temps"|"Structure de phrase"|"Vocabulaire", "original_text": "...", "corrected_text": "...", "explanation": "..."}],
       "c1_c2_model_answer": "string in French"
     },
-    "task2"?: { "task_key": "task2", "task_name": "Tâche 2 : Narration / Récit", "score": number, "estimated_level": "B2", "clb_level": "CLB 7", "general_feedback": "...", "general_feedback_en": "...", "mistakes": [], "c1_c2_model_answer": "..." },
-    "task3"?: { "task_key": "task3", "task_name": "Tâche 3 : Argumentation", "score": number, "estimated_level": "B2", "clb_level": "CLB 7", "general_feedback": "...", "general_feedback_en": "...", "mistakes": [], "c1_c2_model_answer": "..." }
+    "task2"?: {
+      "task_key": "task2",
+      "task_name": "Tâche 2 : Narration / Récit",
+      "score": number,
+      "estimated_level": "A1"|"A2"|"B1"|"B2"|"C1"|"C2",
+      "clb_level": "string",
+      "general_feedback": "string in French",
+      "general_feedback_en": "string in English",
+      "mistakes": [{"category": "Grammaire"|"Orthographe / Accents"|"Conjugaison / Temps"|"Structure de phrase"|"Vocabulaire", "original_text": "...", "corrected_text": "...", "explanation": "..."}],
+      "c1_c2_model_answer": "string in French"
+    },
+    "task3"?: {
+      "task_key": "task3",
+      "task_name": "Tâche 3 : Argumentation",
+      "score": number,
+      "estimated_level": "A1"|"A2"|"B1"|"B2"|"C1"|"C2",
+      "clb_level": "string",
+      "general_feedback": "string in French",
+      "general_feedback_en": "string in English",
+      "mistakes": [{"category": "Grammaire"|"Orthographe / Accents"|"Conjugaison / Temps"|"Structure de phrase"|"Vocabulaire", "original_text": "...", "corrected_text": "...", "explanation": "..."}],
+      "c1_c2_model_answer": "string in French"
+    }
   }
 }`;
 
@@ -334,19 +361,21 @@ OUTPUT RFC 8259 JSON SCHEMA:
   promptContent += `MANDATORY REQUIREMENTS:\n`;
   promptContent += `1. Provide overall_feedback in French AND provide its accurate English translation in overall_feedback_en.\n`;
   promptContent += `2. For each task, provide general_feedback in French AND its accurate English translation in general_feedback_en.\n`;
-  promptContent += `3. MISTAKES MUST BE SHORT AND REAL ERRORS ONLY:\n`;
-  promptContent += `   - Do NOT suggest stylistic "better versions" or "C1/C2 elevation" in mistakes! If a student's French is grammatically and semantically correct, DO NOT flag it as a mistake!\n`;
-  promptContent += `   - NEVER quote entire sentences! "original_text" and "corrected_text" must be short snippets (1 to 5 words maximum).\n`;
-  promptContent += `   - If there are multiple errors in a sentence, break them down into separate, individual mistakes.\n`;
-  promptContent += `   - NEVER write "To target C1/C2..." in explanations. Just state the grammatical, spelling, agreement, or tense rule in English.\n`;
+  promptContent += `3. MANDATORY EXHAUSTIVE PROOFREADING (HARD CHECKING — CATCH ALL MISTAKES):\n`;
+  promptContent += `   - You MUST read the candidate's French writing word-by-word and catch 100% of all real errors.\n`;
+  promptContent += `   - Do NOT stop after finding 2 or 3 mistakes! If there are 5, 8, 12, or 20 mistakes in a task, you MUST list EVERY SINGLE ONE in the "mistakes" array. A strict French tutor never overlooks mistakes.\n`;
+  promptContent += `   - Catch every missing or incorrect accent (a/à, ou/où, deja/déjà, tres/très, etc.), missing hyphen, gender/number agreement error (plural -s, feminine -e, past participle agreement), verb tense or conjugation error, wrong preposition (participer à, aller au), and anglicism/calque.\n`;
+  promptContent += `   - Do NOT suggest stylistic rewrites if the student's French is already correct. But for actual errors, catch them all!\n`;
+  promptContent += `   - Keep "original_text" and "corrected_text" to the erroneous snippet (1 to 5 words max). Never quote entire sentences.\n`;
+  promptContent += `   - If there are multiple errors in a sentence, break each one down into a separate, individual mistake item.\n`;
+  promptContent += `   - All mistake "explanation" values MUST be written 100% IN ENGLISH ONLY (explain French grammar/spelling rule clearly in English).\n`;
   promptContent += `4. MODEL ANSWER WORD COUNT COMPLIANCE IS STRICTLY MANDATORY:\n`;
   promptContent += `   - Task 1 c1_c2_model_answer: 60 to 120 words (target 80-100 words).\n`;
   promptContent += `   - Task 2 c1_c2_model_answer: 120 to 150 words (target 130-145 words). NEVER exceed 150 words!\n`;
   promptContent += `   - Task 3 c1_c2_model_answer: 120 to 180 words (target 140-165 words). NEVER exceed 180 words!\n`;
   promptContent += `   You must count words and ensure the model answers do NOT exceed the maximum limit under any circumstances!\n`;
-  promptContent += `5. All mistake "explanation" values MUST be written 100% IN ENGLISH ONLY (explain French grammar/spelling rule clearly in English).\n`;
-  promptContent += `6. Keep the student's original_text, corrected_text, and c1_c2_model_answer in French.\n`;
-  promptContent += `7. Output strictly standard RFC 8259 JSON. Do NOT escape single quotes (\\') in French text (write "c'est", "l'écriture", never "c\\'est"). Ensure all strings are strictly valid JSON.\n`;
+  promptContent += `5. Keep the student's original_text, corrected_text, and c1_c2_model_answer in French.\n`;
+  promptContent += `6. Output strictly standard RFC 8259 JSON. Do NOT escape single quotes (\\') in French text (write "c'est", "l'écriture", never "c\\'est"). Ensure all strings are strictly valid JSON.\n`;
   promptContent += `Please evaluate the active task(s) and output ONLY the valid JSON response.`;
 
   // Memory & session cache for currently active working model (purging any discontinued 2.5/1.5/2.0 models)
@@ -542,33 +571,42 @@ OUTPUT RFC 8259 JSON SCHEMA:
       }
     }
 
-    let mistakesList = Array.isArray(rawTask?.mistakes)
+    const rawMistakesArray = Array.isArray(rawTask?.mistakes)
       ? rawTask.mistakes
-          .map((m: any) => {
-            let explanation = (m.explanation || '').trim();
-            // Clean up any stylistic C1/C2 phrases
-            explanation = explanation
-              .replace(/^(?:In order to|To)\s+(?:target|reach|achieve|aim for)\s+C1\/?C2,?\s*/i, '')
-              .replace(/To reach high-level C1\/?C2,?\s*/i, '');
-            if (explanation.length > 0) {
-              explanation = explanation.charAt(0).toUpperCase() + explanation.slice(1);
-            }
-
-            return {
-              category: m.category || 'Grammaire',
-              original_text: (m.original_text || '').trim(),
-              corrected_text: (m.corrected_text || '').trim(),
-              explanation
-            };
-          })
-          .filter((m: any) => {
-            if (!m.original_text && !m.corrected_text) return false;
-            // Filter out full-sentence stylistic suggestions masquerading as vocabulary mistakes
-            const origWords = m.original_text.split(/\s+/).length;
-            if (origWords > 12 && m.category === 'Vocabulaire') return false;
-            return true;
-          })
+      : Array.isArray(rawTask?.errors)
+      ? rawTask.errors
+      : Array.isArray(rawTask?.fautes)
+      ? rawTask.fautes
       : [];
+
+    let mistakesList = rawMistakesArray
+      .map((m: any) => {
+        let explanation = (m.explanation || m.rule || m.explication || '').trim();
+        // Clean up any stylistic C1/C2 phrases
+        explanation = explanation
+          .replace(/^(?:In order to|To)\s+(?:target|reach|achieve|aim for)\s+C1\/?C2,?\s*/i, '')
+          .replace(/To reach high-level C1\/?C2,?\s*/i, '');
+        if (explanation.length > 0) {
+          explanation = explanation.charAt(0).toUpperCase() + explanation.slice(1);
+        }
+
+        const orig = (m.original_text || m.original || m.error || m.erreur || m.text || '').trim();
+        const corr = (m.corrected_text || m.correction || m.corrected || m.correct || '').trim();
+
+        return {
+          category: m.category || m.type || 'Grammaire',
+          original_text: orig,
+          corrected_text: corr,
+          explanation
+        };
+      })
+      .filter((m: any) => {
+        if (!m.original_text && !m.corrected_text) return false;
+        // Filter out full-sentence stylistic suggestions masquerading as vocabulary mistakes
+        const origWords = m.original_text.split(/\s+/).length;
+        if (origWords > 12 && m.category === 'Vocabulaire') return false;
+        return true;
+      });
 
     if (isBlank) {
       taskScore = 0;

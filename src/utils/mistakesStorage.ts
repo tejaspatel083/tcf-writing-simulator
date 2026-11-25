@@ -158,6 +158,12 @@ export function saveEvaluationMistakes(evaluation: AIEvaluation, result: ExamRes
   }
 
   const existingMistakes = getStoredMistakes();
+  // If re-evaluating an existing submission, clear previous mistakes for this submission ID
+  // so the new comprehensive evaluation cleanly replaces them
+  const filteredExisting = result.id
+    ? existingMistakes.filter((m) => m.submission_id !== result.id)
+    : existingMistakes;
+
   const newMistakes: SavedMistake[] = [];
 
   const comboNum = result.combination?.combinationNumber || result.combination?.combination || 1;
@@ -181,7 +187,9 @@ export function saveEvaluationMistakes(evaluation: AIEvaluation, result: ExamRes
     const taskLabel = tKey === 'task1' ? 'Tâche 1' : tKey === 'task2' ? 'Tâche 2' : 'Tâche 3';
 
     for (const item of taskEval.mistakes) {
-      if (!item.original_text && !item.corrected_text) continue;
+      const orig = (item.original_text || (item as any).original || (item as any).error || '').trim();
+      const corr = (item.corrected_text || (item as any).correction || (item as any).corrected || '').trim();
+      if (!orig && !corr) continue;
 
       const normCategory = normalizeCategory(item.category);
       counter++;
@@ -189,9 +197,9 @@ export function saveEvaluationMistakes(evaluation: AIEvaluation, result: ExamRes
       const savedItem: SavedMistake = {
         id: `mst_${now}_${counter}_${Math.random().toString(36).slice(2, 7)}`,
         category: normCategory,
-        original_text: item.original_text || '',
-        corrected_text: item.corrected_text || '',
-        explanation: item.explanation || '',
+        original_text: orig,
+        corrected_text: corr,
+        explanation: item.explanation || (item as any).rule || '',
         task_key: tKey,
         task_name: taskLabel,
         submission_id: result.id,
@@ -200,19 +208,20 @@ export function saveEvaluationMistakes(evaluation: AIEvaluation, result: ExamRes
         timestamp: now
       };
 
-      // Check if duplicate already exists
-      const isDuplicate = existingMistakes.some(
+      // Check if duplicate already exists in current batch or remaining existing mistakes
+      const isDuplicate = newMistakes.some(
         (m) =>
           m &&
-          (m.original_text || '').trim() === (savedItem.original_text || '').trim() &&
-          (m.corrected_text || '').trim() === (savedItem.corrected_text || '').trim() &&
-          m.submission_id === savedItem.submission_id
-      ) || newMistakes.some(
+          m.task_key === savedItem.task_key &&
+          (m.original_text || '').trim().toLowerCase() === orig.toLowerCase() &&
+          (m.corrected_text || '').trim().toLowerCase() === corr.toLowerCase()
+      ) || filteredExisting.some(
         (m) =>
           m &&
-          (m.original_text || '').trim() === (savedItem.original_text || '').trim() &&
-          (m.corrected_text || '').trim() === (savedItem.corrected_text || '').trim() &&
-          m.task_key === savedItem.task_key
+          m.submission_id === savedItem.submission_id &&
+          m.task_key === savedItem.task_key &&
+          (m.original_text || '').trim().toLowerCase() === orig.toLowerCase() &&
+          (m.corrected_text || '').trim().toLowerCase() === corr.toLowerCase()
       );
 
       if (!isDuplicate) {
@@ -221,7 +230,7 @@ export function saveEvaluationMistakes(evaluation: AIEvaluation, result: ExamRes
     }
   }
 
-  const updated = [...newMistakes, ...existingMistakes];
+  const updated = [...newMistakes, ...filteredExisting];
   try {
     localStorage.setItem(MISTAKES_STORAGE_KEY, JSON.stringify(updated));
   } catch (e) {
@@ -260,14 +269,17 @@ export function mergeMistakesFromSubmissions(
       const taskLabel = tKey === 'task1' ? 'Tâche 1' : tKey === 'task2' ? 'Tâche 2' : 'Tâche 3';
 
       for (const item of taskEval.mistakes) {
-        if (!item || (!item.original_text && !item.corrected_text)) continue;
+        const orig = (item.original_text || (item as any).original || (item as any).error || '').trim();
+        const corr = (item.corrected_text || (item as any).correction || (item as any).corrected || '').trim();
+        if (!orig && !corr) continue;
 
         const isDuplicate = result.some(
           (m) =>
             m &&
-            (m.original_text || '').trim() === (item.original_text || '').trim() &&
-            (m.corrected_text || '').trim() === (item.corrected_text || '').trim() &&
-            (m.submission_id === sub.id || m.exam_title === examTitle)
+            m.task_key === tKey &&
+            (m.original_text || '').trim().toLowerCase() === orig.toLowerCase() &&
+            (m.corrected_text || '').trim().toLowerCase() === corr.toLowerCase() &&
+            (m.submission_id === sub.id)
         );
 
         if (!isDuplicate) {
@@ -275,9 +287,9 @@ export function mergeMistakesFromSubmissions(
           result.push({
             id: `mst_sync_${Date.now()}_${counter}_${Math.random().toString(36).slice(2, 6)}`,
             category: normalizeCategory(item.category),
-            original_text: item.original_text || '',
-            corrected_text: item.corrected_text || '',
-            explanation: item.explanation || '',
+            original_text: orig,
+            corrected_text: corr,
+            explanation: item.explanation || (item as any).rule || '',
             task_key: tKey,
             task_name: taskLabel,
             submission_id: sub.id,

@@ -598,9 +598,20 @@ export const CandidateInspector: React.FC<CandidateInspectorProps> = ({
               )}
 
               {inspectedSubmission.aiEvaluation?.overall_feedback && (
-                <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-xs text-blue-950 leading-relaxed">
-                  <span className="font-bold block mb-1">📢 {t('Synthèse Générale de l\'IA')} :</span>
-                  {inspectedSubmission.aiEvaluation.overall_feedback}
+                <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-xs text-blue-950 leading-relaxed space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="font-bold block">📢 {t('Synthèse Générale de l\'IA')} :</span>
+                    <button
+                      type="button"
+                      onClick={() => handleEvaluateSingle(inspectedSubmission)}
+                      disabled={evaluatingId === inspectedSubmission.id}
+                      className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 self-start sm:self-auto shrink-0"
+                    >
+                      <Sparkles className={`w-3.5 h-3.5 ${evaluatingId === inspectedSubmission.id ? 'animate-spin' : ''}`} />
+                      <span>{evaluatingId === inspectedSubmission.id ? t('Évaluation en cours...') : t('Réévaluer avec l’IA')}</span>
+                    </button>
+                  </div>
+                  <p>{inspectedSubmission.aiEvaluation.overall_feedback}</p>
                 </div>
               )}
 
